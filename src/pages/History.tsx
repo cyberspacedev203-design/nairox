@@ -3,37 +3,48 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, TrendingUp, TrendingDown, Gift } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { FloatingActionButton } from "@/components/FloatingActionButton";
 
 const History = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (!userData) {
-      navigate("/auth");
-    } else {
-      setUser(JSON.parse(userData));
+    loadTransactions();
+  }, []);
+
+  const loadTransactions = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate("/auth");
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("transactions")
+        .select("*")
+        .eq("user_id", session.user.id)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setTransactions(data || []);
+    } catch (error: any) {
+      toast.error("Failed to load transactions");
+    } finally {
+      setLoading(false);
     }
-  }, [navigate]);
+  };
 
-  // Mock transaction history
-  const transactions = [
-    {
-      id: 1,
-      type: "credit",
-      amount: 50000,
-      description: "Welcome Bonus",
-      date: new Date().toLocaleDateString(),
-      icon: Gift,
-    },
-  ];
-
-  if (!user) return null;
+  const getIcon = (type: string) => {
+    return type === "credit" ? TrendingUp : TrendingDown;
+  };
 
   return (
-    <div className="min-h-screen liquid-bg">
-      {/* Header */}
+    <div className="min-h-screen liquid-bg pb-20">
       <div className="bg-gradient-to-r from-primary to-secondary p-6 text-primary-foreground">
         <div className="flex items-center gap-4">
           <Button
@@ -49,41 +60,45 @@ const History = () => {
       </div>
 
       <div className="p-6 space-y-4">
-        {transactions.length === 0 ? (
+        {loading ? (
+          <p className="text-center text-muted-foreground">Loading...</p>
+        ) : transactions.length === 0 ? (
           <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-8 text-center">
+            <Gift className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
             <p className="text-muted-foreground">No transactions yet</p>
           </Card>
         ) : (
           transactions.map((transaction) => {
-            const Icon = transaction.icon;
+            const Icon = getIcon(transaction.type);
             return (
-              <Card
-                key={transaction.id}
-                className="bg-card/80 backdrop-blur-lg border-border/50 p-4"
-              >
+              <Card key={transaction.id} className="bg-card/80 backdrop-blur-lg border-border/50 p-4 hover:border-primary/50 transition-colors">
                 <div className="flex items-center gap-4">
                   <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                    transaction.type === "credit" 
-                      ? "bg-secondary/20 text-secondary" 
-                      : "bg-destructive/20 text-destructive"
+                    transaction.type === "credit" ? "bg-green-500/10" : "bg-red-500/10"
                   }`}>
-                    <Icon className="w-6 h-6" />
+                    <Icon className={`w-6 h-6 ${
+                      transaction.type === "credit" ? "text-green-500" : "text-red-500"
+                    }`} />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-foreground">{transaction.description}</h3>
-                    <p className="text-sm text-muted-foreground">{transaction.date}</p>
+                    <p className="font-semibold">{transaction.description}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(transaction.created_at).toLocaleString()}
+                    </p>
                   </div>
-                  <div className={`text-lg font-bold ${
-                    transaction.type === "credit" ? "text-secondary" : "text-destructive"
+                  <p className={`text-lg font-bold ${
+                    transaction.type === "credit" ? "text-green-500" : "text-red-500"
                   }`}>
-                    {transaction.type === "credit" ? "+" : "-"}₦{transaction.amount.toLocaleString()}
-                  </div>
+                    {transaction.type === "credit" ? "+" : "-"}₦{Number(transaction.amount).toLocaleString()}
+                  </p>
                 </div>
               </Card>
             );
           })
         )}
       </div>
+
+      <FloatingActionButton />
     </div>
   );
 };

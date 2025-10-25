@@ -1,61 +1,89 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [signupData, setSignupData] = useState({
     fullName: "",
     email: "",
-    phone: "",
     password: "",
-    referralCode: "",
+    referralCode: searchParams.get("ref") || "",
   });
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   });
 
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/dashboard");
+      }
+    };
+    checkSession();
+  }, [navigate]);
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate signup - in production this would connect to backend
-    setTimeout(() => {
-      localStorage.setItem("user", JSON.stringify({
-        ...signupData,
-        id: Date.now(),
-        balance: 50000,
-        referrals: 0,
-        referralCode: Math.random().toString(36).substring(7).toUpperCase(),
-      }));
-      toast.success("Welcome to Chixx9ja! 🎉");
-      navigate("/welcome");
+
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: signupData.email,
+        password: signupData.password,
+        options: {
+          data: {
+            fullName: signupData.fullName,
+            referralCode: signupData.referralCode,
+          },
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        toast.success("Welcome to Chixx9ja! 🎉");
+        setTimeout(() => navigate("/welcome"), 1000);
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to sign up");
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate login
-    setTimeout(() => {
-      const user = localStorage.getItem("user");
-      if (user) {
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: loginData.email,
+        password: loginData.password,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
         toast.success("Welcome back! 👋");
         navigate("/dashboard");
-      } else {
-        toast.error("Account not found. Please sign up first.");
       }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to log in");
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -94,17 +122,6 @@ const Auth = () => {
                     placeholder="Enter your email"
                     value={signupData.email}
                     onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="Enter your phone number"
-                    value={signupData.phone}
-                    onChange={(e) => setSignupData({ ...signupData, phone: e.target.value })}
                     required
                   />
                 </div>

@@ -2,53 +2,72 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Copy, Share2, Users } from "lucide-react";
+import { ArrowLeft, Copy, Share2, Users, Gift, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { FloatingActionButton } from "@/components/FloatingActionButton";
 
 const Referrals = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (!userData) {
-      navigate("/auth");
-    } else {
-      setUser(JSON.parse(userData));
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate("/auth");
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", session.user.id)
+        .single();
+
+      if (error) throw error;
+      setProfile(data);
+    } catch (error: any) {
+      toast.error("Failed to load profile");
+    } finally {
+      setLoading(false);
     }
-  }, [navigate]);
+  };
+
+  const referralLink = profile ? `${window.location.origin}/auth?ref=${profile.referral_code}` : "";
 
   const copyReferralCode = () => {
-    if (user?.referralCode) {
-      navigator.clipboard.writeText(user.referralCode);
-      toast.success("Referral code copied!");
-    }
+    navigator.clipboard.writeText(referralLink);
+    toast.success("Referral link copied!");
   };
 
   const shareReferral = async () => {
-    const referralText = `Join Chixx9ja and earn money! Use my referral code: ${user?.referralCode}`;
-    
+    const shareData = {
+      title: "Join Chixx9ja",
+      text: `Join me on Chixx9ja and earn ₦50,000 welcome bonus! Use my referral code: ${profile?.referral_code}`,
+      url: referralLink,
+    };
+
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: "Join Chixx9ja",
-          text: referralText,
-        });
-        toast.success("Shared successfully!");
+        await navigator.share(shareData);
       } catch (err) {
-        console.log("Share cancelled");
+        copyReferralCode();
       }
     } else {
-      navigator.clipboard.writeText(referralText);
-      toast.success("Referral message copied!");
+      copyReferralCode();
     }
   };
 
-  if (!user) return null;
+  if (loading || !profile) return null;
 
   return (
-    <div className="min-h-screen liquid-bg">
-      {/* Header */}
+    <div className="min-h-screen liquid-bg pb-20">
       <div className="bg-gradient-to-r from-primary to-secondary p-6 text-primary-foreground">
         <div className="flex items-center gap-4">
           <Button
@@ -65,83 +84,88 @@ const Referrals = () => {
 
       <div className="p-6 space-y-6">
         {/* Stats Card */}
-        <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-lg border-border/50 p-6 glow-secondary">
-          <div className="text-center space-y-4">
-            <Users className="w-16 h-16 mx-auto text-primary animate-pulse-glow" />
-            <div>
+        <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-lg border-border/50 p-6 glow-primary">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="text-center">
+              <Users className="w-8 h-8 mx-auto mb-2 text-primary" />
               <p className="text-sm text-muted-foreground">Total Referrals</p>
-              <p className="text-5xl font-bold gradient-text">{user.referrals || 0}</p>
+              <p className="text-3xl font-bold text-primary">{profile.total_referrals || 0}</p>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Total Earnings from Referrals</p>
-              <p className="text-3xl font-bold text-secondary">
-                ₦{((user.referrals || 0) * 15000).toLocaleString()}
-              </p>
-            </div>
-          </div>
-        </Card>
-
-        {/* Referral Code Card */}
-        <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-6">
-          <div className="space-y-4">
-            <h3 className="font-semibold text-lg">Your Referral Code</h3>
-            <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-6 rounded-lg text-center">
-              <code className="text-3xl font-bold gradient-text">{user.referralCode}</code>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <Button
-                onClick={copyReferralCode}
-                className="bg-card hover:bg-muted border border-border/50 text-foreground"
-                variant="outline"
-              >
-                <Copy className="w-4 h-4 mr-2" />
-                Copy Code
-              </Button>
-              <Button
-                onClick={shareReferral}
-                className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-primary-foreground"
-              >
-                <Share2 className="w-4 h-4 mr-2" />
-                Share
-              </Button>
+            <div className="text-center">
+              <TrendingUp className="w-8 h-8 mx-auto mb-2 text-secondary" />
+              <p className="text-sm text-muted-foreground">Earnings Per Referral</p>
+              <p className="text-3xl font-bold text-secondary">₦{Number(profile.referral_earnings).toLocaleString()}</p>
             </div>
           </div>
         </Card>
 
-        {/* How it Works */}
+        {/* Referral Link Card */}
         <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-6">
-          <h3 className="font-semibold text-lg mb-4">How It Works</h3>
           <div className="space-y-4">
-            <div className="flex gap-3">
-              <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold flex-shrink-0">
-                1
-              </div>
-              <div>
-                <h4 className="font-medium text-foreground">Share Your Code</h4>
-                <p className="text-sm text-muted-foreground">Copy or share your unique referral code with friends</p>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold flex-shrink-0">
-                2
-              </div>
-              <div>
-                <h4 className="font-medium text-foreground">They Sign Up</h4>
-                <p className="text-sm text-muted-foreground">Your friend registers using your referral code</p>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <div className="w-8 h-8 rounded-full bg-secondary/20 text-secondary flex items-center justify-center font-bold flex-shrink-0">
-                3
-              </div>
-              <div>
-                <h4 className="font-medium text-foreground">Earn ₦15,000</h4>
-                <p className="text-sm text-muted-foreground">Get ₦15,000 instantly credited to your account!</p>
+            <h3 className="font-semibold flex items-center gap-2">
+              <Gift className="w-5 h-5 text-primary" />
+              Your Referral Link
+            </h3>
+            <div className="bg-muted/50 p-4 rounded-lg space-y-3">
+              <code className="text-sm font-mono break-all block">{referralLink}</code>
+              <div className="flex gap-2">
+                <Button
+                  onClick={copyReferralCode}
+                  className="flex-1 bg-gradient-to-r from-primary to-secondary"
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  Copy Link
+                </Button>
+                <Button
+                  onClick={shareReferral}
+                  className="flex-1 bg-gradient-to-r from-secondary to-primary"
+                >
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Share
+                </Button>
               </div>
             </div>
           </div>
+        </Card>
+
+        {/* Upgrade Card */}
+        <Card className="bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20 p-6">
+          <h3 className="font-semibold mb-4 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-secondary" />
+            Upgrade Referral Earnings
+          </h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Increase your earnings per referral by upgrading to premium tiers
+          </p>
+          <Button
+            onClick={() => navigate("/upgrade")}
+            className="w-full bg-gradient-to-r from-primary to-secondary"
+          >
+            View Upgrade Options
+          </Button>
+        </Card>
+
+        {/* How It Works */}
+        <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-6">
+          <h3 className="font-semibold mb-4">How It Works</h3>
+          <ol className="space-y-3 text-sm">
+            <li className="flex gap-3">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">1</span>
+              <span>Share your unique referral link with friends</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">2</span>
+              <span>They sign up using your link and get ₦50,000 welcome bonus</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">3</span>
+              <span>You earn ₦{Number(profile.referral_earnings).toLocaleString()} added to your balance instantly!</span>
+            </li>
+          </ol>
         </Card>
       </div>
+
+      <FloatingActionButton />
     </div>
   );
 };

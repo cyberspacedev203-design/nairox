@@ -8,6 +8,11 @@ import Welcome from "./pages/Welcome";
 import Dashboard from "./pages/Dashboard";
 import History from "./pages/History";
 import Referrals from "./pages/Referrals";
+import Profile from "./pages/Profile";
+import Withdraw from "./pages/Withdraw";
+import Upgrade from "./pages/Upgrade";
+import UpgradePayment from "./pages/UpgradePayment";
+import UpgradePending from "./pages/UpgradePending";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +30,11 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/history" element={<History />} />
           <Route path="/referrals" element={<Referrals />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/withdraw" element={<Withdraw />} />
+          <Route path="/upgrade" element={<Upgrade />} />
+          <Route path="/upgrade-payment" element={<UpgradePayment />} />
+          <Route path="/upgrade-pending" element={<UpgradePending />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
