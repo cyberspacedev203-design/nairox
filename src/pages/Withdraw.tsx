@@ -179,12 +179,14 @@ const Withdraw = () => {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="amount">Amount (Min: ₦{MINIMUM_WITHDRAW.toLocaleString()})</Label>
+              <Label htmlFor="amount">
+                Amount {!requireReferrals && `(Min: ₦${MINIMUM_WITHDRAW.toLocaleString()})`}
+              </Label>
               <Input
                 id="amount"
                 type="number"
                 required
-                min={MINIMUM_WITHDRAW}
+                min={requireReferrals ? 0.01 : MINIMUM_WITHDRAW}
                 max={profile.balance}
                 value={withdrawData.amount}
                 onChange={(e) => setWithdrawData({ ...withdrawData, amount: e.target.value })}
