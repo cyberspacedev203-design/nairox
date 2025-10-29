@@ -84,6 +84,36 @@ export type Database = {
           },
         ]
       }
+      instant_activation_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          receipt_url: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          receipt_url?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          receipt_url?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           activation_paid: boolean | null
@@ -92,6 +122,7 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          instant_activation_paid: boolean | null
           referral_code: string
           referral_earnings: number | null
           referred_by: string | null
@@ -106,6 +137,7 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          instant_activation_paid?: boolean | null
           referral_code: string
           referral_earnings?: number | null
           referred_by?: string | null
@@ -120,6 +152,7 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          instant_activation_paid?: boolean | null
           referral_code?: string
           referral_earnings?: number | null
           referred_by?: string | null

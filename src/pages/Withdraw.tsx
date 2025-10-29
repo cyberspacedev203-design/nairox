@@ -64,11 +64,6 @@ const Withdraw = () => {
   const handleWithdraw = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!withdrawalEnabled) {
-      toast.error("Please enable withdrawal toggle first");
-      return;
-    }
-    
     const amount = Math.floor(Number(withdrawData.amount));
     
     // Validate whole numbers only (Naira)
@@ -82,14 +77,8 @@ const Withdraw = () => {
       return;
     }
     
-    // Enforce minimum and referral requirement
     if (amount < MINIMUM_WITHDRAW) {
       toast.error(`Minimum withdrawal is ₦${MINIMUM_WITHDRAW.toLocaleString()}`);
-      return;
-    }
-    
-    if (profile.total_referrals < 5) {
-      toast.error("You need at least 5 referrals to withdraw");
       return;
     }
 
@@ -102,11 +91,26 @@ const Withdraw = () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
 
-      // Check if user needs to pay activation fee (after 5 withdrawals)
-      if (profile.withdrawal_count >= 5 && !profile.activation_paid) {
-        toast.info("After 5 withdrawals, activation fee required");
-        navigate("/withdrawal-activation", { state: { withdrawalCount: profile.withdrawal_count } });
-        return;
+      // TOGGLE ON: Instant withdrawal (requires ₦12,600 activation, no referrals needed)
+      if (withdrawalEnabled) {
+        if (!profile.instant_activation_paid) {
+          toast.info("Instant withdrawal requires ₦12,600 activation fee");
+          navigate("/instant-withdrawal-activation");
+          return;
+        }
+      } 
+      // TOGGLE OFF: Regular withdrawal (requires 5 referrals, ₦6,650 fee after 5 withdrawals)
+      else {
+        if (profile.total_referrals < 5) {
+          toast.error("You need at least 5 referrals to withdraw");
+          return;
+        }
+
+        if (profile.withdrawal_count >= 5 && !profile.activation_paid) {
+          toast.info("After 5 withdrawals, activation fee required");
+          navigate("/withdrawal-activation", { state: { withdrawalCount: profile.withdrawal_count } });
+          return;
+        }
       }
 
       const { error } = await supabase.from("withdrawals").insert({
@@ -171,7 +175,7 @@ const Withdraw = () => {
           <div className="mb-6 p-4 bg-muted/50 rounded-lg">
             <div className="flex items-center justify-between mb-2">
               <Label htmlFor="withdrawal-toggle" className="text-base font-semibold">
-                Enable Withdrawal
+                {withdrawalEnabled ? "⚡ Instant Withdrawal" : "💯 Standard Withdrawal"}
               </Label>
               <Switch
                 id="withdrawal-toggle"
@@ -180,12 +184,14 @@ const Withdraw = () => {
               />
             </div>
             <p className="text-sm text-muted-foreground">
-              Turn on to enable withdrawal processing
+              {withdrawalEnabled 
+                ? "ON: Withdraw instantly (₦12,600 activation fee, no referrals needed)" 
+                : "OFF: Withdraw with 5 referrals (₦6,650 fee after 5 withdrawals)"}
             </p>
           </div>
 
           <form onSubmit={handleWithdraw} className="space-y-4">
-            {profile.total_referrals < 5 && (
+            {!withdrawalEnabled && profile.total_referrals < 5 && (
               <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
                 <p className="text-sm text-yellow-600 dark:text-yellow-400">
                   You have {profile.total_referrals} referrals. You need {5 - profile.total_referrals} more to withdraw.
@@ -193,10 +199,18 @@ const Withdraw = () => {
               </div>
             )}
 
-            {profile.withdrawal_count >= 5 && !profile.activation_paid && (
+            {!withdrawalEnabled && profile.withdrawal_count >= 5 && !profile.activation_paid && (
               <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
                 <p className="text-sm text-blue-600 dark:text-blue-400">
                   ⚠️ After 5 withdrawals, you need to pay a one-time activation fee of ₦6,650 to continue withdrawing.
+                </p>
+              </div>
+            )}
+
+            {withdrawalEnabled && !profile.instant_activation_paid && (
+              <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                <p className="text-sm text-blue-600 dark:text-blue-400">
+                  ⚡ Instant withdrawal requires a one-time activation fee of ₦12,600. No referrals needed!
                 </p>
               </div>
             )}
@@ -267,7 +281,7 @@ const Withdraw = () => {
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-primary to-secondary"
-              disabled={submitting || !withdrawalEnabled}
+              disabled={submitting}
             >
               {submitting ? "Submitting..." : "Submit Withdrawal"}
             </Button>
