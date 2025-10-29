@@ -9,12 +9,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 const Withdraw = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [withdrawalEnabled, setWithdrawalEnabled] = useState(false);
   const [withdrawData, setWithdrawData] = useState({
     amount: "",
     accountName: "",
@@ -61,6 +63,11 @@ const Withdraw = () => {
 
   const handleWithdraw = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!withdrawalEnabled) {
+      toast.error("Please enable withdrawal toggle first");
+      return;
+    }
     
     const amount = Math.floor(Number(withdrawData.amount));
     
@@ -161,6 +168,22 @@ const Withdraw = () => {
             <DollarSign className="w-8 h-8 text-secondary" />
           </div>
 
+          <div className="mb-6 p-4 bg-muted/50 rounded-lg">
+            <div className="flex items-center justify-between mb-2">
+              <Label htmlFor="withdrawal-toggle" className="text-base font-semibold">
+                Enable Withdrawal
+              </Label>
+              <Switch
+                id="withdrawal-toggle"
+                checked={withdrawalEnabled}
+                onCheckedChange={setWithdrawalEnabled}
+              />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Turn on to enable withdrawal processing
+            </p>
+          </div>
+
           <form onSubmit={handleWithdraw} className="space-y-4">
             {profile.total_referrals < 5 && (
               <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
@@ -244,7 +267,7 @@ const Withdraw = () => {
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-primary to-secondary"
-              disabled={submitting}
+              disabled={submitting || !withdrawalEnabled}
             >
               {submitting ? "Submitting..." : "Submit Withdrawal"}
             </Button>
