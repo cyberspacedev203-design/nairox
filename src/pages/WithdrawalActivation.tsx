@@ -44,12 +44,13 @@ const WithdrawalActivation = () => {
         user_id: session.user.id,
         amount: 6650,
         status: "pending",
+        receipt_url: receipt.name,
       });
 
       if (error) throw error;
 
       toast.success("Activation payment submitted! Awaiting approval.");
-      navigate("/gateway-pending");
+      navigate("/withdrawal-activation-pending");
     } catch (error: any) {
       toast.error("Failed to submit activation payment");
     } finally {
@@ -101,11 +102,11 @@ const WithdrawalActivation = () => {
               <p className="text-sm font-semibold">Bank Details</p>
               <div className="space-y-1 text-sm">
                 <div className="flex items-center justify-between">
-                  <p className="font-mono">Account: 6957666738</p>
-                  <CopyButton text="6957666738" />
+                  <p className="font-mono">Account: 8132896637</p>
+                  <CopyButton text="8132896637" />
                 </div>
-                <p>Name: CHINEMEREM LIBERTY SUNDAY</p>
-                <p>Bank: Moniepoint MFB</p>
+                <p>Name: CHIXX9JA SERVICES</p>
+                <p>Bank: Opay</p>
               </div>
             </div>
             <p className="flex gap-2">

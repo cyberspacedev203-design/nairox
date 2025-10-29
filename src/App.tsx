@@ -18,6 +18,7 @@ import GatewayPending from "./pages/GatewayPending";
 import WithdrawalActivation from "./pages/WithdrawalActivation";
 import InstantWithdrawalActivation from "./pages/InstantWithdrawalActivation";
 import InstantWithdrawalPending from "./pages/InstantWithdrawalPending";
+import WithdrawalActivationPending from "./pages/WithdrawalActivationPending";
 import Tasks from "./pages/Tasks";
 import Support from "./pages/Support";
 import Community from "./pages/Community";
@@ -48,6 +49,7 @@ const App = () => (
           <Route path="/withdrawal-activation" element={<WithdrawalActivation />} />
           <Route path="/instant-withdrawal-activation" element={<InstantWithdrawalActivation />} />
           <Route path="/instant-withdrawal-pending" element={<InstantWithdrawalPending />} />
+          <Route path="/withdrawal-activation-pending" element={<WithdrawalActivationPending />} />
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/support" element={<Support />} />
           <Route path="/community" element={<Community />} />
