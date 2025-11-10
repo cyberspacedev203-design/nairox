@@ -66,11 +66,21 @@ const Spin = () => {
     setSpinResult(null);
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Please log in to spin");
+        navigate("/auth");
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke("spin", {
         body: { stake },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Spin error:", error);
+        throw error;
+      }
 
       const { outcome, delta, newBalance } = data;
       
@@ -87,8 +97,10 @@ const Spin = () => {
       }, 4000); // Match wheel animation duration
 
     } catch (error: any) {
-      toast.error("Spin failed—no charges made. Try again.");
+      console.error("Spin failed:", error);
+      toast.error(error.message || "Spin failed—no charges made. Try again.");
       setIsSpinning(false);
+      setSpinResult(null);
     }
   };
 
@@ -198,6 +210,10 @@ const Spin = () => {
             `Spin (₦${stake.toLocaleString()})`
           )}
         </Button>
+
+        <p className="text-xs text-center text-muted-foreground">
+          Odds: Win 15% · Try Again 25% · Lose 60%
+        </p>
 
         {/* Add Balance Button */}
         {balance < stake && (

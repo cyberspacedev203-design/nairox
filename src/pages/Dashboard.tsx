@@ -10,6 +10,7 @@ import { PromotionsCarousel } from "@/components/PromotionsCarousel";
 import { ArrowRight } from "lucide-react";
 import { WelcomeModal } from "@/components/WelcomeModal";
 import { WithdrawalNotification } from "@/components/WithdrawalNotification";
+import { AddBalanceModal } from "@/components/AddBalanceModal";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ const Dashboard = () => {
   const [claiming, setClaiming] = useState(false);
   const [canClaim, setCanClaim] = useState(false);
   const [lastClaimTime, setLastClaimTime] = useState<Date | null>(null);
+  const [showTopUp, setShowTopUp] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -196,6 +198,14 @@ const Dashboard = () => {
               <h2 className="text-3xl md:text-4xl font-bold gradient-text">
                 {showBalance ? `₦${Number(profile.balance || 0).toLocaleString()}.00` : "****"}
               </h2>
+              <Button
+                onClick={() => setShowTopUp(true)}
+                variant="outline"
+                size="sm"
+                className="w-full"
+              >
+                Top-Up Wallet
+              </Button>
             </div>
           </Card>
         </div>
@@ -333,6 +343,14 @@ const Dashboard = () => {
       </div>
 
       <FloatingActionButton />
+
+      <AddBalanceModal
+        open={showTopUp}
+        onOpenChange={setShowTopUp}
+        onSuccess={() => {
+          if (user) loadProfile(user.id);
+        }}
+      />
     </div>
   );
 };
