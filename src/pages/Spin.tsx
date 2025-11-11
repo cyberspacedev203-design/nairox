@@ -67,7 +67,7 @@ const Spin = () => {
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      if (!session?.access_token) {
         toast.error("Please log in to spin");
         navigate("/auth");
         return;
@@ -75,6 +75,9 @@ const Spin = () => {
 
       const { data, error } = await supabase.functions.invoke("spin", {
         body: { stake },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
+        }
       });
 
       if (error) {
