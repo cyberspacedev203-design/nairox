@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, CheckCircle2, Clock, Gift } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Gift } from "lucide-react";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,118 +10,102 @@ import { useState, useEffect } from "react";
 interface Task {
   id: number;
   title: string;
-  description: string;
   reward: string;
   amount: number;
   status: "available" | "completed";
-  type: "once" | "daily" | "link" | "referral";
+  type: "link" | "daily";
   link?: string;
 }
 
 const Tasks = () => {
   const navigate = useNavigate();
-
   const [tasks, setTasks] = useState<Task[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [claimingId, setClaimingId] = useState<number | null>(null);
 
-  // Load user + tasks on mount
   useEffect(() => {
     const init = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-
       if (!user) {
         navigate("/auth");
         return;
       }
-
       setUserId(user.id);
       await loadTasks(user.id);
     };
-
     init();
   }, [navigate]);
 
   const loadTasks = async (uid: string) => {
+    // Check daily check-in
     const { data: profile } = await supabase
       .from("profiles")
-      .select("last_daily_checkin")
+      .select("last_daily_checkin, telegram_joined, whatsapp_joined")
       .eq("id", uid)
-      .maybeSingle();
-
-    const lastCheckin = profile?.last_daily_checkin
-      ? new Date(profile.last_daily_checkin)
-      : null;
+      .single();
 
     const today = new Date().toDateString();
-    const alreadyCheckedToday =
-      lastCheckin && lastCheckin.toDateString() === today;
+    const lastDaily = profile?.last_daily_checkin
+      ? new Date(profile.last_daily_checkin).toDateString()
+      : null;
 
     setTasks([
       {
         id: 1,
         title: "Join Telegram Channel",
-        description: "Join our official Telegram channel for updates",
         reward: "₦5,000",
         amount: 5000,
-        status: "available",
+        status: profile?.telegram_joined ? "completed" : "available",
         type: "link",
         link: "https://t.me/officialbluepay2025",
       },
       {
         id: 2,
         title: "Join WhatsApp Group",
-        description: "Join our WhatsApp community for instant updates",
         reward: "₦5,000",
         amount: 5000,
-        status: "available",
+        status: profile?.whatsapp_joined ? "completed" : "available",
         type: "link",
         link: "https://chat.whatsapp.com/EB6wii8cqxI25rENGOzI5d?mode=wwt",
       },
       {
-        id: 3,
-        title: "Complete Profile",
-        description: "Fill out your profile information",
-        reward: "₦2,000",
-        amount: 2000,
-        status: "available",
-        type: "once",
-      },
-      {
-        id: 4,
-        title: "Make First Referral",
-        description: "Invite your first friend to Chixx9ja",
-        reward: "₦10,000",
-        amount: 10000,
-        status: "available",
-        type: "referral",
-      },
-      {
         id: 5,
         title: "Daily Check-in",
-        description: "Come back every day and claim your reward!",
         reward: "₦15,000",
         amount: 15000,
-        status: alreadyCheckedToday ? "completed" : "available",
+        status: lastDaily === today ? "completed" : "available",
         type: "daily",
       },
     ]);
   };
 
   const handleTaskClick = async (task: Task) => {
-    if (loading) return;
+    if (task.status === "completed" || claimingId) return;
 
-    // External links
+    setClaimingId(task.id);
+
     if (task.link) {
-      window.open(task.link, "_blank", "noopener,noreferrer");
-      toast.success("Opened! Complete the task to earn reward.");
-      return;
-    }
+      // Instant payout + mark as done
+      const field = task.id === 1 ? "telegram_joined" : "whatsapp_joined";
 
-    // Daily Check-in
-    if (task.type === "daily" && task.status === "available") {
-      setLoading(true);
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          balance: supabase.raw("balance + ?", [task.amount]),
+          [field]: true,
+        })
+        .eq("id", userId);
 
+      if (error) {
+        toast.error("Failed. Try again.");
+        setClaimingId(null);
+        return;
+      }
+
+      toast.success(`₦${task.amount.toLocaleString()} added instantly!`);
+      window.open(task.link, "_blank");
+    } 
+    else if (task.type === "daily") {
       const { error } = await supabase
         .from("profiles")
         .update({
@@ -131,24 +115,21 @@ const Tasks = () => {
         .eq("id", userId);
 
       if (error) {
-        toast.error("Claim failed. Try again.");
-        setLoading(false);
+        toast.error("Claim failed.");
+        setClaimingId(null);
         return;
       }
 
-      toast.success(`₦${task.amount.toLocaleString()} added to your wallet!`);
-      await loadTasks(userId!); // refresh task list
-      setLoading(false);
-      return;
+      toast.success("₦15,000 daily bonus claimed!");
     }
 
-    // Other tasks (profile, referral, etc.)
-    toast.info("This task will be activated soon!");
+    // Refresh tasks
+    await loadTasks(userId!);
+    setClaimingId(null);
   };
 
   return (
     <div className="min-h-screen liquid-bg pb-20">
-      {/* Header */}
       <div className="bg-gradient-to-r from-primary to-secondary p-6 text-primary-foreground">
         <div className="flex items-center gap-4">
           <Button
@@ -168,9 +149,9 @@ const Tasks = () => {
           <div className="flex items-center gap-3">
             <Gift className="w-8 h-8 text-primary" />
             <div>
-              <h2 className="text-xl font-bold">Earn Extra Rewards</h2>
+              <h2 className="text-xl font-bold">Instant Rewards</h2>
               <p className="text-sm text-muted-foreground">
-                Complete tasks and check in daily to boost your wallet!
+                Click any task → get paid immediately!
               </p>
             </div>
           </div>
@@ -178,39 +159,33 @@ const Tasks = () => {
 
         {tasks.map((task) => (
           <Card key={task.id} className="bg-card/80 backdrop-blur-lg border-border/50 p-4">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1">
-                <h3 className="font-semibold mb-1">{task.title}</h3>
-                <p className="text-sm text-muted-foreground mb-3">{task.description}</p>
-                <div className="flex items-center gap-2">
-                  <span className="text-lg font-bold text-primary">{task.reward}</span>
-                  <span className="text-xs text-muted-foreground">reward</span>
-                </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-lg">{task.title}</h3>
+                <p className="text-sm text-muted-foreground">Click to claim reward</p>
               </div>
 
-              <div className="flex flex-col items-center gap-2">
-                {task.status === "available" ? (
-                  <button
-                    onClick={() => handleTaskClick(task)}
-                    disabled={loading}
-                    className="bg-gradient-to-r from-primary to-secondary text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:opacity-90 disabled:opacity-60 transition-all min-w-[100px]"
-                  >
-                    {loading && task.type === "daily" ? "Claiming..." : "Claim"}
-                  </button>
-                ) : (
-                  <div className="flex items-center gap-1 text-green-500">
-                    <CheckCircle2 className="w-5 h-5" />
-                    <span className="text-sm font-medium">Done</span>
-                  </div>
-                )}
-              </div>
+              {task.status === "available" ? (
+                <Button
+                  onClick={() => handleTaskClick(task)}
+                  disabled={!!claimingId}
+                  className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold px-8"
+                >
+                  {claimingId === task.id ? "Paying..." : `Claim ${task.reward}`}
+                </Button>
+              ) : (
+                <div className="flex items-center gap-2 text-green-500">
+                  <CheckCircle2 className="w-6 h-6" />
+                  <span className="font-bold">Completed</span>
+                </div>
+              )}
             </div>
           </Card>
         ))}
 
-        <Card className="bg-muted/50 border-border/50 p-4 text-center">
+        <Card className="bg-muted/50 p-4 text-center">
           <p className="text-sm text-muted-foreground">
-            More tasks coming soon • Daily check-in resets every 24 hours
+            All rewards paid instantly • No waiting • Daily reset at midnight
           </p>
         </Card>
       </div>
