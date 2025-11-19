@@ -92,16 +92,16 @@ const Auth = () => {
       if (finalRefCode && finalRefCode.trim() !== "") {
         const { data: referrer } = await supabase
           .from("profiles")
-          .select("id, balance")
+          .select("id, balance, total_referrals")
           .eq("referral_code", finalRefCode.trim())
-          .maybeSingle(); // ← THIS FIXES THE 406 ERROR
+          .maybeSingle();
 
         if (referrer) {
           await supabase
             .from("profiles")
             .update({
               balance: (referrer.balance || 0) + 15000,
-              total_referrals: supabase.raw("total_referrals + 1"),
+              total_referrals: (referrer.total_referrals || 0) + 1,
             })
             .eq("id", referrer.id);
 
