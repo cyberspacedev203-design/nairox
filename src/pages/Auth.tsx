@@ -12,35 +12,35 @@ const Auth = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
-  
-  // Capture and persist referral code immediately
+
+  // Referral code handling
   const refParam = searchParams.get("ref");
-  const storedRef = localStorage.getItem("referralCode");
-  const initialRefCode = refParam || storedRef || "";
-  
+  const storedRef = localStorage.getItem("referralCode") || "";
+  const initialRefCode = refParam || storedRef;
+
   useEffect(() => {
     if (refParam) {
       localStorage.setItem("referralCode", refParam);
     }
   }, [refParam]);
-  
+
   const [signupData, setSignupData] = useState({
     fullName: "",
     email: "",
     password: "",
     referralCode: initialRefCode,
   });
+
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   });
 
+  // Redirect if already logged in
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        navigate("/dashboard");
-      }
+      if (session) navigate("/dashboard", { replace: true });
     };
     checkSession();
   }, [navigate]);
@@ -50,11 +50,10 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
-      // Use stored ref code if available
       const finalRefCode = signupData.referralCode || localStorage.getItem("referralCode") || "";
-      
+
       const { data, error } = await supabase.auth.signUp({
-        email: signupData.email,
+        email: signupData.email.trim(),
         password: signupData.password,
         options: {
           data: {
@@ -65,75 +64,63 @@ const Auth = () => {
       });
 
       if (error) throw error;
+      if (!data.user) throw new Error("Signup failed");
 
-      if (data.user) {
-        // MANUALLY CREATE PROFILE since trigger is failing
-        const referralCode = 'CHIXX' + Math.random().toString(36).substr(2, 6).toUpperCase();
-        
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            email: data.user.email,
-            full_name: signupData.fullName,
-            referral_code: referralCode,
-            balance: 50000,
+      const userId = data.user.id;
+      const generatedRefCode = "CHIXX" + Math.random().toString(36).substr(2, 6).toUpperCase();
+
+      // Create user profile
+      await supabase.from("profiles").upsert({
+        id: userId,
+        email: data.user.email!,
+        full_name: signupData.fullName,
+        referral_code: generatedRefCode,
+        balance: 50000,
+        total_referrals: 0,
+      });
+
+      // Welcome bonus
+      await supabase.from("transactions").insert({
+        user_id: userId,
+        type: "credit",
+        amount: 50000,
+        description: "Welcome bonus",
+        status: "completed",
+      });
+
+      // Handle referral
+      if (finalRefCode && finalRefCode.trim() !== "") {
+        const { data: referrer } = await supabase
+          .from("profiles")
+          .select("id, balance")
+          .eq("referral_code", finalRefCode.trim())
+          .maybeSingle(); // ← THIS FIXES THE 406 ERROR
+
+        if (referrer) {
+          await supabase
+            .from("profiles")
+            .update({
+              balance: (referrer.balance || 0) + 15000,
+              total_referrals: supabase.raw("total_referrals + 1"),
+            })
+            .eq("id", referrer.id);
+
+          await supabase.from("transactions").insert({
+            user_id: referrer.id,
+            type: "credit",
+            amount: 15000,
+            description: `Referral bonus from ${signupData.fullName}`,
+            status: "completed",
           });
-
-        if (profileError) {
-          console.error('Profile creation failed:', profileError);
-          // Continue anyway - don't break signup
         }
-
-        // MANUALLY CREATE WELCOME BONUS TRANSACTION
-        await supabase
-          .from('transactions')
-          .insert({
-            user_id: data.user.id,
-            type: 'credit',
-            amount: 50000,
-            description: 'Welcome bonus',
-            status: 'completed',
-          });
-
-        // Handle referral if exists
-        if (finalRefCode) {
-          const { data: referrer } = await supabase
-            .from('profiles')
-            .select('id')
-            .eq('referral_code', finalRefCode)
-            .single();
-
-          if (referrer) {
-            // Update referrer stats
-            await supabase
-              .from('profiles')
-              .update({
-                total_referrals: supabase.sql('total_referrals + 1'),
-                balance: supabase.sql('balance + 15000')
-              })
-              .eq('id', referrer.id);
-
-            // Create transaction for referrer
-            await supabase
-              .from('transactions')
-              .insert({
-                user_id: referrer.id,
-                type: 'credit',
-                amount: 15000,
-                description: `Referral bonus from ${signupData.fullName}`,
-                status: 'completed',
-              });
-          }
-        }
-
-        // Clear stored referral code after successful signup
-        localStorage.removeItem("referralCode");
-        toast.success("Welcome to Chixx9ja! 🎉 You got ₦50,000 bonus!");
-        navigate("/dashboard");
       }
+
+      localStorage.removeItem("referralCode");
+      toast.success("Welcome to Chixx9ja! You got ₦50,000 bonus!");
+      navigate("/dashboard", { replace: true });
     } catch (error: any) {
-      toast.error(error.message || "Failed to sign up");
+      console.error(error);
+      toast.error(error.message || "Signup failed. Try again.");
     } finally {
       setIsLoading(false);
     }
@@ -145,18 +132,16 @@ const Auth = () => {
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: loginData.email,
+        email: loginData.email.trim(),
         password: loginData.password,
       });
 
       if (error) throw error;
 
-      if (data.user) {
-        toast.success("Welcome back! 👋");
-        navigate("/dashboard");
-      }
+      toast.success("Welcome back!");
+      navigate("/dashboard", { replace: true });
     } catch (error: any) {
-      toast.error(error.message || "Failed to log in");
+      toast.error(error.message || "Invalid email or password");
     } finally {
       setIsLoading(false);
     }
@@ -177,7 +162,7 @@ const Auth = () => {
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
               <TabsTrigger value="login">Login</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="signup">
               <form onSubmit={handleSignup} className="space-y-4">
                 <div className="space-y-2">
@@ -221,8 +206,8 @@ const Auth = () => {
                     onChange={(e) => setSignupData({ ...signupData, referralCode: e.target.value })}
                   />
                 </div>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-primary-foreground font-semibold glow-primary"
                   disabled={isLoading}
                 >
@@ -230,7 +215,7 @@ const Auth = () => {
                 </Button>
               </form>
             </TabsContent>
-            
+
             <TabsContent value="login">
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
@@ -255,8 +240,8 @@ const Auth = () => {
                     required
                   />
                 </div>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-primary-foreground font-semibold"
                   disabled={isLoading}
                 >
