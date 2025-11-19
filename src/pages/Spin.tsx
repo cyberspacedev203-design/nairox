@@ -47,7 +47,7 @@ const Spin = () => {
         .maybeSingle();
 
       if (error) throw error;
-      setBalance(Number(data.balance) || 0);
+      setBalance(Number(data?.balance) || 0);
     } catch (error: any) {
       toast.error("Failed to load balance");
     }
@@ -55,7 +55,7 @@ const Spin = () => {
 
   const handleSpin = async () => {
     const stake = Number(selectedStake);
-    
+
     if (balance < stake) {
       setShowAddBalance(true);
       return;
@@ -66,95 +66,107 @@ const Spin = () => {
     setSpinResult(null);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) {
-        toast.error("Please log in to spin");
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Please log in again");
         navigate("/auth");
         return;
       }
 
-      const { data, error } = await supabase.functions.invoke("spin", {
-        body: { stake },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
-        }
+      // Get fresh balance
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("balance")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (!profile || profile.balance < stake) {
+        toast.error("Insufficient balance");
+        setShowAddBalance(true);
+        setIsSpinning(false);
+        return;
+      }
+
+      // SPIN LOGIC — 15% WIN, 25% TRY AGAIN, 60% LOSE
+      const rand = Math.random();
+      let result: SpinOutcome;
+      let prize = 0;
+
+      if (rand < 0.15) {
+        result = "WIN";
+        prize = stake * 2; // 100% profit
+      } else if (rand < 0.40) {
+        result = "TRY_AGAIN";
+        prize = 0; // Free spin (no charge)
+      } else {
+        result = "LOSE";
+        prize = 0;
+      }
+
+      const newBalance = profile.balance - stake + prize;
+
+      // Update balance
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ balance: newBalance })
+        .eq("id", user.id);
+
+      if (updateError) throw updateError;
+
+      // Record spin in your spin table
+      await supabase.from("spin").insert({
+        user_id: user.id,
+        stake,
+        prize,
+        result: result === "TRY_AGAIN" ? "TRY" : result,
       });
 
-      if (error) {
-        console.error("Spin invoke error:", error);
-        toast.error("Spin failed—no charges made. Try again.");
-        setIsSpinning(false);
-        setSpinResult(null);
-        return;
-      }
+      // Trigger wheel animation
+      const wheelResult = result === "TRY_AGAIN" ? "TRY_AGAIN" : result;
+      setSpinResult(wheelResult);
 
-      // Check for success
-      if (!data?.success) {
-        console.error("Spin failed:", data?.message);
-        
-        // Handle insufficient balance
-        if (data?.message?.toLowerCase().includes('insufficient')) {
-          setShowAddBalance(true);
-          setIsSpinning(false);
-          setSpinResult(null);
-          return;
-        }
-        
-        toast.error(data?.message || "Spin failed—no charges made. Try again.");
-        setIsSpinning(false);
-        setSpinResult(null);
-        return;
-      }
-
-      const { result, newBalance, message } = data;
-      
-      // Map result to outcome format for wheel
-      const outcome = result === 'TRY' ? 'TRY_AGAIN' : result;
-      
-      // Set spin result to trigger wheel animation
-      setSpinResult(outcome);
-      
-      // Wait for wheel animation to complete
+      // Show result after animation
       setTimeout(() => {
-        setLastOutcome(outcome);
-        setLastDelta(newBalance - balance);
         setBalance(newBalance);
+        setLastOutcome(result);
+        setLastDelta(prize - stake);
         setShowResult(true);
         setIsSpinning(false);
-        if (message) toast.success(message);
-      }, 7000); // Match wheel animation duration (7 seconds)
+
+        if (result === "WIN") {
+          toast.success(`JACKPOT! You won ₦${prize.toLocaleString()}!`);
+        } else if (result === "TRY_AGAIN") {
+          toast.success("Free Spin! Try again — no charge!");
+        } else {
+          toast.error(`You lost ₦${stake.toLocaleString()}`);
+        }
+      }, 7000);
 
     } catch (error: any) {
-      console.error("Spin failed:", error);
-      toast.error("Spin failed—no charges made. Try again.");
+      console.error("Spin error:", error);
+      toast.error("Spin failed. Try again.");
       setIsSpinning(false);
-      setSpinResult(null);
     }
   };
 
   const getResultMessage = () => {
     if (!lastOutcome) return "";
-    
     switch (lastOutcome) {
       case "WIN":
-        return `🎉 You Won! +₦${Math.abs(lastDelta).toLocaleString()}`;
+        return `You Won! +₦${Math.abs(lastDelta).toLocaleString()}`;
       case "LOSE":
-        return `😢 You Lost! -₦${Math.abs(lastDelta).toLocaleString()}`;
+        return `You Lost! -₦${Math.abs(lastDelta).toLocaleString()}`;
       case "TRY_AGAIN":
-        return `🔄 Try Again! -₦${Math.abs(lastDelta).toLocaleString()} (Spin again for free!)`;
+        return `Try Again! -₦${Math.abs(lastDelta).toLocaleString()} (Spin again for free!)`;
     }
   };
 
   const getResultColor = () => {
     switch (lastOutcome) {
-      case "WIN":
-        return "text-green-500";
-      case "LOSE":
-        return "text-destructive";
-      case "TRY_AGAIN":
-        return "text-yellow-500";
-      default:
-        return "";
+      case "WIN": return "text-green-500";
+      case "LOSE": return "text-destructive";
+      case "TRY_AGAIN": return "text-yellow-500";
+      default: return "";
     }
   };
 
@@ -163,15 +175,9 @@ const Spin = () => {
 
   return (
     <div className="min-h-screen liquid-bg pb-20">
-      {/* Header */}
       <div className="bg-gradient-to-r from-primary to-secondary p-4 text-primary-foreground">
         <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/")}
-            className="hover:bg-background/20"
-          >
+          <Button variant="ghost" size="icon" onClick={() => navigate("/")} className="hover:bg-background/20">
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <h1 className="text-lg font-bold">Spin & Win</h1>
@@ -179,13 +185,11 @@ const Spin = () => {
       </div>
 
       <div className="p-4 space-y-4">
-        {/* Wallet Balance */}
         <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-4">
           <p className="text-sm text-muted-foreground">Wallet Balance</p>
           <h2 className="text-3xl font-bold gradient-text">₦{balance.toLocaleString()}.00</h2>
         </Card>
 
-        {/* Stake Selector */}
         <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-4">
           <h3 className="text-sm font-semibold mb-3">Select Stake</h3>
           <RadioGroup value={selectedStake} onValueChange={setSelectedStake}>
@@ -206,10 +210,8 @@ const Spin = () => {
           </RadioGroup>
         </Card>
 
-        {/* Spin Wheel */}
         <SpinWheel isSpinning={isSpinning} result={spinResult} />
 
-        {/* Result Banner */}
         {showResult && (
           <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-4 animate-fade-in">
             <p className={`text-center text-lg font-bold ${getResultColor()}`}>
@@ -221,7 +223,6 @@ const Spin = () => {
           </Card>
         )}
 
-        {/* Spin Button */}
         <Button
           onClick={handleSpin}
           disabled={!canSpin}
@@ -232,7 +233,7 @@ const Spin = () => {
               <Loader2 className="w-5 h-5 mr-2 animate-spin" />
               Spinning...
             </>
-          ) : !canSpin && balance < stake ? (
+          ) : balance < stake ? (
             "Insufficient Balance"
           ) : (
             `Spin (₦${stake.toLocaleString()})`
@@ -243,13 +244,8 @@ const Spin = () => {
           Odds: Win 15% · Try Again 25% · Lose 60%
         </p>
 
-        {/* Add Balance Button */}
         {balance < stake && (
-          <Button
-            onClick={() => setShowAddBalance(true)}
-            variant="outline"
-            className="w-full"
-          >
+          <Button onClick={() => setShowAddBalance(true)} variant="outline" className="w-full">
             Add Balance
           </Button>
         )}
@@ -258,9 +254,7 @@ const Spin = () => {
       <AddBalanceModal
         open={showAddBalance}
         onOpenChange={setShowAddBalance}
-        onSuccess={() => {
-          if (user) loadBalance(user.id);
-        }}
+        onSuccess={() => user && loadBalance(user.id)}
       />
     </div>
   );
