@@ -32,7 +32,28 @@ const Tasks = () => {
     },
   ];
 
+  // Check if task was already claimed today
+  const isTaskClaimedToday = (taskId: number) => {
+    const lastClaimDate = localStorage.getItem(`task_${taskId}_last_claim`);
+    if (!lastClaimDate) return false;
+    
+    const today = new Date().toDateString();
+    const lastClaim = new Date(lastClaimDate).toDateString();
+    return today === lastClaim;
+  };
+
+  // Mark task as claimed for today
+  const markTaskAsClaimed = (taskId: number) => {
+    localStorage.setItem(`task_${taskId}_last_claim`, new Date().toISOString());
+  };
+
   const handleClaim = async (task: any) => {
+    // Check if already claimed today
+    if (isTaskClaimedToday(task.id)) {
+      toast.error("Already claimed today! Come back tomorrow.");
+      return;
+    }
+
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       toast.error("Please login first");
@@ -40,7 +61,7 @@ const Tasks = () => {
     }
 
     try {
-      // Simple balance update - no complex verification
+      // Get current balance
       const { data: profile, error } = await supabase
         .from("profiles")
         .select("balance")
@@ -53,7 +74,7 @@ const Tasks = () => {
       if (task.id === 1 || task.id === 2) newBalance += 5000;
       if (task.id === 5) newBalance += 15000;
 
-      // Update the balance
+      // Update balance
       const { error: updateError } = await supabase
         .from("profiles")
         .update({ balance: newBalance })
@@ -62,6 +83,8 @@ const Tasks = () => {
       if (updateError) {
         toast.error("Failed. Try again.");
       } else {
+        // Mark as claimed for today
+        markTaskAsClaimed(task.id);
         toast.success(`${task.reward} added to your balance!`);
         if (task.link) window.open(task.link, "_blank");
       }
@@ -95,31 +118,45 @@ const Tasks = () => {
           </p>
         </Card>
 
-        {tasks.map((task) => (
-          <Card key={task.id} className="bg-card/80 backdrop-blur-lg border-border/50 p-4">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1">
-                <h3 className="font-semibold mb-1">{task.title}</h3>
-                <p className="text-sm text-muted-foreground mb-3">{task.description}</p>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-primary">{task.reward}</span>
-                  <span className="text-xs text-muted-foreground">reward</span>
+        {tasks.map((task) => {
+          const isClaimed = isTaskClaimedToday(task.id);
+          
+          return (
+            <Card key={task.id} className="bg-card/80 backdrop-blur-lg border-border/50 p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <h3 className="font-semibold mb-1">{task.title}</h3>
+                  <p className="text-sm text-muted-foreground mb-3">{task.description}</p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-primary">{task.reward}</span>
+                    <span className="text-xs text-muted-foreground">reward</span>
+                    {isClaimed && (
+                      <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">
+                        Claimed Today
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              <Button
-                onClick={() => handleClaim(task)}
-                className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 px-6 py-3 font-bold"
-              >
-                Claim Now
-              </Button>
-            </div>
-          </Card>
-        ))}
+                <Button
+                  onClick={() => handleClaim(task)}
+                  disabled={isClaimed}
+                  className={`px-6 py-3 font-bold ${
+                    isClaimed 
+                      ? "bg-gray-400 cursor-not-allowed" 
+                      : "bg-gradient-to-r from-primary to-secondary hover:opacity-90"
+                  }`}
+                >
+                  {isClaimed ? "Claimed" : "Claim Now"}
+                </Button>
+              </div>
+            </Card>
+          );
+        })}
 
         <Card className="bg-muted/50 border-border/50 p-4">
           <p className="text-sm text-center text-muted-foreground">
-            New tasks are added regularly. Check back daily!
+            Tasks reset every day at midnight. Check back tomorrow!
           </p>
         </Card>
       </div>
