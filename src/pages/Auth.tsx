@@ -67,7 +67,7 @@ const Auth = () => {
       if (!data.user) throw new Error("Signup failed");
 
       const userId = data.user.id;
-      const generatedRefCode = "CHIXX" + Math.random().toString(36).substr(2, 6).toUpperCase();
+      const generatedRefCode = Math.random().toString(36).substr(2, 6).toUpperCase();
 
       // Create user profile
       await supabase.from("profiles").upsert({
