@@ -8,49 +8,49 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 220 25% 8%;
-    --foreground: 0 0% 100%;
+    --background: 220 40% 8%; /* Deeper blue background */
+    --foreground: 210 20% 98%; /* Pale white foreground */
 
-    --card: 220 20% 12%;
-    --card-foreground: 0 0% 100%;
+    --card: 220 35% 12%; /* Deep blue card */
+    --card-foreground: 210 20% 98%; /* Pale white text */
 
-    --popover: 220 20% 12%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 220 35% 12%; /* Deep blue popover */
+    --popover-foreground: 210 20% 98%; /* Pale white text */
 
-    --primary: 195 92% 58%;
-    --primary-foreground: 220 25% 8%;
+    --primary: 220 25% 25%; /* Muted deep blue primary */
+    --primary-foreground: 45 95% 85%; /* Light gold text */
 
-    --secondary: 45 95% 55%;
-    --secondary-foreground: 220 25% 8%;
+    --secondary: 45 95% 55%; /* Gold secondary */
+    --secondary-foreground: 220 40% 8%; /* Deep blue text */
 
-    --muted: 220 15% 18%;
-    --muted-foreground: 0 0% 70%;
+    --muted: 220 30% 18%; /* Deep blue muted */
+    --muted-foreground: 210 20% 70%; /* Pale gray muted text */
 
-    --accent: 195 92% 58%;
-    --accent-foreground: 220 25% 8%;
+    --accent: 45 95% 55%; /* Gold accent */
+    --accent-foreground: 220 40% 8%; /* Deep blue text */
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: 210 20% 98%; /* Pale white text */
 
-    --border: 220 15% 20%;
-    --input: 220 15% 20%;
-    --ring: 195 92% 58%;
+    --border: 220 25% 25%; /* Deep blue border with gold lining feel */
+    --input: 220 25% 20%; /* Deep blue input */
+    --ring: 45 95% 55%; /* Gold ring/focus */
 
     --radius: 1rem;
 
-    --gradient-liquid: linear-gradient(135deg, hsl(195 92% 58% / 0.2), hsl(45 95% 55% / 0.2));
-    --gradient-primary: linear-gradient(135deg, hsl(195 92% 58%), hsl(195 92% 68%));
+    --gradient-liquid: linear-gradient(135deg, hsl(220 40% 15% / 0.3), hsl(45 95% 55% / 0.2));
+    --gradient-primary: linear-gradient(135deg, hsl(220 40% 15%), hsl(220 40% 25%));
     --gradient-secondary: linear-gradient(135deg, hsl(45 95% 55%), hsl(45 95% 65%));
-    --gradient-mixed: linear-gradient(135deg, hsl(195 92% 58%), hsl(45 95% 55%));
+    --gradient-mixed: linear-gradient(135deg, hsl(220 40% 20%), hsl(45 95% 55%));
     
-    --shadow-glow-primary: 0 0 40px hsl(195 92% 58% / 0.3);
+    --shadow-glow-primary: 0 0 40px hsl(220 40% 25% / 0.4);
     --shadow-glow-secondary: 0 0 40px hsl(45 95% 55% / 0.3);
   }
 }
 
 @layer utilities {
   .liquid-bg {
-    background: linear-gradient(135deg, hsl(220 25% 8%), hsl(220 25% 12%));
+    background: linear-gradient(135deg, hsl(220 40% 8%), hsl(220 35% 12%));
     position: relative;
     overflow: hidden;
   }
@@ -60,7 +60,7 @@ All colors MUST be HSL.
     position: absolute;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle at 30% 50%, hsl(195 92% 58% / 0.15) 0%, transparent 50%),
+    background: radial-gradient(circle at 30% 50%, hsl(220 40% 20% / 0.2) 0%, transparent 50%),
                 radial-gradient(circle at 70% 50%, hsl(45 95% 55% / 0.15) 0%, transparent 50%);
     animation: liquid-float 20s ease-in-out infinite;
     pointer-events: none;
@@ -83,7 +83,7 @@ All colors MUST be HSL.
   }
   
   .gradient-text {
-    background: linear-gradient(135deg, hsl(195 92% 58%), hsl(45 95% 55%));
+    background: linear-gradient(135deg, hsl(210 20% 98%), hsl(45 95% 65%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
