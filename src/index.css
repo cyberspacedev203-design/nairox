@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* EXACT COLOR MATCH: black → red-950/red-900 */
+/* EXACTUAL COLOR MATCH: black → deep yellow/amber-950 */
 @layer base {
   :root {
     --background: 0 0% 0%;
@@ -14,7 +14,7 @@
     --popover: 0 0% 0%;
     --popover-foreground: 165 100% 90%;
 
-    --primary: 165 100% 45%;
+    --primary: 165 100% 45%;                  /* vibrant jade buttons */
     --primary-foreground: 0 0% 100%;
 
     --secondary: 165 80% 8%;
@@ -26,6 +26,7 @@
     --accent: 165 100% 45%;
     --accent-foreground: 0 0% 100%;
 
+    /* BRIGHT ASH / LIGHT JADE FOR IMPORTANT BUTTONS & BOXES */
     --bright: 165 90% 68%;
     --bright-foreground: 0 0% 4%;
     --bright-border: 165 100% 60% / 0.4;
@@ -48,12 +49,13 @@
 }
 
 @layer utilities {
+  /* Your original cards – black → amber-950 / yellow-950 */
   .why-glow {
-    @apply bg-gradient-to-br from-red-950 via-red-950 to-red-950 rounded-2xl p-6 mb-6 mx-2 border border-green-500/30 relative overflow-hidden;
+    @apply bg-gradient-to-br from-amber-950 via-yellow-950 to-amber-950 rounded-2xl p-6 mb-6 mx-2 border border-green-500/30 relative overflow-hidden;
   }
 
   .liquid-bg {
-    @apply bg-gradient-to-br from-red-950 via-red-950 to-red-950;
+    @apply bg-gradient-to-br from-amber-950 via-yellow-950 to-amber-950;
     position: relative;
     overflow: hidden;
   }
@@ -61,7 +63,7 @@
   .liquid-bg::before {
     content: '';
     position: absolute;
-    inset: -100%;
+    inset: inset-100%;
     background: 
       radial-gradient(circle at 25% 25%, hsl(165 100% 65% / 0.25), transparent 45%),
       radial-gradient(circle at 75% 75%, hsl(165 100% 70% / 0.2), transparent 50%);
@@ -86,6 +88,7 @@
   .glow-primary { box-shadow: var(--shadow-glow-primary); }
   .glow-secondary { box-shadow: var(--shadow-glow-secondary); }
 
+  /* BRIGHT ASH/LIGHT JADE BUTTONS & BOXES – unchanged */
   .bright-btn,
   button[class*="withdraw"],
   button[class*="history"],
@@ -107,6 +110,7 @@
            transition-all duration-300;
   }
 
+  /* All your previous utilities (unchanged) */
   .animate-slide-in-right { animation: slideInRight 0.5s ease-out forwards; }
   .animate-slide-in-left  { animation: slideInLeft  0.5s ease-out forwards; }
   @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
@@ -115,7 +119,7 @@
   input, textarea, select,
   [type="text"], [type="email"], [type="password"],
   [type="number"], [type="tel"], [type="url"], [type="search"] {
-    @apply bg-red-950/50 border border-green-500/30 rounded-xl text-foreground placeholder-muted-foreground transition-all duration-200;
+    @apply bg-amber-950/50 border border-green-500/30 rounded-xl text-foreground placeholder-muted-foreground transition-all duration-200;
   }
 
   input:focus, textarea:focus, select:focus,
@@ -129,7 +133,7 @@
 
   .fixed > div, [role="dialog"], .modal, .popup, .dialog,
   [data-radix-dialog-content], [data-radix-popover-content] {
-    @apply rounded-2xl overflow-hidden border border-green-500/30 bg-gradient-to-br from-red-950 via-red-950 to-red-950 shadow-2xl;
+    @apply rounded-2xl overflow-hidden border border-green-500/30 bg-gradient-to-br from-amber-950 via-yellow-950 to-amber-950 shadow-2xl;
   }
 
   .fixed button, [role="dialog"] button, .modal button,
@@ -145,6 +149,6 @@
 
 @layer base {
   * { @apply border-border; -webkit-tap-highlight-color: transparent; }
-  body { @apply bg-red-950 text-foreground; touch-action: manipulation; }
+  body { @apply bg-amber-950 text-foreground; touch-action: manipulation; }
   button, a, [role="button"] { touch-action: manipulation; cursor: pointer; }
 }
