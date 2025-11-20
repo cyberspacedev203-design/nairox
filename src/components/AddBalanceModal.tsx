@@ -132,12 +132,12 @@ export const AddBalanceModal = ({ open, onOpenChange, onSuccess }: AddBalanceMod
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-card border-border">
+      <DialogContent className="bg-card border-border max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>Add Balance</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="flex-1 overflow-y-auto space-y-4 pr-2">
           {/* Bank Details */}
           <div className="bg-muted/50 p-3 rounded-lg space-y-2 text-sm">
             <p className="font-semibold">Bank Details:</p>
@@ -251,7 +251,10 @@ export const AddBalanceModal = ({ open, onOpenChange, onSuccess }: AddBalanceMod
             <p className="font-semibold">Note:</p>
             <p>A {FEE_PERCENT}% fee is added to all top-ups. Please transfer the total amount shown above and upload payment receipt.</p>
           </div>
+        </div>
 
+        {/* Button stays fixed at bottom */}
+        <div className="pt-4 border-t border-border mt-4">
           <Button
             onClick={handleSubmit}
             disabled={isSubmitting || amountNum < 1000 || files.length === 0}
