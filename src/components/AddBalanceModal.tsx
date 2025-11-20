@@ -132,57 +132,67 @@ export const AddBalanceModal = ({ open, onOpenChange, onSuccess }: AddBalanceMod
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-card border-border max-h-[90vh] overflow-hidden flex flex-col sm:max-w-md">
-        <DialogHeader className="flex-shrink-0">
-          <DialogTitle>Add Balance</DialogTitle>
+      <DialogContent className="bg-card border-border max-h-[85vh] w-[95vw] sm:w-[500px] md:w-[550px] overflow-hidden flex flex-col p-0">
+        <DialogHeader className="px-6 py-4 border-b border-border flex-shrink-0">
+          <DialogTitle className="text-xl">Add Balance</DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto space-y-4 pr-1 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto px-6 pb-4 space-y-6">
           {/* Bank Details */}
-          <div className="bg-muted/50 p-3 rounded-lg space-y-2 text-sm">
-            <p className="font-semibold">Bank Details:</p>
-            <div className="space-y-1">
-              <p><span className="text-muted-foreground">Bank:</span> {BANK_DETAILS.bankName}</p>
-              <p><span className="text-muted-foreground">Name:</span> {BANK_DETAILS.accountName}</p>
-              <p><span className="text-muted-foreground">Account:</span> {BANK_DETAILS.accountNumber}</p>
+          <div className="bg-muted/50 p-4 rounded-lg space-y-3 text-sm border border-border">
+            <p className="font-semibold text-base">Bank Details:</p>
+            <div className="space-y-2">
+              <p className="flex justify-between">
+                <span className="text-muted-foreground">Bank:</span>
+                <span className="font-semibold">{BANK_DETAILS.bankName}</span>
+              </p>
+              <p className="flex justify-between">
+                <span className="text-muted-foreground">Account Name:</span>
+                <span className="font-semibold">{BANK_DETAILS.accountName}</span>
+              </p>
+              <p className="flex justify-between">
+                <span className="text-muted-foreground">Account Number:</span>
+                <span className="font-semibold text-lg">{BANK_DETAILS.accountNumber}</span>
+              </p>
             </div>
           </div>
 
           {/* Amount Input */}
-          <div className="space-y-2">
-            <Label htmlFor="amount">Amount (₦)</Label>
+          <div className="space-y-3">
+            <Label htmlFor="amount" className="text-base font-medium">Amount (₦)</Label>
             <Input
               id="amount"
               type="number"
-              placeholder="Enter amount"
+              placeholder="Enter amount (minimum ₦1,000)"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               min="1000"
+              className="h-12 text-base"
             />
           </div>
 
           {/* Fee Breakdown */}
           {amountNum > 0 && (
-            <div className="bg-muted/50 p-3 rounded-lg space-y-1 text-sm">
-              <div className="flex justify-between">
+            <div className="bg-muted/50 p-4 rounded-lg space-y-2 text-sm border border-border">
+              <div className="flex justify-between text-base">
                 <span className="text-muted-foreground">Amount:</span>
                 <span className="font-semibold">₦{amountNum.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between text-base">
                 <span className="text-muted-foreground">Fee ({FEE_PERCENT}%):</span>
                 <span className="font-semibold">₦{fee.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between border-t border-border pt-1 mt-1">
-                <span className="font-semibold">Total to Pay:</span>
+              <div className="flex justify-between border-t border-border pt-2 mt-2 text-lg">
+                <span className="font-bold">Total to Pay:</span>
                 <span className="font-bold text-primary">₦{totalToPay.toLocaleString()}</span>
               </div>
             </div>
           )}
 
           {/* Receipt Upload */}
-          <div className="space-y-2">
-            <Label>Upload Receipt (Required)</Label>
-            <div className="border-2 border-dashed border-border rounded-lg p-4 text-center">
+          <div className="space-y-3">
+            <Label className="text-base font-medium">Upload Receipt (Required)</Label>
+            <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
               <input
                 type="file"
                 id="receipt-upload"
@@ -194,41 +204,42 @@ export const AddBalanceModal = ({ open, onOpenChange, onSuccess }: AddBalanceMod
               />
               <label
                 htmlFor="receipt-upload"
-                className={`cursor-pointer flex flex-col items-center gap-2 ${files.length >= 3 ? 'opacity-50' : ''}`}
+                className={`cursor-pointer flex flex-col items-center gap-3 ${files.length >= 3 ? 'opacity-50' : 'hover:opacity-80'}`}
               >
-                <Upload className="w-8 h-8 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">
+                <Upload className="w-10 h-10 text-muted-foreground" />
+                <p className="text-base text-muted-foreground">
                   {files.length >= 3 
-                    ? "Maximum 3 files" 
-                    : "Click to upload or drag and drop"}
+                    ? "Maximum 3 files reached" 
+                    : "Click to upload receipt"}
                 </p>
-                <p className="text-xs text-muted-foreground">JPG, PNG, PDF (max 5MB each)</p>
+                <p className="text-sm text-muted-foreground">JPG, PNG, PDF (max 5MB each)</p>
               </label>
             </div>
 
             {/* File previews */}
             {files.length > 0 && (
-              <div className="space-y-2 mt-3">
+              <div className="space-y-3 mt-4">
+                <p className="text-sm text-muted-foreground">Uploaded files:</p>
                 {files.map((file, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between bg-muted/50 p-2 rounded-lg"
+                    className="flex items-center justify-between bg-muted/50 p-3 rounded-lg border border-border"
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                       {file.type === 'application/pdf' ? (
-                        <FileText className="w-5 h-5 text-primary" />
+                        <FileText className="w-8 h-8 text-primary" />
                       ) : (
                         <img
                           src={URL.createObjectURL(file)}
                           alt="Preview"
-                          className="w-10 h-10 object-cover rounded"
+                          className="w-12 h-12 object-cover rounded-lg"
                         />
                       )}
                       <div>
-                        <p className="text-sm font-medium truncate max-w-[200px]">
+                        <p className="text-base font-medium truncate max-w-[220px]">
                           {file.name}
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-sm text-muted-foreground">
                           {(file.size / 1024).toFixed(1)} KB
                         </p>
                       </div>
@@ -238,8 +249,9 @@ export const AddBalanceModal = ({ open, onOpenChange, onSuccess }: AddBalanceMod
                       size="sm"
                       onClick={() => removeFile(index)}
                       disabled={uploading}
+                      className="h-9 w-9 p-0"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-5 h-5" />
                     </Button>
                   </div>
                 ))}
@@ -247,43 +259,26 @@ export const AddBalanceModal = ({ open, onOpenChange, onSuccess }: AddBalanceMod
             )}
           </div>
 
-          <div className="bg-yellow-500/10 border border-yellow-500/20 p-3 rounded-lg text-sm text-yellow-500">
-            <p className="font-semibold">Note:</p>
-            <p>A {FEE_PERCENT}% fee is added to all top-ups. Please transfer the total amount shown above and upload payment receipt.</p>
+          <div className="bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-lg text-sm text-yellow-500">
+            <p className="font-semibold text-base mb-2">Important Note:</p>
+            <p>A {FEE_PERCENT}% fee is added to all top-ups. Please transfer the exact total amount shown above and upload your payment receipt for verification.</p>
           </div>
         </div>
 
-        {/* Button stays fixed at bottom */}
-        <div className="flex-shrink-0 pt-4 border-t border-border mt-4">
+        {/* Fixed Button at Bottom */}
+        <div className="flex-shrink-0 px-6 py-4 border-t border-border bg-card/80 backdrop-blur-sm">
           <Button
             onClick={handleSubmit}
             disabled={isSubmitting || amountNum < 1000 || files.length === 0}
-            className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90"
+            className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 h-12 text-base font-semibold"
           >
             {isSubmitting 
               ? uploading 
-                ? "Uploading..." 
-                : "Processing..." 
+                ? "Uploading Receipts..." 
+                : "Processing Request..." 
               : "I've Paid & Attached Receipt"}
           </Button>
         </div>
-
-        {/* Custom scrollbar styles */}
-        <style jsx>{`
-          .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-          }
-          .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-          }
-          .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 3px;
-          }
-          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #555;
-          }
-        `}</style>
       </DialogContent>
     </Dialog>
   );
