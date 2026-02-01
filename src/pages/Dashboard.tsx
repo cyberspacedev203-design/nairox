@@ -461,20 +461,20 @@ const Dashboard = () => {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-lg p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
           onClick={() => setShowLoanModal(false)}
         >
           <div
-            className="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6 text-center"
+            className="w-72 max-w-[280px] bg-white rounded-2xl shadow-2xl p-4 text-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <p className="text-sm text-gray-400 mb-2">Get quick loan without bvn</p>
-            <p className="text-xs text-gray-500 mb-6">To use this feature, you need to upgrade your account.</p>
+            <p className="text-sm text-gray-400 mb-1">Get quick loan without bvn</p>
+            <p className="text-xs text-gray-500 mb-4">To use this feature, you need to upgrade your account.</p>
 
             <div className="flex gap-3 justify-center">
               <button
                 onClick={() => setShowLoanModal(false)}
-                className="flex-1 bg-gray-100 text-gray-700 rounded-lg py-2"
+                className="flex-1 bg-gray-100 text-gray-700 rounded-md py-2 text-sm"
               >
                 Cancel
               </button>
@@ -484,7 +484,7 @@ const Dashboard = () => {
                   setShowLoanModal(false);
                   navigate("/upgrade");
                 }}
-                className="flex-1 bg-green-600 text-white rounded-lg py-2"
+                className="flex-1 bg-emerald-500 text-white rounded-md py-2 text-sm"
               >
                 Upgrade Account
               </button>
