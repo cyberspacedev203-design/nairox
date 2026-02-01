@@ -106,7 +106,7 @@ const Auth = () => {
           const currentBalance = Number(referrer.balance) || 0;
           const currentReferrals = Number(referrer.total_referrals) || 0;
           
-          const newBalance = currentBalance + 15000;
+          const newBalance = currentBalance + 10000;
           const newReferrals = currentReferrals + 1;
 
           console.log("🔍 DEBUG: Current balance:", currentBalance, "referrals:", currentReferrals);
@@ -129,7 +129,7 @@ const Auth = () => {
           await supabase.from("transactions").insert({
             user_id: referrer.id,
             type: "credit",
-            amount: 15000,
+            amount: 10000,
             description: `Referral bonus from ${signupData.fullName}`,
             status: "completed",
           });

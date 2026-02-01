@@ -125,11 +125,11 @@ const Dashboard = () => {
     try {
       const { error: claimError } = await supabase
         .from("claims")
-        .insert({ user_id: user.id, amount: 15000 });
+        .insert({ user_id: user.id, amount: 5000 });
 
       if (claimError) throw claimError;
 
-      const newBalance = (profile?.balance || 0) + 15000;
+      const newBalance = (profile?.balance || 0) + 5000;
       const { error: updateError } = await supabase
         .from("profiles")
         .update({ balance: newBalance })
@@ -142,12 +142,12 @@ const Dashboard = () => {
         .insert({
           user_id: user.id,
           type: "credit",
-          amount: 15000,
+          amount: 5000,
           description: "Mini claim bonus",
           status: "completed",
         });
 
-      toast.success("₦15,000 claimed successfully!");
+      toast.success("₦5,000 claimed successfully!");
       setLastClaimTime(new Date());
       setCanClaim(false);
       await loadProfile(user.id);
@@ -203,7 +203,7 @@ const Dashboard = () => {
                 disabled={!canClaim || claiming}
                 className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-sm py-2"
               >
-                {claiming ? "Claiming..." : canClaim ? "Claim ₦15,000" : timeRemaining}
+                {claiming ? "Claiming..." : canClaim ? "Claim ₦5,000" : timeRemaining}
               </Button>
             </div>
           </Card>

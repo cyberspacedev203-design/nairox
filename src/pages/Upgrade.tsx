@@ -13,10 +13,10 @@ const Upgrade = () => {
   const [loading, setLoading] = useState(true);
 
   const upgradeTiers = [
-    { level: "Silver", amount: 25000, price: 25000, color: "from-gray-400 to-gray-600" },
-    { level: "Gold", amount: 30000, price: 30000, color: "from-yellow-400 to-yellow-600" },
-    { level: "Platinum", amount: 35000, price: 35000, color: "from-blue-400 to-blue-600" },
-    { level: "Diamond", amount: 40000, price: 40000, color: "from-purple-400 to-purple-600" },
+    { level: "Silver", amount: 15000, price: 15000, color: "from-gray-400 to-gray-600" },
+    { level: "Gold", amount: 20000, price: 20000, color: "from-yellow-400 to-yellow-600" },
+    { level: "Platinum", amount: 25000, price: 25000, color: "from-blue-400 to-blue-600" },
+    { level: "Diamond", amount: 30000, price: 30000, color: "from-purple-400 to-purple-600" },
   ];
 
   useEffect(() => {
@@ -50,7 +50,7 @@ const Upgrade = () => {
     navigate("/upgrade-payment", { state: tier });
   };
 
-  const currentEarnings = profile?.referral_earnings || 15000;
+  const currentEarnings = profile?.referral_earnings || 10000;
 
   if (loading || !profile) return null;
 
