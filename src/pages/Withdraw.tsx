@@ -16,7 +16,7 @@ const Withdraw = () => {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [withdrawalEnabled, setWithdrawalEnabled] = useState(false);
+  const [withdrawalTier, setWithdrawalTier] = useState<"light" | "standard">("light"); // light: 50k+2ref, standard: 100k+5ref
   const [withdrawData, setWithdrawData] = useState({
     amount: "",
     accountName: "",
@@ -32,7 +32,11 @@ const Withdraw = () => {
     "Unity Bank", "Wema Bank", "Zenith Bank", "Moniepoint MFB", "VFD MFB"
   ].sort();
 
-  const MINIMUM_WITHDRAW = 50000;
+  // Tier-specific settings
+  const tiers = {
+    light: { minAmount: 50000, requiredReferrals: 2, name: "Light (Quick)" },
+    standard: { minAmount: 100000, requiredReferrals: 5, name: "Standard (More Earnings)" }
+  };
 
   useEffect(() => {
     loadProfile();
@@ -64,6 +68,7 @@ const Withdraw = () => {
   const handleWithdraw = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const tier = tiers[withdrawalTier];
     const amount = Math.floor(Number(withdrawData.amount));
     
     // Validate whole numbers only (Naira)
@@ -77,8 +82,8 @@ const Withdraw = () => {
       return;
     }
     
-    if (amount < MINIMUM_WITHDRAW) {
-      toast.error(`Minimum withdrawal is ₦${MINIMUM_WITHDRAW.toLocaleString()}`);
+    if (amount < tier.minAmount) {
+      toast.error(`Minimum withdrawal for ${tier.name} is ₦${tier.minAmount.toLocaleString()}`);
       return;
     }
 
@@ -87,76 +92,43 @@ const Withdraw = () => {
       return;
     }
 
+    // Check referral requirement
+    if (profile.total_referrals < tier.requiredReferrals) {
+      toast.error(`You need at least ${tier.requiredReferrals} referrals for ${tier.name}`);
+      return;
+    }
+
     setSubmitting(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
 
-      // TOGGLE ON: Instant withdrawal (requires ₦12,600 activation, no referrals needed)
-      if (withdrawalEnabled) {
-        if (!profile.instant_activation_paid) {
-          toast.info("Instant withdrawal requires ₦12,600 activation fee");
-          navigate("/instant-withdrawal-activation");
-          return;
-        }
-      } 
-      // TOGGLE OFF: Standard withdrawal (requires 5 referrals, one-time ₦6,660 activation)
-      else {
-        if (profile.total_referrals < 5) {
-          toast.error("You need at least 5 referrals to withdraw");
-          return;
-        }
+      // Create withdrawal record
+      const { data: withdrawal, error: withdrawalError } = await supabase
+        .from("withdrawals")
+        .insert({
+          user_id: session?.user.id,
+          amount,
+          account_name: withdrawData.accountName,
+          account_number: withdrawData.accountNumber,
+          bank_name: withdrawData.bankName,
+          type: withdrawalTier,
+          status: "awaiting_activation_payment",
+        })
+        .select()
+        .maybeSingle();
 
-        // Check if standard activation is required (one-time payment)
-        if (!profile.standard_activation_unlocked) {
-          // Create withdrawal record with awaiting_activation_payment status
-          const { data: withdrawal, error: withdrawalError } = await supabase
-            .from("withdrawals")
-            .insert({
-              user_id: session?.user.id,
-              amount,
-              account_name: withdrawData.accountName,
-              account_number: withdrawData.accountNumber,
-              bank_name: withdrawData.bankName,
-              type: "standard",
-              status: "awaiting_activation_payment",
-            })
-            .select()
-            .maybeSingle();
+      if (withdrawalError) throw withdrawalError;
 
-          if (withdrawalError) throw withdrawalError;
-
-          toast.info("Standard withdrawal requires ₦6,660 activation fee");
-          navigate("/withdrawal-activation", { state: { withdrawalId: withdrawal.id } });
-          return;
-        }
+      // Now prompt for activation AFTER submission
+      if (withdrawalTier === "light") {
+        // Light: lower/no activation
+        toast.success("Withdrawal submitted! Processing...");
+        navigate("/history");
+      } else {
+        // Standard: activation required
+        toast.info("Standard withdrawal requires ₦6,660 activation fee");
+        navigate("/withdrawal-activation", { state: { withdrawalId: withdrawal.id } });
       }
-
-      const withdrawalType = withdrawalEnabled ? "instant" : "standard";
-      const { error } = await supabase.from("withdrawals").insert({
-        user_id: session?.user.id,
-        amount,
-        account_name: withdrawData.accountName,
-        account_number: withdrawData.accountNumber,
-        bank_name: withdrawData.bankName,
-        type: withdrawalType,
-        status: "pending",
-      });
-
-      if (error) throw error;
-
-      // Create transaction as PENDING (no balance deduction yet)
-      await supabase.from("transactions").insert({
-        user_id: session?.user.id,
-        type: "debit",
-        amount,
-        description: `Withdrawal request to ${withdrawData.bankName}`,
-        status: "pending",
-      });
-
-      // DO NOT update balance - wait for admin approval
-
-      toast.success("Withdrawal request submitted! Awaiting approval.");
-      navigate("/history");
     } catch (error: any) {
       toast.error("Failed to submit withdrawal");
     } finally {
@@ -193,58 +165,46 @@ const Withdraw = () => {
           </div>
 
           <div className="mb-6 p-4 bg-muted/50 rounded-lg">
-            <div className="flex items-center justify-between mb-2">
-              <Label htmlFor="withdrawal-toggle" className="text-base font-semibold">
-                {withdrawalEnabled ? "⚡ Instant Withdrawal" : "💯 Standard Withdrawal"}
-              </Label>
-              <Switch
-                id="withdrawal-toggle"
-                checked={withdrawalEnabled}
-                onCheckedChange={setWithdrawalEnabled}
-              />
+            <Label className="text-base font-semibold mb-3 block">Choose Withdrawal Type</Label>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setWithdrawalTier("light")}
+                className={`flex-1 p-3 rounded-lg border-2 transition-all ${
+                  withdrawalTier === "light"
+                    ? "border-primary bg-primary/10"
+                    : "border-border/50 bg-card/50 hover:border-primary/50"
+                }`}
+              >
+                <p className="font-semibold text-sm">⚡ Light</p>
+                <p className="text-xs text-muted-foreground">₦50,000+ • 2 referrals</p>
+              </button>
+              <button
+                type="button"
+                onClick={() => setWithdrawalTier("standard")}
+                className={`flex-1 p-3 rounded-lg border-2 transition-all ${
+                  withdrawalTier === "standard"
+                    ? "border-primary bg-primary/10"
+                    : "border-border/50 bg-card/50 hover:border-primary/50"
+                }`}
+              >
+                <p className="font-semibold text-sm">💯 Standard</p>
+                <p className="text-xs text-muted-foreground">₦100,000+ • 5 referrals</p>
+              </button>
             </div>
-            <p className="text-sm text-muted-foreground">
-              {withdrawalEnabled 
-                ? "ON:  Withdraw from N50,000+ with 5 referrals" 
-                : "OFF: Standard withdrawal requires a minimum of 50,000 and a total of 5 referrals"}
-            </p>
           </div>
 
           <form onSubmit={handleWithdraw} className="space-y-4">
-            {!withdrawalEnabled && profile.total_referrals < 5 && (
-              <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-                <p className="text-sm text-yellow-600 dark:text-yellow-400">
-                  You have {profile.total_referrals} referrals. You need {5 - profile.total_referrals} more to withdraw.
-                </p>
-              </div>
-            )}
-
-            {!withdrawalEnabled && !profile.standard_activation_unlocked && (
-              <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-                <p className="text-sm text-blue-600 dark:text-blue-400">
-                  ⚡ Standard withdrawal requires a one-time activation fee of ₦6,660 after 5 referrals!
-                </p>
-              </div>
-            )}
-
-            {withdrawalEnabled && !profile.instant_activation_paid && (
-              <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-                <p className="text-sm text-blue-600 dark:text-blue-400">
-                  ⚡ Instant withdrawal requires a one-time activation fee of ₦12,600. No referrals needed!
-                </p>
-              </div>
-            )}
-
             <div className="space-y-2">
               <Label htmlFor="amount">
-                Amount (₦) (Min: ₦{MINIMUM_WITHDRAW.toLocaleString()})
+                Amount (₦) (Min: ₦{tiers[withdrawalTier].minAmount.toLocaleString()})
               </Label>
               <Input
                 id="amount"
                 type="number"
                 required
                 step="1"
-                min={MINIMUM_WITHDRAW}
+                min={tiers[withdrawalTier].minAmount}
                 max={Math.floor(profile.balance)}
                 value={withdrawData.amount}
                 onChange={(e) => setWithdrawData({ ...withdrawData, amount: e.target.value })}
