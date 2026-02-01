@@ -277,23 +277,23 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* Mini Claim Card - NOW WITH TOP UP BUTTON INSTEAD OF CLAIM */}
+        {/* Mini Card - Upgrade CTA */}
         <div className="px-4">
           <Card className="bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20 p-3">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-start gap-2 flex-1 min-w-0">
-                <DollarSign className="w-4 h-4 text-secondary mt-0.5 flex-shrink-0" />
+                <Shield className="w-4 h-4 text-secondary mt-0.5 flex-shrink-0" />
                 <div className="text-xs min-w-0">
-                  <p className="font-semibold text-foreground">Top Up Your Wallet</p>
-                  <p className="text-muted-foreground truncate">Add funds to your account</p>
+                  <p className="font-semibold text-foreground">Upgrade Account</p>
+                  <p className="text-muted-foreground truncate">Unlock higher earnings and faster withdrawals</p>
                 </div>
               </div>
-              {/* TOP UP BUTTON REPLACES CLAIM BUTTON */}
+              {/* UPGRADE BUTTON */}
               <Button
-                onClick={() => setShowTopUp(true)}
+                onClick={() => navigate("/upgrade")}
                 className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-xs px-3 py-1 h-auto flex-shrink-0"
               >
-                Top Up
+                Upgrade
               </Button>
             </div>
           </Card>
