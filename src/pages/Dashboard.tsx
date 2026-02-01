@@ -461,20 +461,22 @@ const Dashboard = () => {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-xl p-6"
           onClick={() => setShowLoanModal(false)}
         >
           <div
-            className="w-72 max-w-[280px] bg-white rounded-2xl shadow-2xl p-4 text-center"
+            className="w-[320px] max-w-[88%] bg-white rounded-2xl shadow-[0_18px_40px_rgba(2,6,23,0.6)] p-5 text-center"
             onClick={(e) => e.stopPropagation()}
+            style={{ fontFamily: 'Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial' }}
           >
-            <p className="text-sm text-gray-400 mb-1">Get quick loan without bvn</p>
-            <p className="text-xs text-gray-500 mb-4">To use this feature, you need to upgrade your account.</p>
+            <p className="text-sm text-gray-400 mb-2">Get quick loan without bvn</p>
+            <p className="text-xs text-gray-500 mb-5">To use this feature, you need to upgrade your account.</p>
 
-            <div className="flex gap-3 justify-center">
+            <div className="flex items-center gap-3 justify-center">
               <button
                 onClick={() => setShowLoanModal(false)}
-                className="flex-1 bg-gray-100 text-gray-700 rounded-md py-2 text-sm"
+                className="px-4 py-2 rounded-full bg-gray-100 text-gray-700 text-sm"
+                style={{ minWidth: 100 }}
               >
                 Cancel
               </button>
@@ -484,7 +486,8 @@ const Dashboard = () => {
                   setShowLoanModal(false);
                   navigate("/upgrade");
                 }}
-                className="flex-1 bg-emerald-500 text-white rounded-md py-2 text-sm"
+                className="px-4 py-2 rounded-full bg-emerald-500 text-white text-sm"
+                style={{ minWidth: 140 }}
               >
                 Upgrade Account
               </button>
