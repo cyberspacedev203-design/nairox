@@ -22,6 +22,7 @@ const Dashboard = () => {
   const [canClaim, setCanClaim] = useState(false);
   const [lastClaimTime, setLastClaimTime] = useState<Date | null>(null);
   const [showTopUp, setShowTopUp] = useState(false);
+  const [showLoanModal, setShowLoanModal] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState("Ready!");
 
   useEffect(() => {
@@ -158,6 +159,13 @@ const Dashboard = () => {
     }
   };
 
+  // Auto-dismiss loan modal after 6 seconds when opened
+  useEffect(() => {
+    if (!showLoanModal) return;
+    const t = setTimeout(() => setShowLoanModal(false), 6000);
+    return () => clearTimeout(t);
+  }, [showLoanModal]);
+
   if (loading || !profile) return null;
 
   return (
@@ -292,7 +300,7 @@ const Dashboard = () => {
             </button>
             <button
               type="button"
-              onClick={() => navigate("/upgrade")}
+              onClick={() => setShowLoanModal(true)}
               className="h-20 flex flex-col gap-1.5 items-center justify-center rounded-lg border bg-card/80 hover:bg-card border-border/50 transition-all active:scale-95 touch-manipulation cursor-pointer min-h-[44px]"
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
@@ -447,6 +455,43 @@ const Dashboard = () => {
       </div>
 
       <FloatingActionButton />
+
+      {/* Loan modal (centered, mobile-friendly). Auto-dismisses after 6s. */}
+      {showLoanModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-lg p-4"
+          onClick={() => setShowLoanModal(false)}
+        >
+          <div
+            className="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6 text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="text-sm text-gray-400 mb-2">Get quick loan without bvn</p>
+            <p className="text-xs text-gray-500 mb-6">To use this feature, you need to upgrade your account.</p>
+
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => setShowLoanModal(false)}
+                className="flex-1 bg-gray-100 text-gray-700 rounded-lg py-2"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowLoanModal(false);
+                  navigate("/upgrade");
+                }}
+                className="flex-1 bg-green-600 text-white rounded-lg py-2"
+              >
+                Upgrade Account
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <AddBalanceModal
         open={showTopUp}
