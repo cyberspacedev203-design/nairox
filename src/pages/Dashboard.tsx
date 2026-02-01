@@ -456,41 +456,62 @@ const Dashboard = () => {
 
       <FloatingActionButton />
 
-      {/* Loan modal (centered, mobile-friendly). Auto-dismisses after 6s. */}
+      {/* OPTIMIZED LOAN POPUP - Smaller and cleaner */}
       {showLoanModal && (
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-xl p-6"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
           onClick={() => setShowLoanModal(false)}
         >
+          {/* Dimmed backdrop */}
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          
+          {/* Small popup card */}
           <div
-            className="w-[320px] max-w-[88%] bg-white rounded-2xl shadow-[0_18px_40px_rgba(2,6,23,0.6)] p-5 text-center"
+            className="relative w-full max-w-xs bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-4 animate-in zoom-in-95"
             onClick={(e) => e.stopPropagation()}
-            style={{ fontFamily: 'Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial' }}
           >
-            <p className="text-sm text-gray-400 mb-2">Get quick loan without bvn</p>
-            <p className="text-xs text-gray-500 mb-5">To use this feature, you need to upgrade your account.</p>
-
-            <div className="flex items-center gap-3 justify-center">
-              <button
-                onClick={() => setShowLoanModal(false)}
-                className="px-4 py-2 rounded-full bg-gray-100 text-gray-700 text-sm"
-                style={{ minWidth: 100 }}
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={() => {
-                  setShowLoanModal(false);
-                  navigate("/upgrade");
-                }}
-                className="px-4 py-2 rounded-full bg-emerald-500 text-white text-sm"
-                style={{ minWidth: 140 }}
-              >
-                Upgrade Account
-              </button>
+            {/* Close button */}
+            <button
+              onClick={() => setShowLoanModal(false)}
+              className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            >
+              ×
+            </button>
+            
+            <div className="text-center space-y-3">
+              <div className="inline-flex items-center justify-center w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-full mb-2">
+                <Radio className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              
+              <h3 className="font-semibold text-gray-800 dark:text-white">
+                Account Upgrade Required
+              </h3>
+              
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                Upgrade your account to access quick loans
+              </p>
+              
+              <div className="pt-2 space-y-2">
+                <Button
+                  onClick={() => {
+                    setShowLoanModal(false);
+                    navigate("/upgrade");
+                  }}
+                  className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-sm py-2"
+                >
+                  Upgrade Now
+                </Button>
+                
+                <Button
+                  onClick={() => setShowLoanModal(false)}
+                  variant="ghost"
+                  className="w-full text-gray-600 dark:text-gray-400 text-sm"
+                >
+                  Maybe Later
+                </Button>
+              </div>
             </div>
           </div>
         </div>
