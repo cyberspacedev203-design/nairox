@@ -205,8 +205,8 @@ const Withdraw = () => {
             </div>
             <p className="text-sm text-muted-foreground">
               {withdrawalEnabled 
-                ? "ON: Withdraw from ₦50,000+ (₦12,600 activation, no referrals needed)" 
-                : "OFF: Withdraw from ₦50,000+ with 5 referrals (one-time ₦6,660 activation)"}
+                ? "ON:  Withdraw from N50,000+ with 5 referrals" 
+                : "OFF: Standard withdrawal requires a minimum of 50,000 and a total of 5 referrals"}
             </p>
           </div>
 
