@@ -292,12 +292,12 @@ const Dashboard = () => {
             </button>
             <button
               type="button"
-              onClick={() => navigate("/broadcast")}
+              onClick={() => navigate("/upgrade")}
               className="h-20 flex flex-col gap-1.5 items-center justify-center rounded-lg border bg-card/80 hover:bg-card border-border/50 transition-all active:scale-95 touch-manipulation cursor-pointer min-h-[44px]"
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
               <Radio className="w-5 h-5 text-primary" />
-              <span className="text-xs font-semibold">Broadcast</span>
+              <span className="text-xs font-semibold">Loan</span>
             </button>
           </div>
         </div>
