@@ -169,9 +169,69 @@ const Dashboard = () => {
   if (loading || !profile) return null;
 
   return (
-    <div className="min-h-screen liquid-bg pb-20" style={{ position: 'relative', zIndex: 1 }}>
+    <div className="min-h-screen liquid-bg pb-20 relative" style={{ position: 'relative', zIndex: 1 }}>
       <WelcomeModal />
       <WithdrawalNotification />
+
+      {/* SMALL LOAN POPUP - Floating at bottom */}
+      {showLoanModal && (
+        <div
+          className="fixed bottom-20 right-4 z-50 animate-in slide-in-from-bottom-4 duration-300"
+          onClick={() => setShowLoanModal(false)}
+        >
+          <div
+            className="w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-4 border border-gray-200 dark:border-gray-700"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/30 dark:to-emerald-800/20 rounded-full flex items-center justify-center">
+                <Radio className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-1">
+                  <h4 className="font-semibold text-sm text-gray-800 dark:text-white">
+                    Upgrade Required
+                  </h4>
+                  <button
+                    onClick={() => setShowLoanModal(false)}
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-sm"
+                  >
+                    ×
+                  </button>
+                </div>
+                
+                <p className="text-xs text-gray-600 dark:text-gray-300 mb-3">
+                  Upgrade your account to access quick loans without BVN
+                </p>
+                
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => {
+                      setShowLoanModal(false);
+                      navigate("/upgrade");
+                    }}
+                    className="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-xs py-1.5 h-8"
+                  >
+                    Upgrade
+                  </Button>
+                  
+                  <Button
+                    onClick={() => setShowLoanModal(false)}
+                    variant="outline"
+                    className="flex-1 text-gray-600 dark:text-gray-400 text-xs py-1.5 h-8 border-gray-300 dark:border-gray-600"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Small arrow pointer */}
+          <div className="absolute -bottom-2 right-8 w-4 h-4 bg-white dark:bg-gray-800 transform rotate-45 border-r border-b border-gray-200 dark:border-gray-700" />
+        </div>
+      )}
 
       {/* Header */}
       <div className="bg-gradient-to-r from-primary to-secondary p-4 text-primary-foreground glow-primary" style={{ pointerEvents: 'auto', position: 'relative', zIndex: 2 }}>
@@ -455,67 +515,6 @@ const Dashboard = () => {
       </div>
 
       <FloatingActionButton />
-
-      {/* OPTIMIZED LOAN POPUP - Smaller and cleaner */}
-      {showLoanModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          onClick={() => setShowLoanModal(false)}
-        >
-          {/* Dimmed backdrop */}
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-          
-          {/* Small popup card */}
-          <div
-            className="relative w-full max-w-xs bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-4 animate-in zoom-in-95"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Close button */}
-            <button
-              onClick={() => setShowLoanModal(false)}
-              className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-            >
-              ×
-            </button>
-            
-            <div className="text-center space-y-3">
-              <div className="inline-flex items-center justify-center w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-full mb-2">
-                <Radio className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-              </div>
-              
-              <h3 className="font-semibold text-gray-800 dark:text-white">
-                Account Upgrade Required
-              </h3>
-              
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                Upgrade your account to access quick loans
-              </p>
-              
-              <div className="pt-2 space-y-2">
-                <Button
-                  onClick={() => {
-                    setShowLoanModal(false);
-                    navigate("/upgrade");
-                  }}
-                  className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-sm py-2"
-                >
-                  Upgrade Now
-                </Button>
-                
-                <Button
-                  onClick={() => setShowLoanModal(false)}
-                  variant="ghost"
-                  className="w-full text-gray-600 dark:text-gray-400 text-sm"
-                >
-                  Maybe Later
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       <AddBalanceModal
         open={showTopUp}
