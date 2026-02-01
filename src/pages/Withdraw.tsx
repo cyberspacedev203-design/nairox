@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, DollarSign } from "lucide-react";
+import { ArrowLeft, DollarSign, Radio } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
@@ -16,7 +16,8 @@ const Withdraw = () => {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [withdrawalTier, setWithdrawalTier] = useState<"light" | "standard">("light"); // light: 50k+2ref, standard: 100k+5ref
+  const [withdrawalTier, setWithdrawalTier] = useState<"light" | "standard">("light");
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [withdrawData, setWithdrawData] = useState({
     amount: "",
     accountName: "",
@@ -34,8 +35,8 @@ const Withdraw = () => {
 
   // Tier-specific settings
   const tiers = {
-    light: { minAmount: 50000, requiredReferrals: 2, name: "Light (Quick)" },
-    standard: { minAmount: 100000, requiredReferrals: 5, name: "Standard (More Earnings)" }
+    light: { minAmount: 150000, requiredReferrals: 5, name: "Light (Quick)" },
+    standard: { minAmount: 150000, requiredReferrals: 0, name: "Standard (Premium)" }
   };
 
   useEffect(() => {
@@ -98,11 +99,17 @@ const Withdraw = () => {
       return;
     }
 
+    // If Standard tier, show upgrade modal instead of processing
+    if (withdrawalTier === "standard") {
+      setShowUpgradeModal(true);
+      return;
+    }
+
     setSubmitting(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
 
-      // Create withdrawal record
+      // Create withdrawal record (Light tier only at this point)
       const { data: withdrawal, error: withdrawalError } = await supabase
         .from("withdrawals")
         .insert({
@@ -119,16 +126,9 @@ const Withdraw = () => {
 
       if (withdrawalError) throw withdrawalError;
 
-      // Now prompt for activation AFTER submission
-      if (withdrawalTier === "light") {
-        // Light: lower/no activation
-        toast.success("Withdrawal submitted! Processing...");
-        navigate("/history");
-      } else {
-        // Standard: activation required
-        toast.info("Standard withdrawal requires ₦6,660 activation fee");
-        navigate("/withdrawal-activation", { state: { withdrawalId: withdrawal.id } });
-      }
+      // Light tier: process immediately
+      toast.success("Withdrawal submitted! Processing...");
+      navigate("/history");
     } catch (error: any) {
       toast.error("Failed to submit withdrawal");
     } finally {
@@ -138,8 +138,75 @@ const Withdraw = () => {
 
   if (loading || !profile) return null;
 
+  // Auto-dismiss upgrade modal after 6 seconds when opened
+  useEffect(() => {
+    if (!showUpgradeModal) return;
+    const t = setTimeout(() => setShowUpgradeModal(false), 6000);
+    return () => clearTimeout(t);
+  }, [showUpgradeModal]);
+
   return (
     <div className="min-h-screen liquid-bg pb-20">
+      {/* UPGRADE MODAL - Standard Withdrawal Upgrade Prompt */}
+      {showUpgradeModal && (
+        <div
+          className="fixed bottom-20 right-4 z-50 animate-in slide-in-from-bottom-4 duration-300"
+          onClick={() => setShowUpgradeModal(false)}
+        >
+          <div
+            className="w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-4 border border-gray-200 dark:border-gray-700"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/30 dark:to-emerald-800/20 rounded-full flex items-center justify-center">
+                <Radio className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-1">
+                  <h4 className="font-semibold text-sm text-gray-800 dark:text-white">
+                    Upgrade Required
+                  </h4>
+                  <button
+                    onClick={() => setShowUpgradeModal(false)}
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-sm"
+                  >
+                    ×
+                  </button>
+                </div>
+                
+                <p className="text-xs text-gray-600 dark:text-gray-300 mb-3">
+                  Upgrade your account to access standard withdrawals without referral requirements
+                </p>
+                
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => {
+                      setShowUpgradeModal(false);
+                      navigate("/upgrade");
+                    }}
+                    className="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-xs py-1.5 h-8"
+                  >
+                    Upgrade
+                  </Button>
+                  
+                  <Button
+                    onClick={() => setShowUpgradeModal(false)}
+                    variant="outline"
+                    className="flex-1 text-gray-600 dark:text-gray-400 text-xs py-1.5 h-8 border-gray-300 dark:border-gray-600"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Small arrow pointer */}
+          <div className="absolute -bottom-2 right-8 w-4 h-4 bg-white dark:bg-gray-800 transform rotate-45 border-r border-b border-gray-200 dark:border-gray-700" />
+        </div>
+      )}
+
       <div className="bg-gradient-to-r from-primary to-secondary p-6 text-primary-foreground">
         <div className="flex items-center gap-4">
           <Button
@@ -177,7 +244,7 @@ const Withdraw = () => {
                 }`}
               >
                 <p className="font-semibold text-sm">⚡ Light</p>
-                <p className="text-xs text-muted-foreground">₦50,000+ • 2 referrals</p>
+                <p className="text-xs text-muted-foreground">₦150,000+ • 5 referrals</p>
               </button>
               <button
                 type="button"
@@ -189,7 +256,7 @@ const Withdraw = () => {
                 }`}
               >
                 <p className="font-semibold text-sm">💯 Standard</p>
-                <p className="text-xs text-muted-foreground">₦100,000+ • 5 referrals</p>
+                <p className="text-xs text-muted-foreground">₦150,000+ • No referrals</p>
               </button>
             </div>
           </div>
