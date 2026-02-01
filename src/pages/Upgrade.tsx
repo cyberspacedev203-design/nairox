@@ -50,7 +50,7 @@ const Upgrade = () => {
     navigate("/upgrade-payment", { state: tier });
   };
 
-  const currentEarnings = profile?.referral_earnings || 10000;
+  const currentEarnings = 10000;
 
   if (loading || !profile) return null;
 
