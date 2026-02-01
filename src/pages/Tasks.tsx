@@ -28,7 +28,7 @@ const Tasks = () => {
       id: 5,
       title: "Daily Check-in",
       description: "Come back every day and claim your reward!",
-      reward: "₦15,000",
+      reward: "₦10,000",
     },
   ];
 

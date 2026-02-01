@@ -40,7 +40,7 @@ const Welcome = () => {
           <div className="bg-card/80 backdrop-blur-lg p-6 rounded-2xl border border-border/50 space-y-2">
             <Users className="w-12 h-12 mx-auto text-primary animate-pulse-glow" />
             <h3 className="text-xl font-bold text-foreground">Refer & Earn</h3>
-            <p className="text-muted-foreground text-sm">₦15,000 for each friend you invite</p>
+            <p className="text-muted-foreground text-sm">₦10,000 for each friend you invite</p>
           </div>
           
           <div className="bg-card/80 backdrop-blur-lg p-6 rounded-2xl border border-border/50 space-y-2">
