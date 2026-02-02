@@ -7,12 +7,8 @@ import { FloatingActionButton } from "@/components/FloatingActionButton";
 const Support = () => {
   const navigate = useNavigate();
 
-  const openWhatsApp = () => {
-    window.open("https://t.me/tivexxadmin", "_blank", "noopener,noreferrer");
-  };
-
   const openTelegram = () => {
-    window.open("https://t.me/tivexxadmin", "_blank", "noopener,noreferrer");
+    window.open("https://t.me/Nairox9jasupport", "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -43,13 +39,6 @@ const Support = () => {
         <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-6">
           <h3 className="font-semibold mb-4 text-lg">Contact Support 🎯</h3>
           <div className="space-y-3">
-            <button
-              onClick={openWhatsApp}
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-all touch-manipulation min-h-[44px] flex items-center justify-center gap-2"
-            >
-              <MessageCircle className="w-5 h-5" />
-              Telegram Support
-            </button>
             <button
               onClick={openTelegram}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all touch-manipulation min-h-[44px] flex items-center justify-center gap-2"

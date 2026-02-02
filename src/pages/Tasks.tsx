@@ -15,14 +15,7 @@ const Tasks = () => {
       title: "Join Telegram Channel",
       description: "Join our official Telegram channel for updates",
       reward: "₦5,000",
-      link: "hhttps://t.me/tivexxglobal",
-    },
-    {
-      id: 2,
-      title: "Join WhatsApp Group", 
-      description: "Join our WhatsApp community for instant updates",
-      reward: "₦5,000",
-      link: "https://whatsapp.com/channel/0029VbBnF1q9MF8rtAHEih2p",
+      link: "https://t.me/Nairox9ja",
     },
     {
       id: 5,
@@ -92,7 +85,7 @@ const Tasks = () => {
         // Show success message
         toast.success(`${task.reward} added to your balance!`);
         
-        // Open link for Telegram/WhatsApp tasks (even if balance update worked)
+        // Open link for Telegram tasks (even if balance update worked)
         if (task.link) {
           window.open(task.link, "_blank");
         }

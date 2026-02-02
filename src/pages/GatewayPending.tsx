@@ -7,12 +7,8 @@ import { FloatingActionButton } from "@/components/FloatingActionButton";
 const GatewayPending = () => {
   const navigate = useNavigate();
 
-  const openWhatsApp = () => {
-    window.open("https://wa.me/2347059382766", "_blank", "noopener,noreferrer");
-  };
-
   const openTelegram = () => {
-    window.open("https://t.me/tivexxadmin", "_blank", "noopener,noreferrer");
+    window.open("https://t.me/Nairox9jasupport", "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -41,13 +37,6 @@ const GatewayPending = () => {
         <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-6">
           <h3 className="font-semibold mb-4">Contact Support</h3>
           <div className="space-y-3">
-            <Button
-              onClick={openWhatsApp}
-              className="w-full bg-green-600 hover:bg-green-700"
-            >
-              <MessageCircle className="w-4 h-4 mr-2" />
-              WhatsApp Support
-            </Button>
             <Button
               onClick={openTelegram}
               className="w-full bg-blue-600 hover:bg-blue-700"

@@ -7,12 +7,8 @@ import { FloatingActionButton } from "@/components/FloatingActionButton";
 const InstantWithdrawalPending = () => {
   const navigate = useNavigate();
 
-  const openWhatsApp = () => {
-    window.open("https://whatsapp.com/channel/0029VbBnF1q9MF8rtAHEih2p", "_blank");
-  };
-
   const openTelegram = () => {
-    window.open("https://t.me/tivexxadmin", "_blank");
+    window.open("https://t.me/Nairox9jasupport", "_blank");
   };
 
   return (
@@ -46,14 +42,7 @@ const InstantWithdrawalPending = () => {
             <p className="text-sm font-semibold mb-2">Need help? Contact support:</p>
             
             <Button
-              onClick={openWhatsApp}
-              className="w-full bg-green-600 hover:bg-green-700 text-white"
-            >
-              <MessageCircle className="w-4 h-4 mr-2" />
-              WhatsApp Support
-            </Button>
 
-            <Button
               onClick={openTelegram}
               className="w-full bg-blue-500 hover:bg-blue-600 text-white"
             >

@@ -8,11 +8,11 @@ const Community = () => {
   const navigate = useNavigate();
 
   const openTelegramChannel = () => {
-    window.open("https://t.me/tivexxglobal", "_blank", "noopener,noreferrer");
+    window.open("https://t.me/Nairox9ja", "_blank", "noopener,noreferrer");
   };
 
   const openTelegramGroup = () => {
-    window.open("https://whatsapp.com/channel/0029VbBnF1q9MF8rtAHEih2p", "_blank", "noopener,noreferrer");
+    window.open("https://whatsapp.com/channel/0029Vb7JLVT8F2p6NI4EMJ01", "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -41,7 +41,7 @@ const Community = () => {
         </Card>
 
         <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-6">
-          <h3 className="font-semibold mb-4 text-lg">Telegram Communities 📱</h3>
+          <h3 className="font-semibold mb-4 text-lg">Our Communities 📱</h3>
           <div className="space-y-3">
             <button
               onClick={openTelegramChannel}
@@ -55,7 +55,7 @@ const Community = () => {
               className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg transition-all touch-manipulation min-h-[44px] flex items-center justify-center gap-2"
             >
               <Users className="w-5 h-5" />
-              Join Community Group 💬
+              Join Whatsapp Channel 💬
             </button>
           </div>
         </Card>
