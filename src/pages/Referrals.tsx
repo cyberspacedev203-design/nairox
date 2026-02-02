@@ -164,7 +164,7 @@ const Referrals = () => {
             </li>
             <li className="flex gap-3">
               <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">3</span>
-              <span>You earn ₦{Number(profile.referral_earnings).toLocaleString()} added to your balance instantly!</span>
+              <span>You earn ₦10,000 added to your balance instantly!</span>
             </li>
           </ol>
         </Card>
