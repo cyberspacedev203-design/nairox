@@ -406,7 +406,7 @@ const Dashboard = () => {
         <div className="mt-6">
           <div className="why-glow bg-gradient-to-br from-black via-green-950 to-black rounded-2xl p-6 mb-6 mx-2 border border-green-500/30 relative overflow-hidden">
             <div className="text-center mb-4 relative z-10">
-              <h2 className="text-2xl font-bold text-white mb-2">Why Nairox⁉️</h2>
+              <h2 className="text-2xl font-bold text-white mb-2">Why Nairox9ja⁉️</h2>
               <div className="w-16 h-1 bg-gradient-to-r from-green-500 to-yellow-400 mx-auto mb-4"></div>
             </div>
 

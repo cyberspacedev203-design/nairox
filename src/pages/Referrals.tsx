@@ -51,8 +51,8 @@ const Referrals = () => {
 
   const shareReferral = async () => {
     const shareData = {
-      title: "Join Nairox",
-      text: `Join me on Nairox and earn ₦50,000 welcome bonus! Use my referral code: ${profile?.referral_code}`,
+      title: "Join Nairox9ja",
+      text: `Join me on Nairox9ja and earn ₦50,000 welcome bonus! Use my referral code: ${profile?.referral_code}`,
       url: referralLink,
     };
 
