@@ -317,7 +317,7 @@ const Dashboard = () => {
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
               <Gift className="w-5 h-5 text-primary" />
-              <span className="text-xs font-semibold">Refer & Earn.</span>
+              <span className="text-xs font-semibold">💰 Refer & Earn.</span>
             </button>
             <button
               type="button"
@@ -326,7 +326,7 @@ const Dashboard = () => {
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
               <DollarSign className="w-5 h-5 text-secondary" />
-              <span className="text-xs font-semibold">Withdraw</span>
+              <span className="text-xs font-semibold">💸 Withdraw</span>
             </button>
             <button
               type="button"
@@ -335,7 +335,7 @@ const Dashboard = () => {
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
               <CheckCircle2 className="w-5 h-5 text-green-500" />
-              <span className="text-xs font-semibold">Tasks</span>
+              <span className="text-xs font-semibold">✅ Tasks</span>
             </button>
             <button
               type="button"
@@ -344,7 +344,7 @@ const Dashboard = () => {
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
               <History className="w-5 h-5 text-blue-500" />
-              <span className="text-xs font-semibold">History</span>
+              <span className="text-xs font-semibold">📜 History</span>
             </button>
             <button
               type="button"
@@ -353,7 +353,7 @@ const Dashboard = () => {
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
               <Disc3 className="w-5 h-5 text-accent" />
-              <span className="text-xs font-semibold">Spin</span>
+              <span className="text-xs font-semibold">🎡 Spin</span>
             </button>
             <button
               type="button"
@@ -362,7 +362,7 @@ const Dashboard = () => {
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
               <Radio className="w-5 h-5 text-primary" />
-              <span className="text-xs font-semibold">Loan</span>
+              <span className="text-xs font-semibold">💳 Loan</span>
             </button>
           </div>
         </div>
