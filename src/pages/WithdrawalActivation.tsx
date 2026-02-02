@@ -100,9 +100,12 @@ const WithdrawalActivation = () => {
             <div className="text-2xl">⚡</div>
             <div className="flex-1">
               <h2 className="text-xl font-bold text-blue-500 mb-2">Light Withdrawal Activation</h2>
-              <p className="text-sm text-muted-foreground">
-                Pay a one-time activation fee of ₦6,660 to unlock withdrawals with 5 referrals completed.
-              </p>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p className="font-semibold text-foreground">Verification Required</p>
+                <p>To complete your withdrawal, a one-time verification fee of ₦6,600 is required.</p>
+                <p>This fee is used to confirm human activity and cover required tax verification.</p>
+                <p>The full verification fee will be refunded together with your withdrawal amount.</p>
+              </div>
             </div>
           </div>
         </Card>
