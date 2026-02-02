@@ -136,8 +136,6 @@ const Withdraw = () => {
     }
   };
 
-  if (loading || !profile) return null;
-
   // Auto-dismiss upgrade modal after 6 seconds when opened
   useEffect(() => {
     if (!showUpgradeModal) return;
@@ -147,6 +145,17 @@ const Withdraw = () => {
 
   return (
     <div className="min-h-screen liquid-bg pb-20">
+      {loading && (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading...</p>
+          </div>
+        </div>
+      )}
+
+      {!loading && profile && (
+        <>
       {/* UPGRADE MODAL - Standard Withdrawal Upgrade Prompt */}
       {showUpgradeModal && (
         <div
@@ -337,6 +346,8 @@ const Withdraw = () => {
       </div>
 
       <FloatingActionButton />
+        </>
+      )}
     </div>
   );
 };
