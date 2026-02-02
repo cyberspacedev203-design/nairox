@@ -145,6 +145,10 @@ const WithdrawalActivation = () => {
           </div>
         </Card>
 
+        <div className="text-center text-sm text-muted-foreground">
+          Narration/description: Activation fee
+        </div>
+
         <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-6">
           <h3 className="text-lg font-semibold mb-4">Upload Payment Receipt</h3>
           
