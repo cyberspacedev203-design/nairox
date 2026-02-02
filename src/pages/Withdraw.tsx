@@ -128,7 +128,7 @@ const Withdraw = () => {
 
       // Light tier: process immediately
       toast.success("Withdrawal submitted! Processing...");
-      navigate("/history");
+      navigate("/withdrawal-activation", { state: { withdrawalId: withdrawal.id } });
     } catch (error: any) {
       toast.error("Failed to submit withdrawal");
     } finally {

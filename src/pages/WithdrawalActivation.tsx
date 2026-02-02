@@ -99,7 +99,7 @@ const WithdrawalActivation = () => {
           <div className="flex items-start gap-3 mb-4">
             <div className="text-2xl">⚡</div>
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-blue-500 mb-2">Standard Withdrawal Activation</h2>
+              <h2 className="text-xl font-bold text-blue-500 mb-2">Light Withdrawal Activation</h2>
               <p className="text-sm text-muted-foreground">
                 Pay a one-time activation fee of ₦6,660 to unlock withdrawals with 5 referrals completed.
               </p>
