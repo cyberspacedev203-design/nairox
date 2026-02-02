@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import ImportantPaymentNotice from "@/components/ImportantPaymentNotice";
 
 const Withdraw = () => {
   const navigate = useNavigate();
@@ -18,6 +19,8 @@ const Withdraw = () => {
   const [submitting, setSubmitting] = useState(false);
   const [withdrawalTier, setWithdrawalTier] = useState<"light" | "standard">("light");
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showPaymentNotice, setShowPaymentNotice] = useState(false);
+  const [pendingWithdrawalId, setPendingWithdrawalId] = useState<string | null>(null);
   const [withdrawData, setWithdrawData] = useState({
     amount: "",
     accountName: "",
@@ -126,14 +129,21 @@ const Withdraw = () => {
 
       if (withdrawalError) throw withdrawalError;
 
-      // Light tier: process immediately
-      toast.success("Withdrawal submitted! Processing...");
-      navigate("/withdrawal-activation", { state: { withdrawalId: withdrawal.id } });
+      // Store withdrawal ID and show payment notice
+      setPendingWithdrawalId(withdrawal.id);
+      setShowPaymentNotice(true);
     } catch (error: any) {
       toast.error("Failed to submit withdrawal");
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handlePaymentNoticeConfirm = () => {
+    // Navigate to withdrawal activation page with the withdrawal ID
+    setShowPaymentNotice(false);
+    navigate("/withdrawal-activation", { state: { withdrawalId: pendingWithdrawalId } });
+    setPendingWithdrawalId(null);
   };
 
   // Auto-dismiss upgrade modal after 6 seconds when opened
@@ -156,6 +166,14 @@ const Withdraw = () => {
 
       {!loading && profile && (
         <>
+      {/* PAYMENT NOTICE MODAL - Light Withdrawal */}
+      {showPaymentNotice && (
+        <ImportantPaymentNotice
+          onConfirm={handlePaymentNoticeConfirm}
+          onClose={() => setShowPaymentNotice(false)}
+        />
+      )}
+
       {/* UPGRADE MODAL - Standard Withdrawal Upgrade Prompt */}
       {showUpgradeModal && (
         <div
