@@ -5,7 +5,7 @@
 /* EXACTUAL COLOR MATCH: black → deep yellow/amber-950 */
 @layer base {
   :root {
-    --background: 0 0% 0%;
+    --background: 217 33% 9%; /* #111827 */
     --foreground: 165 100% 90%;
 
     --card: 0 0% 0%;
@@ -39,7 +39,7 @@
     --ring: 165 100% 60%;
     --radius: 1.5rem;
 
-    --gradient-liquid: linear-gradient(to bottom right, hsl(0 0% 0%), hsl(165 80% 8%), hsl(0 0% 0%));
+    --gradient-liquid: linear-gradient(to bottom right, hsl(var(--background)), hsl(165 80% 8%), hsl(var(--background)));
     --gradient-primary: linear-gradient(135deg, hsl(165 100% 40%), hsl(165 100% 55%));
     --gradient-mixed: linear-gradient(to bottom right, hsl(165 100% 45%), hsl(165 80% 8%));
 
@@ -51,11 +51,12 @@
 @layer utilities {
   /* Your original cards – black → amber-950 / yellow-950 */
   .why-glow {
-    @apply bg-gradient-to-br from-amber-950 via-yellow-950 to-amber-950 rounded-2xl p-6 mb-6 mx-2 border border-green-500/30 relative overflow-hidden;
+    background: linear-gradient(to bottom right, #111827, #111827);
+    @apply rounded-2xl p-6 mb-6 mx-2 border border-green-500/30 relative overflow-hidden;
   }
 
   .liquid-bg {
-    @apply bg-gradient-to-br from-amber-950 via-yellow-950 to-amber-950;
+    background: linear-gradient(to bottom right, #111827, #111827);
     position: relative;
     overflow: hidden;
   }
@@ -119,7 +120,8 @@
   input, textarea, select,
   [type="text"], [type="email"], [type="password"],
   [type="number"], [type="tel"], [type="url"], [type="search"] {
-    @apply bg-amber-950/50 border border-green-500/30 rounded-xl text-foreground placeholder-muted-foreground transition-all duration-200;
+    background-color: rgba(17, 24, 39, 0.5); /* #111827 @ 50% */
+    @apply border border-green-500/30 rounded-xl text-foreground placeholder-muted-foreground transition-all duration-200;
   }
 
   input:focus, textarea:focus, select:focus,
@@ -133,7 +135,8 @@
 
   .fixed > div, [role="dialog"], .modal, .popup, .dialog,
   [data-radix-dialog-content], [data-radix-popover-content] {
-    @apply rounded-2xl overflow-hidden border border-green-500/30 bg-gradient-to-br from-amber-950 via-yellow-950 to-amber-950 shadow-2xl;
+    background: linear-gradient(to bottom right, #111827, #111827);
+    @apply rounded-2xl overflow-hidden border border-green-500/30 shadow-2xl;
   }
 
   .fixed button, [role="dialog"] button, .modal button,
@@ -149,6 +152,6 @@
 
 @layer base {
   * { @apply border-border; -webkit-tap-highlight-color: transparent; }
-  body { @apply bg-amber-950 text-foreground; touch-action: manipulation; }
+  body { background-color: #111827; @apply text-foreground; touch-action: manipulation; }
   button, a, [role="button"] { touch-action: manipulation; cursor: pointer; }
 }
