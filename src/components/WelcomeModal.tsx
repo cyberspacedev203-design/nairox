@@ -36,7 +36,7 @@ export const WelcomeModal = () => {
       >
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">
-            {step === "initial" ? "Welcome to Tivexx_Global! 🎉" : "Verification Needed"}
+            {step === "initial" ? "Welcome to Nairox ! 🎉" : "Verification Needed"}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">

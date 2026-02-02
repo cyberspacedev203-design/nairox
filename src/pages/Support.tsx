@@ -52,7 +52,7 @@ const Support = () => {
         <Card className="bg-muted/50 border-border/50 p-4">
           <p className="text-sm text-center text-muted-foreground">
             📞 {/*<strong>WhatsApp:</strong> +234 705 938 2766<br />*/}
-            📱 <strong>Telegram:</strong> @tivexxadmin
+            📱 <strong>Telegram:</strong> @Nairox9jasupport
           </p>
         </Card>
       </div>

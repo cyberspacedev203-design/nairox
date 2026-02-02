@@ -139,7 +139,7 @@ const Auth = () => {
       }
 
       localStorage.removeItem("referralCode");
-      toast.success("Welcome to Tivexx_Global! You got ₦50,000 bonus!");
+      toast.success("Welcome to Nairox! You got ₦50,000 bonus!");
       navigate("/dashboard", { replace: true });
     } catch (error: any) {
       console.error(error);
@@ -174,7 +174,7 @@ const Auth = () => {
     <div className="min-h-screen liquid-bg flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-card/95 backdrop-blur-lg border-border/50 animate-slide-up">
         <CardHeader className="text-center">
-          <CardTitle className="text-4xl font-bold gradient-text mb-2">Tivexx_Global</CardTitle>
+          <CardTitle className="text-4xl font-bold gradient-text mb-2">Nairox</CardTitle>
           <CardDescription className="text-muted-foreground">
             Turn one click into thousands!
           </CardDescription>
