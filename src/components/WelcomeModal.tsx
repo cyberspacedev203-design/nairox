@@ -1,56 +1,60 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
 
 export const WelcomeModal = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [step, setStep] = useState<"initial" | "verification">( "initial");
 
   useEffect(() => {
-    const hasSeenWelcome = localStorage.getItem("chixx9ja_welcome_seen");
-    if (!hasSeenWelcome) {
+    // Check if user has completed the Telegram verification in this session
+    const hasCompletedVerification = sessionStorage.getItem("telegram_verification_completed");
+    if (!hasCompletedVerification) {
       setIsOpen(true);
+      setStep("initial");
     }
   }, []);
 
-  const handleClose = () => {
-    localStorage.setItem("chixx9ja_welcome_seen", "true");
-    setIsOpen(false);
-  };
-
   const handleJoinTelegram = () => {
-    window.open("https://t.me/tivexxglobal", "_blank", "noopener,noreferrer");
-    handleClose();
+    if (step === "initial") {
+      // First click: show verification message and reopen
+      window.open("https://t.me/tivexxglobal", "_blank", "noopener,noreferrer");
+      setStep("verification");
+    } else if (step === "verification") {
+      // Second click: mark as complete and close permanently
+      sessionStorage.setItem("telegram_verification_completed", "true");
+      setIsOpen(false);
+    }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent 
+        className="sm:max-w-md"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">
-            Welcome to Tivexx_Global! 🎉
+            {step === "initial" ? "Welcome to Tivexx_Global! 🎉" : "Verification Needed"}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">
           <p className="text-center text-lg">
-            Join our Telegram channel for exclusive updates, tips, and support! 🚀✨
+            {step === "initial"
+              ? "Join our Telegram channel for exclusive updates, tips, and support! 🚀✨"
+              : "Couldn't be verified. Join our Telegram channel to continue."}
           </p>
-          <p className="text-center text-muted-foreground">
-            Get instant notifications about new features and earn extra rewards! 💰🔥
-          </p>
+          {step === "initial" && (
+            <p className="text-center text-muted-foreground">
+              Get instant notifications about new features and earn extra rewards! 💰🔥
+            </p>
+          )}
           <div className="space-y-2">
             <button
               onClick={handleJoinTelegram}
               className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all touch-manipulation min-h-[44px]"
             >
-              Join Telegram Channel 📢
-            </button>
-            <button
-              onClick={handleClose}
-              className="w-full bg-muted hover:bg-muted/80 text-foreground font-medium py-2 px-4 rounded-lg transition-all touch-manipulation min-h-[44px]"
-            >
-              <X className="w-4 h-4 inline mr-2" />
-              Maybe Later
+              {step === "initial" ? "Join Telegram Channel 📢" : "Verify & Continue"}
             </button>
           </div>
         </div>
