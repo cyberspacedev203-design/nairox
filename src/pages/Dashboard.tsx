@@ -317,7 +317,7 @@ const Dashboard = () => {
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
               <Gift className="w-5 h-5 text-primary" />
-              <span className="text-xs font-semibold">Refer & Earn</span>
+              <span className="text-xs font-semibold">Refer & Earn.</span>
             </button>
             <button
               type="button"
