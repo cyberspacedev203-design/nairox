@@ -173,10 +173,10 @@ const Dashboard = () => {
       <WelcomeModal />
       <WithdrawalNotification />
 
-      {/* SMALL LOAN POPUP - Floating at bottom */}
+      {/* SMALL LOAN POPUP - Centered */}
       {showLoanModal && (
         <div
-          className="fixed bottom-20 right-4 z-50 animate-in slide-in-from-bottom-4 duration-300"
+          className="fixed inset-0 z-50 flex items-center justify-center animate-in fade-in duration-300"
           onClick={() => setShowLoanModal(false)}
         >
           <div
@@ -227,9 +227,6 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          
-          {/* Small arrow pointer */}
-          <div className="absolute -bottom-2 right-8 w-4 h-4 bg-white dark:bg-gray-800 transform rotate-45 border-r border-b border-gray-200 dark:border-gray-700" />
         </div>
       )}
 
