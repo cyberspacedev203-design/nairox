@@ -272,7 +272,10 @@ const Withdraw = () => {
               </button>
               <button
                 type="button"
-                onClick={() => setWithdrawalTier("standard")}
+                onClick={() => {
+                  setWithdrawalTier("standard");
+                  setShowUpgradeModal(true);
+                }}
                 className={`flex-1 p-3 rounded-lg border-2 transition-all ${
                   withdrawalTier === "standard"
                     ? "border-primary bg-primary/10"
