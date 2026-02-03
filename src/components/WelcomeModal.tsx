@@ -18,7 +18,7 @@ export const WelcomeModal = () => {
   const handleJoinTelegram = () => {
     if (step === "initial") {
       // First click: show verification message and reopen
-      window.open("https://t.me/Nairox9ja");
+      window.open("https://t.me/Nairox9ja", "_blank", "rel=opener");
       setStep("verification");
     } else if (step === "verification") {
       // Second click: mark as complete and close permanently
