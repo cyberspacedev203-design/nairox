@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
@@ -8,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const Tasks = () => {
   const navigate = useNavigate();
+  const [claimedTasks, setClaimedTasks] = useState<Set<number>>(new Set());
 
   const tasks = [
     {
@@ -61,8 +63,16 @@ const Tasks = () => {
       return;
     }
 
+    // Mark as immediately claimed in UI to prevent duplicate clicks
+    setClaimedTasks(prev => new Set(prev).add(task.id));
+
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
+      setClaimedTasks(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(task.id);
+        return newSet;
+      });
       toast.error("Please login first");
       return;
     }
@@ -92,9 +102,14 @@ const Tasks = () => {
         .eq("id", user.id);
 
       if (updateError) {
+        setClaimedTasks(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(task.id);
+          return newSet;
+        });
         toast.error("Failed to update balance. Try again.");
       } else {
-        // Mark as claimed for today
+        // Mark as claimed for today in localStorage
         markTaskAsClaimed(task.id);
         
         // Show success message
@@ -107,6 +122,11 @@ const Tasks = () => {
       }
     } catch (error) {
       console.error("Error:", error);
+      setClaimedTasks(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(task.id);
+        return newSet;
+      });
       toast.error("Something went wrong");
     }
   };
@@ -137,6 +157,7 @@ const Tasks = () => {
 
         {tasks.map((task) => {
           const isClaimed = isTaskClaimedToday(task.id);
+          const isProcessing = claimedTasks.has(task.id);
           
           return (
             <div key={task.id}>
@@ -148,9 +169,9 @@ const Tasks = () => {
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-bold text-primary">{task.reward}</span>
                       <span className="text-xs text-muted-foreground">reward</span>
-                      {isClaimed && (
+                      {(isClaimed || isProcessing) && (
                         <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">
-                          Claimed Today
+                          {isProcessing ? "Processing..." : "Claimed Today"}
                         </span>
                       )}
                     </div>
@@ -158,14 +179,14 @@ const Tasks = () => {
 
                   <Button
                     onClick={() => handleClaim(task)}
-                    disabled={isClaimed}
+                    disabled={isClaimed || isProcessing}
                     className={`px-6 py-3 font-bold ${
-                      isClaimed 
+                      (isClaimed || isProcessing) 
                         ? "bg-gray-400 cursor-not-allowed" 
                         : "bg-gradient-to-r from-primary to-secondary hover:opacity-90"
                     }`}
                   >
-                    {isClaimed ? "Claimed" : "Claim Now"}
+                    {isProcessing ? "Processing..." : isClaimed ? "Claimed" : "Claim Now"}
                   </Button>
                 </div>
               </Card>
