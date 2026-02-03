@@ -235,6 +235,7 @@ const Tasks = () => {
                     </div>
                   </div>
 
+                  <Button
                     onClick={() => isPending ? handleVerify(task) : handleClaim(task)}
                     disabled={isClaimed || isProcessing || isVerifying}
                     className={`px-6 py-3 font-bold ${
