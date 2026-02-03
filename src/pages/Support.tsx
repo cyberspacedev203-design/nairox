@@ -8,7 +8,7 @@ const Support = () => {
   const navigate = useNavigate();
 
   const openTelegram = () => {
-    window.open("https://t.me/Nairox9jasupport", "_blank", "noopener,noreferrer");
+    window.location.href = "https://t.me/Nairox9jasupport";
   };
 
   return (

@@ -38,7 +38,7 @@ const UpgradePending = () => {
             <p className="text-sm font-semibold text-muted-foreground mb-2">Need Help?</p>
             
             <Button
-              onClick={() => window.open(TELEGRAM_SUPPORT, "_blank")}
+              onClick={() => (window.location.href = TELEGRAM_SUPPORT)}
               className="w-full bg-blue-500 hover:bg-blue-600 text-white"
             >
               <Send className="w-4 h-4 mr-2" />
