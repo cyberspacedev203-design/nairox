@@ -139,35 +139,45 @@ const Tasks = () => {
           const isClaimed = isTaskClaimedToday(task.id);
           
           return (
-            <Card key={task.id} className="bg-card/80 backdrop-blur-lg border-border/50 p-4">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <h3 className="font-semibold mb-1">{task.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-3">{task.description}</p>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-primary">{task.reward}</span>
-                    <span className="text-xs text-muted-foreground">reward</span>
-                    {isClaimed && (
-                      <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">
-                        Claimed Today
-                      </span>
-                    )}
+            <div key={task.id}>
+              <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <h3 className="font-semibold mb-1">{task.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-3">{task.description}</p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-primary">{task.reward}</span>
+                      <span className="text-xs text-muted-foreground">reward</span>
+                      {isClaimed && (
+                        <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">
+                          Claimed Today
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                <Button
-                  onClick={() => handleClaim(task)}
-                  disabled={isClaimed}
-                  className={`px-6 py-3 font-bold ${
-                    isClaimed 
-                      ? "bg-gray-400 cursor-not-allowed" 
-                      : "bg-gradient-to-r from-primary to-secondary hover:opacity-90"
-                  }`}
-                >
-                  {isClaimed ? "Claimed" : "Claim Now"}
-                </Button>
-              </div>
-            </Card>
+                  <Button
+                    onClick={() => handleClaim(task)}
+                    disabled={isClaimed}
+                    className={`px-6 py-3 font-bold ${
+                      isClaimed 
+                        ? "bg-gray-400 cursor-not-allowed" 
+                        : "bg-gradient-to-r from-primary to-secondary hover:opacity-90"
+                    }`}
+                  >
+                    {isClaimed ? "Claimed" : "Claim Now"}
+                  </Button>
+                </div>
+              </Card>
+
+              {task.id === 2 && (
+                <Card className="bg-yellow-500/10 border-yellow-500/30 p-3 mt-2">
+                  <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                    ⚠️ <strong>Important:</strong> Allow the page to load completely before closing to receive your full reward.
+                  </p>
+                </Card>
+              )}
+            </div>
           );
         })}
 
