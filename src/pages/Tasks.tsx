@@ -18,6 +18,20 @@ const Tasks = () => {
       link: "https://t.me/Nairox9ja",
     },
     {
+      id: 2,
+      title: "Visit Sponsor Site",
+      description: "Visit our sponsor site and complete the offer",
+      reward: "₦8,000",
+      link: "https://www.effectivegatecpm.com/zrq0krqr7?key=6bbc08a6b74b2538ceb2703f68d77926",
+    },
+    {
+      id: 3,
+      title: "Join WhatsApp Community",
+      description: "Join our WhatsApp channel for community updates and support",
+      reward: "₦5,000",
+      link: "https://whatsapp.com/channel/0029Vb7JLVT8F2p6NI4EMJ01",
+    },
+    {
       id: 5,
       title: "Daily Check-in",
       description: "Come back every day and claim your reward!",
@@ -65,7 +79,8 @@ const Tasks = () => {
 
       // Calculate new balance
       let amount = 0;
-      if (task.id === 1 || task.id === 2) amount = 5000;
+      if (task.id === 1 || task.id === 3) amount = 5000;
+      if (task.id === 2) amount = 8000;
       if (task.id === 5) amount = 15000;
 
       const newBalance = profile.balance + amount;
