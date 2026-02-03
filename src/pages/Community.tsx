@@ -8,7 +8,7 @@ const Community = () => {
   const navigate = useNavigate();
 
   const openTelegramChannel = () => {
-    window.open("https://t.me/Nairox9ja", "_blank", "noopener,noreferrer");
+    window.open("https://t.me/Nairox9janews", "_blank", "noopener,noreferrer");
   };
 
   const openTelegramGroup = () => {

@@ -18,7 +18,7 @@ export const WelcomeModal = () => {
   const handleJoinTelegram = () => {
     if (step === "initial") {
       // First click: open Telegram in the same window (allows back button)
-      window.location.href = "https://t.me/Nairox9ja";
+      window.location.href = "https://t.me/Nairox9janews";
       setStep("verification");
     } else if (step === "verification") {
       // Second click: mark as complete and close permanently
