@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
 import { CopyButton } from "@/components/CopyButton";
+import { NarrationSection } from "@/components/NarrationSection";
 
 const InstantWithdrawalActivation = () => {
   const navigate = useNavigate();
@@ -115,6 +116,7 @@ const InstantWithdrawalActivation = () => {
                 </div>
               </div>
             </div>
+            <NarrationSection text="Activation fee" />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

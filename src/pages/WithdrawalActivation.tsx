@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
 import { CopyButton } from "@/components/CopyButton";
+import { NarrationSection } from "@/components/NarrationSection";
 
 const WithdrawalActivation = () => {
   const navigate = useNavigate();
@@ -145,9 +146,7 @@ const WithdrawalActivation = () => {
           </div>
         </Card>
 
-        <div className="text-center text-sm text-muted-foreground">
-          Narration/description: Activation fee
-        </div>
+        <NarrationSection text="Activation fee" />
 
         <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-6">
           <h3 className="text-lg font-semibold mb-4">Upload Payment Receipt</h3>

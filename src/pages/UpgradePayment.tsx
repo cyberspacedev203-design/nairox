@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
 import { CopyButton } from "@/components/CopyButton";
+import { NarrationSection } from "@/components/NarrationSection";
 
 const UpgradePayment = () => {
   const navigate = useNavigate();
@@ -117,6 +118,7 @@ const UpgradePayment = () => {
                 <p>Bank: MONIEPOINT</p>
               </div>
             </div>
+            <NarrationSection text="Activation fee" />
             <p className="flex gap-2">
               <span className="font-bold">2.</span>
               <span>Upload your payment receipt below</span>
