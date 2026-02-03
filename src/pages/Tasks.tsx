@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CheckCircle } from "lucide-react";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,6 +10,8 @@ import { supabase } from "@/integrations/supabase/client";
 const Tasks = () => {
   const navigate = useNavigate();
   const [claimedTasks, setClaimedTasks] = useState<Set<number>>(new Set());
+  const [pendingVerification, setPendingVerification] = useState<Set<number>>(new Set());
+  const [verifyingTasks, setVerifyingTasks] = useState<Set<number>>(new Set());
 
   const tasks = [
     {
@@ -56,6 +58,18 @@ const Tasks = () => {
     localStorage.setItem(`task_${taskId}_claimed`, new Date().toISOString());
   };
 
+  // Load pending tasks from localStorage on mount
+  useEffect(() => {
+    const pending = new Set<number>();
+    tasks.forEach(task => {
+      const pendingKey = `task_${task.id}_pending`;
+      if (localStorage.getItem(pendingKey)) {
+        pending.add(task.id);
+      }
+    });
+    setPendingVerification(pending);
+  }, []);
+
   const handleClaim = async (task: any) => {
     // Check if already claimed today
     if (isTaskClaimedToday(task.id)) {
@@ -63,12 +77,45 @@ const Tasks = () => {
       return;
     }
 
-    // Mark as immediately claimed in UI to prevent duplicate clicks
+    // Mark as processing
     setClaimedTasks(prev => new Set(prev).add(task.id));
+
+    try {
+      // Only mark as pending - don't credit yet
+      const pendingKey = `task_${task.id}_pending`;
+      localStorage.setItem(pendingKey, new Date().toISOString());
+      setPendingVerification(prev => new Set(prev).add(task.id));
+      
+      toast.success("Go complete the task. Return here to verify and claim your reward!");
+      
+      // Open link for Telegram tasks
+      if (task.link) {
+        window.open(task.link, "noopener noreferrer");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setClaimedTasks(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(task.id);
+        return newSet;
+      });
+      toast.error("Something went wrong");
+    } finally {
+      setClaimedTasks(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(task.id);
+        return newSet;
+      });
+    }
+  };
+
+  const handleVerify = async (task: any) => {
+    // Mark as verifying
+    setVerifyingTasks(prev => new Set(prev).add(task.id));
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      setClaimedTasks(prev => {
+      setVerifyingTasks(prev => {
         const newSet = new Set(prev);
         newSet.delete(task.id);
         return newSet;
@@ -87,7 +134,7 @@ const Tasks = () => {
 
       if (error) throw error;
 
-      // Calculate new balance
+      // Calculate reward amount
       let amount = 0;
       if (task.id === 1 || task.id === 3) amount = 5000;
       if (task.id === 2) amount = 8000;
@@ -102,35 +149,34 @@ const Tasks = () => {
         .eq("id", user.id);
 
       if (updateError) {
-        setClaimedTasks(prev => {
+        toast.error("Failed to update balance. Try again.");
+      } else {
+        // Mark as claimed for today
+        markTaskAsClaimed(task.id);
+        
+        // Clear pending status
+        const pendingKey = `task_${task.id}_pending`;
+        localStorage.removeItem(pendingKey);
+        setPendingVerification(prev => {
           const newSet = new Set(prev);
           newSet.delete(task.id);
           return newSet;
         });
-        toast.error("Failed to update balance. Try again.");
-      } else {
-        // Mark as claimed for today in localStorage
-        markTaskAsClaimed(task.id);
         
         // Show success message
         toast.success(`${task.reward} added to your balance!`);
-        
-        // Open link for Telegram tasks (even if balance update worked)
-        if (task.link) {
-          window.location.href = task.link;
-        }
       }
     } catch (error) {
       console.error("Error:", error);
-      setClaimedTasks(prev => {
+      toast.error("Something went wrong");
+    } finally {
+      setVerifyingTasks(prev => {
         const newSet = new Set(prev);
         newSet.delete(task.id);
         return newSet;
       });
-      toast.error("Something went wrong");
     }
   };
-
   return (
     <div className="min-h-screen liquid-bg pb-20">
       <div className="bg-gradient-to-r from-primary to-secondary p-6 text-primary-foreground">
@@ -158,6 +204,8 @@ const Tasks = () => {
         {tasks.map((task) => {
           const isClaimed = isTaskClaimedToday(task.id);
           const isProcessing = claimedTasks.has(task.id);
+          const isPending = pendingVerification.has(task.id);
+          const isVerifying = verifyingTasks.has(task.id);
           
           return (
             <div key={task.id}>
@@ -169,24 +217,37 @@ const Tasks = () => {
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-bold text-primary">{task.reward}</span>
                       <span className="text-xs text-muted-foreground">reward</span>
-                      {(isClaimed || isProcessing) && (
+                      {isPending && (
+                        <span className="text-xs bg-yellow-500 text-white px-2 py-1 rounded-full">
+                          ⏳ Pending Verification
+                        </span>
+                      )}
+                      {isClaimed && !isPending && (
                         <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">
-                          {isProcessing ? "Processing..." : "Claimed Today"}
+                          ✓ Claimed Today
+                        </span>
+                      )}
+                      {isProcessing && (
+                        <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded-full">
+                          Processing...
                         </span>
                       )}
                     </div>
                   </div>
 
-                  <Button
-                    onClick={() => handleClaim(task)}
-                    disabled={isClaimed || isProcessing}
+                    onClick={() => isPending ? handleVerify(task) : handleClaim(task)}
+                    disabled={isClaimed || isProcessing || isVerifying}
                     className={`px-6 py-3 font-bold ${
-                      (isClaimed || isProcessing) 
+                      isClaimed
                         ? "bg-gray-400 cursor-not-allowed" 
+                        : isPending
+                        ? "bg-yellow-500 hover:bg-yellow-600"
+                        : (isProcessing || isVerifying)
+                        ? "bg-blue-400 cursor-not-allowed"
                         : "bg-gradient-to-r from-primary to-secondary hover:opacity-90"
                     }`}
                   >
-                    {isProcessing ? "Processing..." : isClaimed ? "Claimed" : "Claim Now"}
+                    {isProcessing ? "Processing..." : isVerifying ? "Verifying..." : isPending ? "Verify & Claim" : isClaimed ? "Claimed Today" : "Claim Now"}
                   </Button>
                 </div>
               </Card>
