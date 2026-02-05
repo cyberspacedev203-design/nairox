@@ -10,6 +10,7 @@ import { ArrowRight } from "lucide-react";
 import { WelcomeModal } from "@/components/WelcomeModal";
 import { WithdrawalNotification } from "@/components/WithdrawalNotification";
 import { AddBalanceModal } from "@/components/AddBalanceModal";
+import WithdrawalNoticeModal from "@/components/WithdrawalNoticeModal";
 import { Link } from "react-router-dom";
 
 const Dashboard = () => {
@@ -24,6 +25,7 @@ const Dashboard = () => {
   const [showTopUp, setShowTopUp] = useState(false);
   const [showLoanModal, setShowLoanModal] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState("Ready!");
+  const [showWithdrawalNotice, setShowWithdrawalNotice] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -173,6 +175,17 @@ const Dashboard = () => {
       <WelcomeModal />
       <WithdrawalNotification />
 
+      {/* WITHDRAWAL NOTICE MODAL */}
+      {showWithdrawalNotice && (
+        <WithdrawalNoticeModal
+          onContinue={() => {
+            setShowWithdrawalNotice(false);
+            navigate("/withdraw");
+          }}
+          onCancel={() => setShowWithdrawalNotice(false)}
+        />
+      )}
+
       {/* SMALL LOAN POPUP - Centered */}
       {showLoanModal && (
         <div
@@ -321,7 +334,7 @@ const Dashboard = () => {
             </button>
             <button
               type="button"
-              onClick={() => navigate("/withdraw")}
+              onClick={() => setShowWithdrawalNotice(true)}
               className="h-20 flex flex-col gap-1.5 items-center justify-center rounded-lg border bg-card/80 hover:bg-card border-border/50 transition-all active:scale-95 touch-manipulation cursor-pointer min-h-[44px]"
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >

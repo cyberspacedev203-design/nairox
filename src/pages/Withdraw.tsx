@@ -11,7 +11,6 @@ import { FloatingActionButton } from "@/components/FloatingActionButton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import ImportantPaymentNotice from "@/components/ImportantPaymentNotice";
-import WithdrawalNoticeModal from "@/components/WithdrawalNoticeModal";
 
 const Withdraw = () => {
   const navigate = useNavigate();
@@ -20,7 +19,6 @@ const Withdraw = () => {
   const [submitting, setSubmitting] = useState(false);
   const [withdrawalTier, setWithdrawalTier] = useState<"light" | "standard">("light");
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-  const [showWithdrawalNotice, setShowWithdrawalNotice] = useState(false);
   const [showPaymentNotice, setShowPaymentNotice] = useState(false);
   const [pendingWithdrawalId, setPendingWithdrawalId] = useState<string | null>(null);
   const [withdrawData, setWithdrawData] = useState({
@@ -168,14 +166,6 @@ const Withdraw = () => {
 
       {!loading && profile && (
         <>
-      {/* WITHDRAWAL NOTICE MODAL */}
-      {showWithdrawalNotice && (
-        <WithdrawalNoticeModal
-          onContinue={() => setShowWithdrawalNotice(false)}
-          onCancel={() => setShowWithdrawalNotice(false)}
-        />
-      )}
-
       {/* PAYMENT NOTICE MODAL - Light Withdrawal */}
       {showPaymentNotice && (
         <ImportantPaymentNotice
@@ -256,21 +246,6 @@ const Withdraw = () => {
       </div>
 
       <div className="p-6 space-y-6">
-        {/* Withdrawal Notice Card */}
-        <div className="bg-gradient-to-br from-yellow-50 to-yellow-50/50 dark:from-yellow-950/20 dark:to-yellow-900/10 p-4 rounded-lg border border-yellow-200/50 dark:border-yellow-800/50 flex items-start gap-4">
-          <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <p className="text-sm font-medium text-yellow-900 dark:text-yellow-200 mb-3">
-              Before you proceed, please review the withdrawal terms and conditions
-            </p>
-            <Button
-              onClick={() => setShowWithdrawalNotice(true)}
-              className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white text-sm py-1.5 h-8"
-            >
-              View Withdrawal Terms
-            </Button>
-          </div>
-        </div>
         <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-6">
           <div className="flex items-center justify-between mb-6 p-4 bg-muted/50 rounded-lg">
             <div>
