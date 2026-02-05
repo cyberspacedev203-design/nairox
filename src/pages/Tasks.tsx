@@ -29,14 +29,14 @@ const Tasks = () => {
       link: "https://otieu.com/4/10572515",
     },
     {
-      id: 2,
+      id: 4,
       title: "Visit Sponsor Site",
       description: "Visit our sponsor site and complete the offer",
       reward: "₦8,000",
       link: "https://otieu.com/4/10572515",
     },
     {
-      id: 2,
+      id: 6,
       title: "Visit Sponsor Site",
       description: "Visit our sponsor site and complete the offer",
       reward: "₦8,000",
@@ -151,7 +151,7 @@ const Tasks = () => {
       // Calculate reward amount
       let amount = 0;
       if (task.id === 1 || task.id === 3) amount = 5000;
-      if (task.id === 2) amount = 8000;
+      if (task.id === 2 || task.id === 4 || task.id === 6) amount = 8000;
       if (task.id === 5) amount = 15000;
 
       const newBalance = profile.balance + amount;
