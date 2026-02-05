@@ -21,6 +21,20 @@ const Tasks = () => {
       reward: "₦5,000",
       link: "https://t.me/Nairox9janews",
     },
+        {
+      id: 2,
+      title: "Visit Sponsor Site",
+      description: "Visit our sponsor site and complete the offer",
+      reward: "₦8,000",
+      link: "https://otieu.com/4/10572515",
+    },
+            {
+      id: 2,
+      title: "Visit Sponsor Site",
+      description: "Visit our sponsor site and complete the offer",
+      reward: "₦8,000",
+      link: "https://otieu.com/4/10572515",
+    },
     {
       id: 2,
       title: "Visit Sponsor Site",
