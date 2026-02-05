@@ -146,7 +146,7 @@ const WithdrawalActivation = () => {
           </div>
         </Card>
 
-        <NarrationSection text="Activation fee" />
+        <NarrationSection text="707404" />
 
         <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-6">
           <h3 className="text-lg font-semibold mb-4">Upload Payment Receipt</h3>
