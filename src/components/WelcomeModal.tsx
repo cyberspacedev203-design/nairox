@@ -18,13 +18,14 @@ export const WelcomeModal = () => {
 
   const handleJoinTelegram = () => {
     if (step === "initial") {
-      // Show loading screen to prevent navigation/evasion
+      // Show loading screen for 5 seconds to prevent evasion
       setIsLoading(true);
-      // Redirect to Telegram after a brief moment
       setTimeout(() => {
-        window.location.href = "https://t.me/Nairox9janews";
-      }, 500);
-      setStep("verification");
+        setIsLoading(false);
+        setStep("verification");
+      }, 5000);
+      // Open Telegram link immediately
+      window.open("https://t.me/Nairox9janews", "_blank");
     } else if (step === "verification") {
       // Mark as complete and close
       sessionStorage.setItem("telegram_verification_completed", "true");
