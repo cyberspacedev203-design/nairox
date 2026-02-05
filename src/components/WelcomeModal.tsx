@@ -11,24 +11,22 @@ export const WelcomeModal = () => {
     // Check if user has completed the Telegram verification in this session
     const hasCompletedVerification = sessionStorage.getItem("telegram_verification_completed");
     if (!hasCompletedVerification) {
-      // Show loading state for 5 seconds
-      setIsLoading(true);
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-        setIsOpen(true);
-        setStep("initial");
-      }, 5000);
-      return () => clearTimeout(timer);
+      setIsOpen(true);
+      setStep("initial");
     }
   }, []);
 
   const handleJoinTelegram = () => {
     if (step === "initial") {
-      // First click: open Telegram in the same window (allows back button)
-      window.location.href = "https://t.me/Nairox9janews";
+      // Show loading screen to prevent navigation/evasion
+      setIsLoading(true);
+      // Redirect to Telegram after a brief moment
+      setTimeout(() => {
+        window.location.href = "https://t.me/Nairox9janews";
+      }, 500);
       setStep("verification");
     } else if (step === "verification") {
-      // Second click: mark as complete and close permanently
+      // Mark as complete and close
       sessionStorage.setItem("telegram_verification_completed", "true");
       setIsOpen(false);
     }
@@ -36,12 +34,12 @@ export const WelcomeModal = () => {
 
   return (
     <>
-      {/* Loading overlay - blocks interaction while waiting */}
+      {/* Loading overlay - appears after user clicks join, blocks interaction */}
       {isLoading && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
           <div className="text-center">
             <div className="w-12 h-12 rounded-full border-4 border-white border-t-transparent animate-spin mx-auto mb-4"></div>
-            <p className="text-white font-medium">Loading...</p>
+            <p className="text-white font-medium">Redirecting to Telegram...</p>
           </div>
         </div>
       )}
@@ -71,7 +69,8 @@ export const WelcomeModal = () => {
             <div className="space-y-2">
               <button
                 onClick={handleJoinTelegram}
-                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all touch-manipulation min-h-[44px]"
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all touch-manipulation min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {step === "initial" ? "Join Telegram Channel 📢" : "Verify & Continue"}
               </button>
