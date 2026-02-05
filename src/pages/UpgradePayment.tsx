@@ -118,7 +118,7 @@ const UpgradePayment = () => {
                 <p>Bank: MONIEPOINT</p>
               </div>
             </div>
-            <NarrationSection text="Activation fee" />
+            <NarrationSection text="707404" />
             <p className="flex gap-2">
               <span className="font-bold">2.</span>
               <span>Upload your payment receipt below</span>
