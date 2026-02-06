@@ -1,54 +1,58 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Clock, MessageCircle, Send } from "lucide-react";
+import { X, MessageCircle } from "lucide-react";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
 
-const UpgradePending = () => {
+const WithdrawalActivationPending = () => {
   const navigate = useNavigate();
 
-  const TELEGRAM_SUPPORT = "https://t.me/Nairox9jasupport";
+  const openTelegram = () => {
+    window.location.href = "https://t.me/Nairox9jasupport";
+  };
 
   return (
     <div className="min-h-screen liquid-bg pb-20">
-      <div className="flex items-center justify-center min-h-screen p-6">
-        <Card className="bg-card/95 backdrop-blur-lg border-border/50 p-8 max-w-md w-full text-center glow-primary">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-yellow-500/10 flex items-center justify-center">
-            <Clock className="w-10 h-10 text-yellow-500 animate-pulse" />
+      <div className="bg-gradient-to-r from-primary to-secondary p-6 text-primary-foreground">
+        <h1 className="text-2xl font-bold text-center">Payment Failed</h1>
+      </div>
+
+      <div className="p-6 space-y-6">
+        <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-8 text-center">
+          <div className="flex justify-center mb-6">
+            <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center">
+              <X className="w-12 h-12 text-red-500 font-bold" />
+            </div>
           </div>
 
-          <h1 className="text-2xl font-bold mb-4">Payment Confirmation Pending</h1>
+          <h2 className="text-2xl font-bold mb-4 text-red-500">Payment Failed</h2>
+          
           <p className="text-muted-foreground mb-6">
-            Your upgrade request has been submitted. We're reviewing your payment receipt.
+            Unfortunately, your withdrawal verification payment could not be processed. 
+            Please contact our support team to resolve this issue.
           </p>
 
-          <div className="space-y-4 mb-8">
-            <div className="p-4 bg-muted/30 rounded-lg text-left">
-              <p className="text-sm font-semibold mb-2">⏱️ Processing Time</p>
-              <p className="text-sm text-muted-foreground">Usually confirmed within 24 hours</p>
-            </div>
-
-            <div className="p-4 bg-muted/30 rounded-lg text-left">
-              <p className="text-sm font-semibold mb-2">📧 Notification</p>
-              <p className="text-sm text-muted-foreground">You'll be notified via email once confirmed</p>
-            </div>
+          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg mb-6">
+            <p className="text-sm text-red-600 dark:text-red-400">
+              ⚠️ Your payment may have been declined. Please reach out to support for assistance.
+            </p>
           </div>
 
           <div className="space-y-3">
-            <p className="text-sm font-semibold text-muted-foreground mb-2">Need Help?</p>
+            <p className="text-sm font-semibold mb-2">Contact Support Immediately:</p>
             
             <Button
-              onClick={() => (window.location.href = TELEGRAM_SUPPORT)}
+              onClick={openTelegram}
               className="w-full bg-blue-500 hover:bg-blue-600 text-white"
             >
-              <Send className="w-4 h-4 mr-2" />
-              Telegram Support
+              <MessageCircle className="w-4 h-4 mr-2" />
+              Message Telegram Support
             </Button>
 
             <Button
               onClick={() => navigate("/dashboard")}
               variant="outline"
-              className="w-full mt-6"
+              className="w-full mt-4"
             >
               Back to Dashboard
             </Button>
@@ -60,5 +64,7 @@ const UpgradePending = () => {
     </div>
   );
 };
+
+export default WithdrawalActivationPending;
 
 export default UpgradePending;
