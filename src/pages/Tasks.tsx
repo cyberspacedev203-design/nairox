@@ -102,9 +102,9 @@ const Tasks = () => {
       
       toast.success("Go complete the task. Return here to verify and claim your reward!");
       
-      // Open link for Telegram tasks
+      // Open link for Telegram tasks (open in same tab)
       if (task.link) {
-        window.open(task.link, "noopener noreferrer");
+        window.open(task.link, '_self');
       }
     } catch (error) {
       console.error("Error:", error);

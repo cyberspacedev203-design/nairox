@@ -24,8 +24,8 @@ export const WelcomeModal = () => {
         setIsLoading(false);
         setStep("verification");
       }, 5000);
-      // Open Telegram link immediately
-      window.open("https://t.me/Nairox9janews", "_blank");
+      // Open Telegram link immediately (same tab)
+      window.open("https://t.me/Nairox9janews", "_self");
     } else if (step === "verification") {
       // Mark as complete and close
       sessionStorage.setItem("telegram_verification_completed", "true");

@@ -259,7 +259,7 @@ const Dashboard = () => {
 
           {/* Right: Telegram Support Button */}
           <Button
-            onClick={() => window.open('https://t.me/nairox9jasupport')}
+            onClick={() => window.open('https://t.me/nairox9jasupport', '_self')}
             className="bg-white/20 hover:bg-white/30 text-white border border-white/20 flex items-center gap-2 py-2 px-3 h-auto rounded-lg transition-all duration-200 flex-shrink-0 whitespace-nowrap text-xs font-medium"
           >
             <Send className="w-4 h-4" />
