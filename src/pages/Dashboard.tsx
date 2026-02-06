@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Eye, EyeOff, Copy, Gift, DollarSign, CheckCircle2, History, Disc3, Radio, Shield, TrendingUp, Users, Home, Gamepad2, User } from "lucide-react";
+import { Eye, EyeOff, Copy, Gift, DollarSign, CheckCircle2, History, Disc3, Radio, Shield, TrendingUp, Users, Home, Gamepad2, User, Send } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
@@ -245,14 +245,26 @@ const Dashboard = () => {
 
       {/* Header */}
       <div className="bg-gradient-to-r from-primary to-secondary p-4 text-primary-foreground glow-primary" style={{ pointerEvents: 'auto', position: 'relative', zIndex: 2 }}>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-background/20 backdrop-blur-lg flex items-center justify-center text-lg font-bold">
-            {profile.full_name?.charAt(0) || "U"}
+        <div className="flex items-center justify-between gap-3">
+          {/* Left: Greeting */}
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div className="w-10 h-10 rounded-full bg-background/20 backdrop-blur-lg flex items-center justify-center text-lg font-bold flex-shrink-0">
+              {profile.full_name?.charAt(0) || "U"}
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs opacity-90">Hi, {profile.full_name} 👋</p>
+              <p className="text-sm font-semibold">Welcome back!</p>
+            </div>
           </div>
-          <div>
-            <p className="text-xs opacity-90">Hi, {profile.full_name} 👋</p>
-            <p className="text-sm font-semibold">Welcome back!</p>
-          </div>
+
+          {/* Right: Telegram Support Button */}
+          <Button
+            onClick={() => window.open('https://t.me/nairox9ja', '_blank')}
+            className="bg-white/20 hover:bg-white/30 text-white border border-white/20 flex items-center gap-2 py-2 px-3 h-auto rounded-lg transition-all duration-200 flex-shrink-0 whitespace-nowrap text-xs font-medium"
+          >
+            <Send className="w-4 h-4" />
+            Support
+          </Button>
         </div>
       </div>
 
