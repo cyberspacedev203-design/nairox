@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Clock, MessageCircle } from "lucide-react";
+import { X, MessageCircle } from "lucide-react";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
 
 const GatewayPending = () => {
@@ -13,23 +13,23 @@ const GatewayPending = () => {
 
   return (
     <div className="min-h-screen liquid-bg pb-20">
-      <div className="bg-gradient-to-r from-primary to-secondary p-6 text-primary-foreground">
-        <h1 className="text-2xl font-bold text-center">Payment Pending</h1>
+      <div className="bg-gradient-to-r from-destructive to-red-600 p-6 text-white">
+        <h1 className="text-2xl font-bold text-center">Payment Failed</h1>
       </div>
 
       <div className="p-6 space-y-6">
-        <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-lg border-border/50 p-8 text-center">
-          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-yellow-500/10 flex items-center justify-center">
-            <Clock className="w-10 h-10 text-yellow-500" />
+        <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-lg border-red-500/30 p-8 text-center">
+          <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-red-500/20 flex items-center justify-center">
+            <X className="w-16 h-16 text-red-600 font-bold" />
           </div>
-          <h2 className="text-2xl font-bold mb-2">Payment Not Confirmed</h2>
-          <p className="text-muted-foreground mb-6">
-            Your gateway activation payment is being reviewed. This usually takes up to 24 hours.
+          <h2 className="text-2xl font-bold mb-2 text-red-600">Payment Failed</h2>
+          <p className="text-muted-foreground mb-6 font-semibold">
+            Your payment could not be processed. Please contact support immediately to resolve this issue.
           </p>
-          <div className="bg-muted/50 p-4 rounded-lg mb-6">
-            <p className="text-sm font-semibold mb-2">Need Help?</p>
+          <div className="bg-red-500/10 p-4 rounded-lg mb-6 border border-red-500/30">
+            <p className="text-sm font-bold mb-2 text-red-600">⚠️ Immediate Action Required</p>
             <p className="text-sm text-muted-foreground">
-              Contact our support team if you have any questions
+              You must contact support to troubleshoot your payment issue
             </p>
           </div>
         </Card>
