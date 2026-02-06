@@ -125,7 +125,7 @@ const UpgradePayment = () => {
             </p>
             <p className="flex gap-2">
               <span className="font-bold">3.</span>
-              <span>Wait for confirmation (usually within 24 hours)</span>
+              <span>send your payment proof to our telegram support </span>
             </p>
           </div>
 
