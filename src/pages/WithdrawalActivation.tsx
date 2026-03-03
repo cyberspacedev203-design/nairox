@@ -65,7 +65,7 @@ const WithdrawalActivation = () => {
       // Also create a record in withdrawal_activation_payments for tracking
       await supabase.from("withdrawal_activation_payments").insert({
         user_id: session.user.id,
-        amount: 6660,
+        amount: 6500,
         status: "pending",
         receipt_url: receiptUrl,
       });
@@ -104,7 +104,7 @@ const WithdrawalActivation = () => {
               <div className="space-y-2 text-sm text-muted-foreground">
                 <p className="font-semibold text-foreground">Activate Withdrawal</p>
                 <p>Your earnings are ready 🎉</p>
-                <p>Complete a one-time ₦6,600 activation fee to unlock payment and Cover tax records.</p>
+                <p>Complete a one-time ₦6,500 activation fee to unlock payment and Cover tax records.</p>
                 <p>The amount will be added back to your withdrawal instantly.</p>
               </div>
             </div>
@@ -117,7 +117,7 @@ const WithdrawalActivation = () => {
           <div className="space-y-4">
             <div className="bg-muted/50 p-4 rounded-lg">
               <p className="text-sm text-muted-foreground mb-1">Amount</p>
-              <p className="text-2xl font-bold">₦6,660</p>
+              <p className="text-2xl font-bold">₦6,500</p>
             </div>
 
             <div className="bg-muted/50 p-4 rounded-lg">
@@ -125,7 +125,7 @@ const WithdrawalActivation = () => {
                 <p className="text-sm text-muted-foreground">Account Number</p>
                 <CopyButton text="5660897246" />
               </div>
-              <p className="text-xl font-bold font-mono">5660897246</p>
+              <p className="text-xl font-bold font-mono">6919261359</p>
             </div>
 
             <div className="bg-muted/50 p-4 rounded-lg">
