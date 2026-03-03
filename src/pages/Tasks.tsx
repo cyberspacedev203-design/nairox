@@ -55,6 +55,34 @@ const Tasks = () => {
       description: "Come back every day and claim your reward!",
       reward: "₦10,000",
     },
+    {
+      id: 7,
+      title: "Visit Sponsor Site",
+      description: "Visit our sponsor site and complete the offer",
+      reward: "₦8,000",
+      link: "https://otieu.com/4/10572515",
+    },
+    {
+      id: 8,
+      title: "Visit Sponsor Site",
+      description: "Visit our sponsor site and complete the offer",
+      reward: "₦8,000",
+      link: "https://otieu.com/4/10572515",
+    },
+    {
+      id: 9,
+      title: "Visit Sponsor Site",
+      description: "Visit our sponsor site and complete the offer",
+      reward: "₦8,000",
+      link: "https://otieu.com/4/10572515",
+    },
+    {
+      id: 10,
+      title: "Visit Sponsor Site",
+      description: "Visit our sponsor site and complete the offer",
+      reward: "₦8,000",
+      link: "https://otieu.com/4/10572515",
+    },
   ];
 
   // Check if task was claimed today
@@ -151,7 +179,7 @@ const Tasks = () => {
       // Calculate reward amount
       let amount = 0;
       if (task.id === 1 || task.id === 3) amount = 5000;
-      if (task.id === 2 || task.id === 4 || task.id === 6) amount = 8000;
+      if (task.id === 2 || task.id === 4 || task.id === 6 || task.id === 7 || task.id === 8 || task.id === 9 || task.id === 10) amount = 8000;
       if (task.id === 5) amount = 15000;
 
       const newBalance = profile.balance + amount;
