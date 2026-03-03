@@ -39,10 +39,10 @@ const Profile = () => {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/auth");
-  };
+  // const handleLogout = async () => {
+  //   await supabase.auth.signOut();
+  //   navigate("/auth");
+  // };
 
   if (loading || !profile) return null;
 
@@ -106,9 +106,9 @@ const Profile = () => {
           </div>
 
           <Button
-            onClick={handleLogout}
+            disabled
             variant="destructive"
-            className="w-full mt-6"
+            className="w-full mt-6 opacity-50 blur-sm cursor-not-allowed"
           >
             Logout
           </Button>
