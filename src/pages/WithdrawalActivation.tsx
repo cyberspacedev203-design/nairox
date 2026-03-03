@@ -100,12 +100,21 @@ const WithdrawalActivation = () => {
           <div className="flex items-start gap-3 mb-4">
             <div className="text-2xl">⚡</div>
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-blue-500 mb-2">Light Withdrawal Activation</h2>
+              <h2 className="text-xl font-bold text-blue-500 mb-2">
+                Light Withdrawal Activation
+              </h2>
               <div className="space-y-2 text-sm text-muted-foreground">
-                <p className="font-semibold text-foreground">Activate Withdrawal</p>
+                <p className="font-semibold text-foreground">
+                  Activate Withdrawal
+                </p>
                 <p>Your earnings are ready 🎉</p>
-                <p>Complete a one-time ₦6,500 activation fee to unlock payment and Cover tax records.</p>
-                <p>The amount will be added back to your withdrawal instantly.</p>
+                <p>
+                  Complete a one-time ₦6,500 activation fee to unlock payment
+                  and Cover tax records.
+                </p>
+                <p>
+                  The amount will be added back to your withdrawal instantly.
+                </p>
               </div>
             </div>
           </div>
@@ -113,7 +122,7 @@ const WithdrawalActivation = () => {
 
         <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-6">
           <h3 className="text-xl font-bold mb-6">Payment Details</h3>
-          
+
           <div className="space-y-4">
             <div className="bg-muted/50 p-4 rounded-lg">
               <p className="text-sm text-muted-foreground mb-1">Amount</p>
@@ -123,7 +132,7 @@ const WithdrawalActivation = () => {
             <div className="bg-muted/50 p-4 rounded-lg">
               <div className="flex items-center justify-between mb-1">
                 <p className="text-sm text-muted-foreground">Account Number</p>
-                <CopyButton text="5660897246" />
+                <CopyButton text="6919261359" />
               </div>
               <p className="text-xl font-bold font-mono">6919261359</p>
             </div>
@@ -150,7 +159,7 @@ const WithdrawalActivation = () => {
 
         <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-6">
           <h3 className="text-lg font-semibold mb-4">Upload Payment Receipt</h3>
-          
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Input
