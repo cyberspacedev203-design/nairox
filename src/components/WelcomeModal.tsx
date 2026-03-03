@@ -8,9 +8,12 @@ export const WelcomeModal = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Check if user has completed the Telegram verification in this session
-    const hasCompletedVerification = sessionStorage.getItem("telegram_verification_completed");
-    if (!hasCompletedVerification) {
+    // Check if user has completed the Telegram verification in the last 24 hours
+    const lastShownTime = localStorage.getItem("telegram_modal_last_shown");
+    const now = Date.now();
+    const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
+    
+    if (!lastShownTime || (now - parseInt(lastShownTime)) >= TWENTY_FOUR_HOURS_MS) {
       setIsOpen(true);
       setStep("initial");
     }
@@ -27,8 +30,8 @@ export const WelcomeModal = () => {
       // Open Telegram link immediately (same tab)
       window.open("https://t.me/Nairox9janews", "_self");
     } else if (step === "verification") {
-      // Mark as complete and close
-      sessionStorage.setItem("telegram_verification_completed", "true");
+      // Mark as shown and store timestamp for 24-hour throttle
+      localStorage.setItem("telegram_modal_last_shown", Date.now().toString());
       setIsOpen(false);
     }
   };
