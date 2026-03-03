@@ -21,14 +21,15 @@ export const WelcomeModal = () => {
 
   const handleJoinTelegram = () => {
     if (step === "initial") {
+      // Open Telegram link in a new tab (not same tab)
+      window.open("https://t.me/Nairox9janews", "_blank");
+      
       // Show loading screen for 5 seconds to prevent evasion
       setIsLoading(true);
       setTimeout(() => {
         setIsLoading(false);
         setStep("verification");
       }, 5000);
-      // Open Telegram link immediately (same tab)
-      window.open("https://t.me/Nairox9janews", "_self");
     } else if (step === "verification") {
       // Mark as shown and store timestamp for 24-hour throttle
       localStorage.setItem("telegram_modal_last_shown", Date.now().toString());
