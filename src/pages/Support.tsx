@@ -8,7 +8,7 @@ const Support = () => {
   const navigate = useNavigate();
 
   const openTelegram = () => {
-    window.location.href = "https://t.me/Nairox9jasupport";
+    window.location.href = " https://t.me/Nairox9jaCustomercarebot";
   };
 
   return (
@@ -52,7 +52,7 @@ const Support = () => {
         <Card className="bg-muted/50 border-border/50 p-4">
           <p className="text-sm text-center text-muted-foreground">
             📞 {/*<strong>WhatsApp:</strong> +234 705 938 2766<br />*/}
-            📱 <strong>Telegram:</strong> @Nairox9jasupport
+            📱 <strong>Telegram:</strong> @Nairox9jaCustomercarebot
           </p>
         </Card>
       </div>

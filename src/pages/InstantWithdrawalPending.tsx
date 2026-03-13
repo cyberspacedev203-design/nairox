@@ -8,7 +8,7 @@ const InstantWithdrawalPending = () => {
   const navigate = useNavigate();
 
   const openTelegram = () => {
-    window.location.href = "https://t.me/Nairox9jasupport";
+    window.location.href = "https://t.me/m/QyKzQkICMWM0";
   };
 
   return (

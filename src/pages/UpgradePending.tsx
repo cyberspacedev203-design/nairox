@@ -7,7 +7,7 @@ import { FloatingActionButton } from "@/components/FloatingActionButton";
 const UpgradePending = () => {
   const navigate = useNavigate();
 
-  const TELEGRAM_SUPPORT = "https://t.me/Nairox9jasupport";
+  const TELEGRAM_SUPPORT = "https://t.me/m/QyKzQkICMWM0";
 
   return (
     <div className="min-h-screen liquid-bg pb-20">

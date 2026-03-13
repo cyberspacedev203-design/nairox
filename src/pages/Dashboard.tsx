@@ -171,7 +171,10 @@ const Dashboard = () => {
   if (loading || !profile) return null;
 
   return (
-    <div className="min-h-screen liquid-bg pb-20 relative" style={{ position: 'relative', zIndex: 1 }}>
+    <div
+      className="min-h-screen liquid-bg pb-20 relative"
+      style={{ position: "relative", zIndex: 1 }}
+    >
       <WelcomeModal />
       <WithdrawalNotification />
 
@@ -200,7 +203,7 @@ const Dashboard = () => {
               <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/30 dark:to-emerald-800/20 rounded-full flex items-center justify-center">
                 <Radio className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               </div>
-              
+
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
                   <h4 className="font-semibold text-sm text-gray-800 dark:text-white">
@@ -213,11 +216,11 @@ const Dashboard = () => {
                     ×
                   </button>
                 </div>
-                
+
                 <p className="text-xs text-gray-600 dark:text-gray-300 mb-3">
                   Upgrade your account to access quick loans without BVN
                 </p>
-                
+
                 <div className="flex gap-2">
                   <Button
                     onClick={() => {
@@ -228,7 +231,7 @@ const Dashboard = () => {
                   >
                     Upgrade
                   </Button>
-                  
+
                   <Button
                     onClick={() => setShowLoanModal(false)}
                     variant="outline"
@@ -244,7 +247,10 @@ const Dashboard = () => {
       )}
 
       {/* Header */}
-      <div className="bg-gradient-to-r from-primary to-secondary p-4 text-primary-foreground glow-primary" style={{ pointerEvents: 'auto', position: 'relative', zIndex: 2 }}>
+      <div
+        className="bg-gradient-to-r from-primary to-secondary p-4 text-primary-foreground glow-primary"
+        style={{ pointerEvents: "auto", position: "relative", zIndex: 2 }}
+      >
         <div className="flex items-center justify-between gap-3">
           {/* Left: Greeting */}
           <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -259,7 +265,9 @@ const Dashboard = () => {
 
           {/* Right: Telegram Support Button */}
           <Button
-            onClick={() => window.open('https://t.me/nairox9jasupport', '_self')}
+            onClick={() =>
+              window.open(" https://t.me/Nairox9jaCustomercarebot", "_self")
+            }
             className="bg-white/20 hover:bg-white/30 text-white border border-white/20 flex items-center gap-2 py-2 px-3 h-auto rounded-lg transition-all duration-200 flex-shrink-0 whitespace-nowrap text-xs font-medium"
           >
             <Send className="w-4 h-4" />
@@ -268,7 +276,10 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="space-y-4 py-4" style={{ position: 'relative', zIndex: 2, pointerEvents: 'auto' }}>
+      <div
+        className="space-y-4 py-4"
+        style={{ position: "relative", zIndex: 2, pointerEvents: "auto" }}
+      >
         {/* Balance Card - NOW WITH CLAIM BUTTON INSTEAD OF TOP UP */}
         <div className="px-4">
           <Card className="bg-gradient-to-br from-card to-card/80 backdrop-blur-lg border-border/50 p-4 glow-primary animate-fade-in">
@@ -281,11 +292,17 @@ const Dashboard = () => {
                   onClick={() => setShowBalance(!showBalance)}
                   className="hover:bg-muted h-8 w-8"
                 >
-                  {showBalance ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                  {showBalance ? (
+                    <Eye className="w-4 h-4" />
+                  ) : (
+                    <EyeOff className="w-4 h-4" />
+                  )}
                 </Button>
               </div>
               <h2 className="text-3xl md:text-4xl font-bold gradient-text">
-                {showBalance ? `₦${Number(profile.balance || 0).toLocaleString()}.00` : "****"}
+                {showBalance
+                  ? `₦${Number(profile.balance || 0).toLocaleString()}.00`
+                  : "****"}
               </h2>
               {/* CLAIM BUTTON REPLACES TOP UP BUTTON */}
               <Button
@@ -293,7 +310,11 @@ const Dashboard = () => {
                 disabled={!canClaim || claiming}
                 className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-sm py-2"
               >
-                {claiming ? "Claiming..." : canClaim ? "Claim ₦5,000" : timeRemaining}
+                {claiming
+                  ? "Claiming..."
+                  : canClaim
+                    ? "Claim ₦5,000"
+                    : timeRemaining}
               </Button>
             </div>
           </Card>
@@ -306,8 +327,12 @@ const Dashboard = () => {
               <div className="flex items-start gap-2 flex-1 min-w-0">
                 <Shield className="w-4 h-4 text-secondary mt-0.5 flex-shrink-0" />
                 <div className="text-xs min-w-0">
-                  <p className="font-semibold text-foreground">Upgrade Account</p>
-                  <p className="text-muted-foreground truncate">Unlock higher earnings and faster withdrawals</p>
+                  <p className="font-semibold text-foreground">
+                    Upgrade Account
+                  </p>
+                  <p className="text-muted-foreground truncate">
+                    Unlock higher earnings and faster withdrawals
+                  </p>
                 </div>
               </div>
               {/* UPGRADE BUTTON */}
@@ -339,7 +364,7 @@ const Dashboard = () => {
               type="button"
               onClick={() => navigate("/referrals")}
               className="h-20 flex flex-col gap-1.5 items-center justify-center rounded-lg border bg-card/80 hover:bg-card border-border/50 transition-all active:scale-95 touch-manipulation cursor-pointer min-h-[44px]"
-              style={{ WebkitTapHighlightColor: 'transparent' }}
+              style={{ WebkitTapHighlightColor: "transparent" }}
             >
               <Gift className="w-5 h-5 text-primary" />
               <span className="text-xs font-semibold">💰 Refer & Earn.</span>
@@ -348,7 +373,7 @@ const Dashboard = () => {
               type="button"
               onClick={() => setShowWithdrawalNotice(true)}
               className="h-20 flex flex-col gap-1.5 items-center justify-center rounded-lg border bg-card/80 hover:bg-card border-border/50 transition-all active:scale-95 touch-manipulation cursor-pointer min-h-[44px]"
-              style={{ WebkitTapHighlightColor: 'transparent' }}
+              style={{ WebkitTapHighlightColor: "transparent" }}
             >
               <DollarSign className="w-5 h-5 text-secondary" />
               <span className="text-xs font-semibold">💸 Withdraw</span>
@@ -357,7 +382,7 @@ const Dashboard = () => {
               type="button"
               onClick={() => navigate("/tasks")}
               className="h-20 flex flex-col gap-1.5 items-center justify-center rounded-lg border bg-card/80 hover:bg-card border-border/50 transition-all active:scale-95 touch-manipulation cursor-pointer min-h-[44px]"
-              style={{ WebkitTapHighlightColor: 'transparent' }}
+              style={{ WebkitTapHighlightColor: "transparent" }}
             >
               <CheckCircle2 className="w-5 h-5 text-green-500" />
               <span className="text-xs font-semibold">✅ Tasks</span>
@@ -366,7 +391,7 @@ const Dashboard = () => {
               type="button"
               onClick={() => navigate("/history")}
               className="h-20 flex flex-col gap-1.5 items-center justify-center rounded-lg border bg-card/80 hover:bg-card border-border/50 transition-all active:scale-95 touch-manipulation cursor-pointer min-h-[44px]"
-              style={{ WebkitTapHighlightColor: 'transparent' }}
+              style={{ WebkitTapHighlightColor: "transparent" }}
             >
               <History className="w-5 h-5 text-blue-500" />
               <span className="text-xs font-semibold">📜 History</span>
@@ -375,7 +400,7 @@ const Dashboard = () => {
               type="button"
               onClick={() => navigate("/about")}
               className="h-20 flex flex-col gap-1.5 items-center justify-center rounded-lg border bg-card/80 hover:bg-card border-border/50 transition-all active:scale-95 touch-manipulation cursor-pointer min-h-[44px]"
-              style={{ WebkitTapHighlightColor: 'transparent' }}
+              style={{ WebkitTapHighlightColor: "transparent" }}
             >
               <Disc3 className="w-5 h-5 text-accent" />
               <span className="text-xs font-semibold">ℹ️ About</span>
@@ -384,7 +409,7 @@ const Dashboard = () => {
               type="button"
               onClick={() => setShowLoanModal(true)}
               className="h-20 flex flex-col gap-1.5 items-center justify-center rounded-lg border bg-card/80 hover:bg-card border-border/50 transition-all active:scale-95 touch-manipulation cursor-pointer min-h-[44px]"
-              style={{ WebkitTapHighlightColor: 'transparent' }}
+              style={{ WebkitTapHighlightColor: "transparent" }}
             >
               <Radio className="w-5 h-5 text-primary" />
               <span className="text-xs font-semibold">💳 Loan</span>
@@ -402,18 +427,28 @@ const Dashboard = () => {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <p className="text-xs text-muted-foreground">Total Referrals</p>
-                  <p className="text-xl font-bold text-primary">{profile.total_referrals || 0}</p>
+                  <p className="text-xs text-muted-foreground">
+                    Total Referrals
+                  </p>
+                  <p className="text-xl font-bold text-primary">
+                    {profile.total_referrals || 0}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Earnings/Referral</p>
+                  <p className="text-xs text-muted-foreground">
+                    Earnings/Referral
+                  </p>
                   <p className="text-xl font-bold text-secondary">₦10,000</p>
                 </div>
               </div>
               <div className="bg-muted/50 p-3 rounded-lg">
-                <p className="text-xs text-muted-foreground mb-1.5">Your Referral Link</p>
+                <p className="text-xs text-muted-foreground mb-1.5">
+                  Your Referral Link
+                </p>
                 <div className="flex items-center gap-2">
-                  <code className="flex-1 text-[10px] font-bold text-foreground truncate">{window.location.origin}/auth?ref={profile.referral_code}</code>
+                  <code className="flex-1 text-[10px] font-bold text-foreground truncate">
+                    {window.location.origin}/auth?ref={profile.referral_code}
+                  </code>
                   <Button
                     size="sm"
                     onClick={copyReferralCode}
@@ -431,7 +466,9 @@ const Dashboard = () => {
         <div className="mt-6">
           <div className="why-glow bg-gradient-to-br from-black via-green-950 to-black rounded-2xl p-6 mb-6 mx-2 border border-green-500/30 relative overflow-hidden">
             <div className="text-center mb-4 relative z-10">
-              <h2 className="text-2xl font-bold text-white mb-2">Why Nairox9ja⁉️</h2>
+              <h2 className="text-2xl font-bold text-white mb-2">
+                Why Nairox9ja⁉️
+              </h2>
               <div className="w-16 h-1 bg-gradient-to-r from-green-500 to-yellow-400 mx-auto mb-4"></div>
             </div>
 
@@ -442,7 +479,10 @@ const Dashboard = () => {
                 </div>
                 <div>
                   <h3 className="text-white font-semibold mb-1">100% Secure</h3>
-                  <p className="text-green-200 text-sm">Bank-level encryption protects your transactions and personal data</p>
+                  <p className="text-green-200 text-sm">
+                    Bank-level encryption protects your transactions and
+                    personal data
+                  </p>
                 </div>
               </div>
 
@@ -451,8 +491,12 @@ const Dashboard = () => {
                   <TrendingUp className="w-5 h-5 text-black" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-1">Lightning Fast</h3>
-                  <p className="text-green-200 text-sm">Instant withdrawals and seamless transactions in seconds</p>
+                  <h3 className="text-white font-semibold mb-1">
+                    Lightning Fast
+                  </h3>
+                  <p className="text-green-200 text-sm">
+                    Instant withdrawals and seamless transactions in seconds
+                  </p>
                 </div>
               </div>
 
@@ -461,8 +505,12 @@ const Dashboard = () => {
                   <Users className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-1">100% Reliable</h3>
-                  <p className="text-green-200 text-sm">24/7 support and guaranteed service uptime</p>
+                  <h3 className="text-white font-semibold mb-1">
+                    100% Reliable
+                  </h3>
+                  <p className="text-green-200 text-sm">
+                    24/7 support and guaranteed service uptime
+                  </p>
                 </div>
               </div>
             </div>
@@ -478,21 +526,46 @@ const Dashboard = () => {
         {/* Custom Styles for Glow Effect */}
         <style jsx global>{`
           @keyframes bounce-slow {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
+            0%,
+            100% {
+              transform: translateY(0);
+            }
+            50% {
+              transform: translateY(-6px);
+            }
           }
-          .animate-bounce-slow { animation: bounce-slow 3s ease-in-out infinite; }
+          .animate-bounce-slow {
+            animation: bounce-slow 3s ease-in-out infinite;
+          }
 
           @keyframes glow-swipe {
-            0% { opacity: 0.7; transform: translateX(-10%); filter: blur(10px); }
-            50% { opacity: 1; transform: translateX(10%); filter: blur(18px); }
-            100% { opacity: 0.7; transform: translateX(-10%); filter: blur(10px); }
+            0% {
+              opacity: 0.7;
+              transform: translateX(-10%);
+              filter: blur(10px);
+            }
+            50% {
+              opacity: 1;
+              transform: translateX(10%);
+              filter: blur(18px);
+            }
+            100% {
+              opacity: 0.7;
+              transform: translateX(-10%);
+              filter: blur(10px);
+            }
           }
 
           @keyframes shimmer {
-            0% { left: -120%; }
-            50% { left: 120%; }
-            100% { left: -120%; }
+            0% {
+              left: -120%;
+            }
+            50% {
+              left: 120%;
+            }
+            100% {
+              left: -120%;
+            }
           }
 
           .why-glow {
@@ -507,10 +580,19 @@ const Dashboard = () => {
             left: -25%;
             width: 150%;
             height: 150%;
-            background: radial-gradient(circle at 20% 20%, rgba(34,197,94,0.10), transparent 8%),
-                        radial-gradient(circle at 80% 80%, rgba(96,165,250,0.05), transparent 10%);
+            background:
+              radial-gradient(
+                circle at 20% 20%,
+                rgba(34, 197, 94, 0.1),
+                transparent 8%
+              ),
+              radial-gradient(
+                circle at 80% 80%,
+                rgba(96, 165, 250, 0.05),
+                transparent 10%
+              );
             filter: blur(22px);
-            transform: translate3d(0,0,0);
+            transform: translate3d(0, 0, 0);
             animation: glow-swipe 6s linear infinite;
             pointer-events: none;
           }
@@ -522,7 +604,12 @@ const Dashboard = () => {
             left: -120%;
             width: 60%;
             height: 120%;
-            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0) 100%);
+            background: linear-gradient(
+              90deg,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.08) 50%,
+              rgba(255, 255, 255, 0) 100%
+            );
             transform: skewX(-20deg);
             filter: blur(6px);
             animation: shimmer 3.5s ease-in-out infinite;
