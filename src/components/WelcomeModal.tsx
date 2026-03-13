@@ -22,7 +22,7 @@ export const WelcomeModal = () => {
   const handleJoinTelegram = () => {
     if (step === "initial") {
       // Open Telegram link in a new tab (not same tab)
-      window.open("https://t.me/Nairox9janews", "_blank");
+      window.open("https://t.me/Nairox9janews");
       
       // Show loading screen for 5 seconds to prevent evasion
       setIsLoading(true);
