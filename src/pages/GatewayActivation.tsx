@@ -89,7 +89,9 @@ const GatewayActivation = () => {
             </div>
             <div>
               <h2 className="text-xl font-bold">Withdrawal Submitted!</h2>
-              <p className="text-sm text-muted-foreground">Complete activation to process</p>
+              <p className="text-sm text-muted-foreground">
+                Complete activation to process
+              </p>
             </div>
           </div>
           <div className="bg-muted/50 p-4 rounded-lg">
@@ -109,10 +111,10 @@ const GatewayActivation = () => {
               <p className="text-sm font-semibold">Bank Details</p>
               <div className="space-y-1 text-sm">
                 <div className="flex items-center justify-between">
-                  <p className="font-mono">Account: 5237951128</p>
-                  <CopyButton text="5237951128" />
+                  <p className="font-mono">Account: 6686812396</p>
+                  <CopyButton text="6686812396" />
                 </div>
-                <p>Name: Faith Sambo</p>
+                <p>Name: Destiny Miracle</p>
                 <p>Bank: MONIEPOINT</p>
               </div>
             </div>

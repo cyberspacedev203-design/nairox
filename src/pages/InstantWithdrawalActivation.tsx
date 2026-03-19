@@ -79,13 +79,14 @@ const InstantWithdrawalActivation = () => {
               ⚡ Instant Withdrawal Activation
             </h3>
             <p className="text-sm text-muted-foreground">
-              Pay a one-time activation fee of ₦12,600 to unlock instant withdrawals without referral requirements.
+              Pay a one-time activation fee of ₦12,600 to unlock instant
+              withdrawals without referral requirements.
             </p>
           </div>
 
           <div className="mb-6 p-6 bg-muted/50 rounded-lg space-y-4">
             <h3 className="font-semibold text-lg mb-4">Payment Details</h3>
-            
+
             <div className="space-y-3">
               <div className="flex justify-between items-center p-3 bg-background/50 rounded">
                 <span className="text-sm text-muted-foreground">Amount</span>
@@ -93,18 +94,22 @@ const InstantWithdrawalActivation = () => {
               </div>
 
               <div className="flex justify-between items-center p-3 bg-background/50 rounded">
-                <span className="text-sm text-muted-foreground">Account Number</span>
+                <span className="text-sm text-muted-foreground">
+                  Account Number
+                </span>
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold">5237951128</span>
-                  <CopyButton text="5237951128" />
+                  <span className="font-semibold">6686812396</span>
+                  <CopyButton text="6686812396" />
                 </div>
               </div>
 
               <div className="flex justify-between items-center p-3 bg-background/50 rounded">
-                <span className="text-sm text-muted-foreground">Account Name</span>
+                <span className="text-sm text-muted-foreground">
+                  Account Name
+                </span>
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold">Odum David</span>
-                  <CopyButton text="Faith sambo" />
+                  <span className="font-semibold">Destiny Miracle</span>
+                  <CopyButton text="Destiny Miracle" />
                 </div>
               </div>
 
