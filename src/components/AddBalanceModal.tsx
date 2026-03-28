@@ -10,7 +10,7 @@ const FEE_PERCENT = 2;
 const BANK_DETAILS = {
   bankName: "Moniepoint",
   accountName: "Destiny miracle",
-  accountNumber: "6686812396",
+  accountNumber: "5245621224",
 };
 
 export const AddBalanceModal = ({ open, onOpenChange, onSuccess }: any) => {
