@@ -1,4 +1,4 @@
-import { useState } from "react";
+moimport { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -132,9 +132,9 @@ const WithdrawalActivation = () => {
             <div className="bg-muted/50 p-4 rounded-lg">
               <div className="flex items-center justify-between mb-1">
                 <p className="text-sm text-muted-foreground">Account Number</p>
-                <CopyButton text="5245621224" />
+                <CopyButton text="9016713297" />
               </div>
-              <p className="text-xl font-bold font-mono">5245621224</p>
+              <p className="text-xl font-bold font-mono">9016713297</p>
             </div>
 
             <div className="bg-muted/50 p-4 rounded-lg">
@@ -142,15 +142,15 @@ const WithdrawalActivation = () => {
                 <p className="text-sm text-muted-foreground">Account Name</p>
                 <CopyButton text="Faith sambo" />
               </div>
-              <p className="text-lg font-bold">Destiny Miracle</p>
+              <p className="text-lg font-bold">David Odum </p>
             </div>
 
             <div className="bg-muted/50 p-4 rounded-lg">
               <div className="flex items-center justify-between mb-1">
                 <p className="text-sm text-muted-foreground">Bank</p>
-                <CopyButton text="MONIEPOINT" />
+                <CopyButton text="Moremonee Bank" />
               </div>
-              <p className="text-lg font-bold">MONIEPOINT</p>
+              <p className="text-lg font-bold">Moremonee Bank</p>
             </div>
           </div>
         </Card>
