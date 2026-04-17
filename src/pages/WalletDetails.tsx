@@ -121,15 +121,21 @@ const WalletDetails = () => {
 
     setResolvingAccountName(true);
     try {
-      const { data, error } = await supabase.functions.invoke('verify-account', {
-        body: { accountNumber, bankCode }
+      const response = await fetch('/api/verify-account', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ accountNumber, bankCode })
       });
 
-      if (error) {
-        console.warn('Supabase function error:', error);
+      if (!response.ok) {
+        console.warn('Verification API error:', response.statusText);
         // Fallback: allow manual entry
         return;
       }
+
+      const data = await response.json();
 
       if (data && data.accountName) {
         setWalletDetails(prev => ({ ...prev, accountName: data.accountName }));
