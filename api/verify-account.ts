@@ -21,7 +21,10 @@ export default async function handler(
       });
     }
 
-    const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
+    const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || process.env.NEXT_PUBLIC_PAYSTACK_SECRET_KEY;
+
+    console.log('PAYSTACK_SECRET_KEY exists:', !!PAYSTACK_SECRET_KEY);
+    console.log('PAYSTACK_SECRET_KEY length:', PAYSTACK_SECRET_KEY?.length);
 
     if (!PAYSTACK_SECRET_KEY) {
       return res.status(500).json({ error: "PAYSTACK_SECRET_KEY not configured" });
