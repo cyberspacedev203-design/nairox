@@ -58,18 +58,23 @@ export default async function handler(
 
     console.log('Paystack key test passed - proceeding with bank fetch');
 
-    // Make API Request - try with country parameter
+    // Make API Request - try without country parameter first
     console.log('Making request to Paystack API...');
     console.log('Using key starting with:', PAYSTACK_SECRET_KEY.substring(0, 10) + '...');
 
-    const response = await fetch("https://api.paystack.co/bank?country=nigeria", {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${PAYSTACK_SECRET_KEY}`,
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      },
-    });
+    let response;
+    try {
+      response = await fetch("https://api.paystack.co/bank", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${PAYSTACK_SECRET_KEY}`,
+          "Accept": "application/json",
+        },
+      });
+    } catch (fetchError) {
+      console.log('Fetch error:', fetchError);
+      return res.status(500).json({ error: "Network error connecting to Paystack" });
+    }
 
     console.log('Paystack response status:', response.status);
     console.log('Paystack response ok:', response.ok);

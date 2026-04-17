@@ -99,8 +99,13 @@ const WalletDetails = () => {
         if (response.ok) {
           const data = await response.json();
           console.log('Banks API response data:', data);
+          console.log('Banks array exists:', !!data.banks);
+          console.log('Banks array length:', data.banks?.length);
+          console.log('Banks array type:', typeof data.banks);
+          console.log('First bank:', data.banks?.[0]);
 
           if (data.banks && data.banks.length > 0) {
+            console.log('Setting banks from API:', data.banks.length);
             setBanks(data.banks);
             // Build bank code mapping
             const codes: { [key: string]: string } = {};
@@ -112,7 +117,9 @@ const WalletDetails = () => {
             console.log('Loaded banks from Paystack API:', data.banks.length, data.fallback ? '(FALLBACK)' : '(LIVE)');
             return;
           } else {
-            console.log('No banks returned from API');
+            console.log('No banks returned from API - condition failed');
+            console.log('data.banks:', data.banks);
+            console.log('data.banks.length:', data.banks?.length);
           }
         } else {
           const errorData = await response.json();
