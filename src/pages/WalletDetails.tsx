@@ -124,30 +124,11 @@ const WalletDetails = () => {
 
       <div className="p-6 space-y-6">
         <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-6">
-          <div className="space-y-4">
-            <div className="rounded-3xl border border-primary/10 bg-primary/5 p-4">
-              <p className="text-sm font-semibold text-primary">Withdrawal Wallet</p>
-              <p className="text-sm text-muted-foreground mt-2">
-                This is the destination you will use when withdrawing funds from your account.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="rounded-3xl bg-muted/60 p-4">
-                <p className="text-xs text-muted-foreground">Referrals</p>
-                <p className="text-2xl font-bold text-primary">{profile?.total_referrals || 0}</p>
-                <p className="text-xs text-muted-foreground mt-1">Minimum required: 5 referrals</p>
-              </div>
-              <div className="rounded-3xl bg-muted/60 p-4">
-                <p className="text-xs text-muted-foreground">Status</p>
-                <p className="text-2xl font-bold text-secondary">
-                  {profile?.total_referrals >= 5 ? "Ready to save" : "Needs more referrals"}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Use this account for all future withdrawals.
-                </p>
-              </div>
-            </div>
+          <div className="rounded-3xl border border-primary/10 bg-primary/5 p-4">
+            <p className="text-sm font-semibold text-primary">Withdrawal Wallet</p>
+            <p className="text-sm text-muted-foreground mt-2">
+              This is the destination you will use when withdrawing funds from your account.
+            </p>
           </div>
         </Card>
 
