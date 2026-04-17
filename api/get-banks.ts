@@ -12,8 +12,11 @@ export default async function handler(
     const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
     console.log('PAYSTACK_SECRET_KEY exists:', !!PAYSTACK_SECRET_KEY);
+    console.log('PAYSTACK_SECRET_KEY length:', PAYSTACK_SECRET_KEY?.length);
+    console.log('PAYSTACK_SECRET_KEY starts with sk_live:', PAYSTACK_SECRET_KEY?.startsWith('sk_live'));
 
     if (!PAYSTACK_SECRET_KEY) {
+      console.log('PAYSTACK_SECRET_KEY is not set in environment variables');
       return res.status(500).json({ error: "PAYSTACK_SECRET_KEY not configured" });
     }
 
@@ -33,7 +36,11 @@ export default async function handler(
 
     const data = await response.json();
 
-    console.log('Paystack response data:', { status: data.status, dataLength: data.data?.length });
+    console.log('Paystack response data:', JSON.stringify(data, null, 2));
+    console.log('Paystack response ok:', response.ok);
+    console.log('Paystack data.status:', data.status);
+    console.log('Paystack data.data:', data.data);
+    console.log('Paystack data.data length:', data.data?.length);
 
     if (response.ok && data.status) {
       // Format banks for frontend: { name, code }
