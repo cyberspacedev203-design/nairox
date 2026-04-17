@@ -329,6 +329,14 @@ const WalletDetails = () => {
                   <p className="text-lg font-semibold">{walletDetails.bankName}</p>
                 </div>
               </div>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={() => navigate("/withdraw")}
+              >
+                Use in Withdrawal
+              </Button>
             </div>
           ) : (
             <div className="space-y-4">
