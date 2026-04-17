@@ -11,7 +11,6 @@ import { FloatingActionButton } from "@/components/FloatingActionButton";
 
 const WalletDetails = () => {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [walletDetails, setWalletDetails] = useState({
@@ -20,6 +19,8 @@ const WalletDetails = () => {
     bankName: "",
   });
   const [message, setMessage] = useState<string | null>(null);
+  const [hasWallet, setHasWallet] = useState(false);
+  const [isEditing, setIsEditing] = useState(true);
 
   useEffect(() => {
     const loadSavedWallet = () => {
@@ -27,56 +28,49 @@ const WalletDetails = () => {
       if (savedWallet) {
         try {
           const parsed = JSON.parse(savedWallet);
-          setWalletDetails((prev) => ({
-            ...prev,
-            accountName: parsed.accountName || prev.accountName,
-            accountNumber: parsed.accountNumber || prev.accountNumber,
-            bankName: parsed.bankName || prev.bankName,
-          }));
+          const hasSavedWallet =
+            Boolean(parsed.accountName) &&
+            Boolean(parsed.accountNumber) &&
+            Boolean(parsed.bankName);
+
+          setWalletDetails({
+            accountName: parsed.accountName || "",
+            accountNumber: parsed.accountNumber || "",
+            bankName: parsed.bankName || "",
+          });
+          setHasWallet(hasSavedWallet);
+          setIsEditing(!hasSavedWallet);
         } catch (error) {
           console.warn("Failed to parse saved wallet details", error);
+          setHasWallet(false);
+          setIsEditing(true);
         }
+      } else {
+        setHasWallet(false);
+        setIsEditing(true);
       }
     };
 
-    const loadProfile = async () => {
+    const verifySession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
           navigate("/auth");
           return;
         }
-
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", session.user.id)
-          .maybeSingle();
-
-        if (error) throw error;
-        setProfile(data);
       } catch (error: any) {
-        toast.error("Failed to load profile");
+        toast.error("Failed to verify auth");
+        navigate("/auth");
       } finally {
         setLoading(false);
       }
     };
 
     loadSavedWallet();
-    loadProfile();
+    verifySession();
   }, [navigate]);
 
   const handleSave = () => {
-    if (!profile) return;
-
-    const referrals = profile.total_referrals || 0;
-    const required = 5;
-
-    if (referrals < required) {
-      setMessage(`You need at least ${required} referrals. You currently have ${referrals}/${required}.`);
-      return;
-    }
-
     const accountName = walletDetails.accountName.trim();
     const accountNumber = walletDetails.accountNumber.trim();
     const bankName = walletDetails.bankName.trim();
@@ -93,12 +87,28 @@ const WalletDetails = () => {
         JSON.stringify({ accountName, accountNumber, bankName })
       );
       setMessage(null);
+      setHasWallet(true);
+      setIsEditing(false);
       toast.success("Wallet details saved successfully.");
     } catch (error) {
       toast.error("Could not save wallet details.");
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleDelete = () => {
+    localStorage.removeItem("walletDetails");
+    setWalletDetails({ accountName: "", accountNumber: "", bankName: "" });
+    setMessage(null);
+    setHasWallet(false);
+    setIsEditing(true);
+    toast.success("Wallet details deleted.");
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setMessage(null);
   };
 
   return (
@@ -133,58 +143,99 @@ const WalletDetails = () => {
         </Card>
 
         <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-6">
-          <h2 className="text-xl font-semibold mb-4">Enter Wallet / Account Information</h2>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="accountName">Account / Wallet Name</Label>
-              <Input
-                id="accountName"
-                type="text"
-                value={walletDetails.accountName}
-                onChange={(e) => setWalletDetails({ ...walletDetails, accountName: e.target.value })}
-                placeholder="Enter name on account"
-                className="bg-background/50"
-              />
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-xl font-semibold">Wallet Settings</h2>
+              <p className="text-sm text-muted-foreground">
+                Delete or edit the withdrawal wallet you have saved.
+              </p>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="accountNumber">Account / Wallet Number</Label>
-              <Input
-                id="accountNumber"
-                type="text"
-                value={walletDetails.accountNumber}
-                onChange={(e) => setWalletDetails({ ...walletDetails, accountNumber: e.target.value })}
-                placeholder="Enter account or wallet number"
-                className="bg-background/50"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="bankName">Bank / Wallet Provider</Label>
-              <Input
-                id="bankName"
-                type="text"
-                value={walletDetails.bankName}
-                onChange={(e) => setWalletDetails({ ...walletDetails, bankName: e.target.value })}
-                placeholder="Enter bank or wallet provider"
-                className="bg-background/50"
-              />
-            </div>
-
-            {message && (
-              <div className="rounded-2xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
-                {message}
+            {hasWallet && !isEditing && (
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="outline" onClick={handleEdit}>
+                  Edit
+                </Button>
+                <Button
+                  size="sm"
+                  className="border border-rose-200 text-rose-700 hover:bg-rose-50"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>
               </div>
             )}
-
-            <Button
-              onClick={handleSave}
-              disabled={saving || loading}
-              className="w-full bg-gradient-to-r from-primary to-secondary text-white"
-            >
-              {saving ? "Saving..." : "Save Wallet Details"}
-            </Button>
           </div>
+
+          {hasWallet && !isEditing ? (
+            <div className="space-y-4">
+              <div className="rounded-3xl border border-border/50 bg-muted/50 p-4 space-y-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">Account / Wallet Name</p>
+                  <p className="text-lg font-semibold">{walletDetails.accountName}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Account / Wallet Number</p>
+                  <p className="text-lg font-semibold font-mono">{walletDetails.accountNumber}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Bank / Wallet Provider</p>
+                  <p className="text-lg font-semibold">{walletDetails.bankName}</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="accountName">Account / Wallet Name</Label>
+                <Input
+                  id="accountName"
+                  type="text"
+                  value={walletDetails.accountName}
+                  onChange={(e) => setWalletDetails({ ...walletDetails, accountName: e.target.value })}
+                  placeholder="Enter name on account"
+                  className="bg-background/50"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="accountNumber">Account / Wallet Number</Label>
+                <Input
+                  id="accountNumber"
+                  type="text"
+                  value={walletDetails.accountNumber}
+                  onChange={(e) => setWalletDetails({ ...walletDetails, accountNumber: e.target.value })}
+                  placeholder="Enter account or wallet number"
+                  className="bg-background/50"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="bankName">Bank / Wallet Provider</Label>
+                <Input
+                  id="bankName"
+                  type="text"
+                  value={walletDetails.bankName}
+                  onChange={(e) => setWalletDetails({ ...walletDetails, bankName: e.target.value })}
+                  placeholder="Enter bank or wallet provider"
+                  className="bg-background/50"
+                />
+              </div>
+
+              {message && (
+                <div className="rounded-2xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
+                  {message}
+                </div>
+              )}
+
+              <Button
+                onClick={handleSave}
+                disabled={saving || loading}
+                className="w-full bg-gradient-to-r from-primary to-secondary text-white"
+              >
+                {saving ? "Saving..." : "Save Wallet Details"}
+              </Button>
+            </div>
+          )}
         </Card>
       </div>
 

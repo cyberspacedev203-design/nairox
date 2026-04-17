@@ -27,6 +27,8 @@ const Withdraw = () => {
     accountNumber: "",
     bankName: "",
   });
+  const [walletSaved, setWalletSaved] = useState(false);
+  const [walletLoaded, setWalletLoaded] = useState(false);
 
   const nigerianBanks = [
     "Access Bank", "Citibank", "Ecobank", "FCMB", "Fidelity Bank",
@@ -51,17 +53,39 @@ const Withdraw = () => {
     if (savedWallet) {
       try {
         const parsed = JSON.parse(savedWallet);
-        setWithdrawData((prev) => ({
-          ...prev,
-          accountName: parsed.accountName || prev.accountName,
-          accountNumber: parsed.accountNumber || prev.accountNumber,
-          bankName: parsed.bankName || prev.bankName,
-        }));
+        const hasSavedWallet =
+          Boolean(parsed.accountName) &&
+          Boolean(parsed.accountNumber) &&
+          Boolean(parsed.bankName);
+
+        if (hasSavedWallet) {
+          setWalletSaved(true);
+          setWithdrawData((prev) => ({
+            ...prev,
+            accountName: parsed.accountName,
+            accountNumber: parsed.accountNumber,
+            bankName: parsed.bankName,
+          }));
+        } else {
+          setWalletSaved(false);
+        }
       } catch (error) {
         console.warn("Failed to load saved wallet details", error);
+        setWalletSaved(false);
       }
+    } else {
+      setWalletSaved(false);
     }
+
+    setWalletLoaded(true);
   }, []);
+
+  useEffect(() => {
+    if (walletLoaded && !walletSaved) {
+      toast.error("Wallet not set. Please save your withdrawal wallet first.");
+      navigate("/wallet");
+    }
+  }, [walletLoaded, walletSaved, navigate]);
 
   const loadProfile = async () => {
     try {
@@ -326,47 +350,32 @@ const Withdraw = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="accountName">Account Name</Label>
-              <Input
-                id="accountName"
-                type="text"
-                required
-                value={withdrawData.accountName}
-                onChange={(e) => setWithdrawData({ ...withdrawData, accountName: e.target.value })}
-                className="bg-background/50"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="accountNumber">Account Number</Label>
-              <Input
-                id="accountNumber"
-                type="text"
-                required
-                value={withdrawData.accountNumber}
-                onChange={(e) => setWithdrawData({ ...withdrawData, accountNumber: e.target.value })}
-                className="bg-background/50"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="bankName">Bank Name</Label>
-              <Select
-                value={withdrawData.bankName}
-                onValueChange={(value) => setWithdrawData({ ...withdrawData, bankName: value })}
-                required
+              <p className="text-sm text-muted-foreground">Withdrawal Destination</p>
+              <div className="rounded-3xl border border-border/50 bg-muted/50 p-4 space-y-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">Account / Wallet Name</p>
+                  <p className="text-lg font-semibold">{withdrawData.accountName}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Account / Wallet Number</p>
+                  <p className="text-lg font-semibold font-mono">{withdrawData.accountNumber}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Bank / Wallet Provider</p>
+                  <p className="text-lg font-semibold">{withdrawData.bankName}</p>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Wallet details can only be changed on the Wallet page.
+              </p>
+              <Button
+                type="button"
+                onClick={() => navigate("/wallet")}
+                variant="outline"
+                className="w-full"
               >
-                <SelectTrigger className="bg-background/50">
-                  <SelectValue placeholder="Select your bank" />
-                </SelectTrigger>
-                <SelectContent>
-                  {nigerianBanks.map((bank) => (
-                    <SelectItem key={bank} value={bank}>
-                      {bank}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                Edit Wallet
+              </Button>
             </div>
 
             <Button
