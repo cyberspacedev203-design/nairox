@@ -20,9 +20,9 @@ export default async function handler(
       return res.status(500).json({ error: "PAYSTACK_SECRET_KEY not configured" });
     }
 
-    // Fetch list of banks from Paystack
-    const response = await fetch(
-      "https://api.paystack.co/bank?country=NG",
+    // First test if the key works by checking balance (simple API call)
+    const testResponse = await fetch(
+      "https://api.paystack.co/balance",
       {
         method: "GET",
         headers: {
@@ -32,12 +32,33 @@ export default async function handler(
       }
     );
 
-    console.log('Paystack response status:', response.status);
+    console.log('Paystack balance test response status:', testResponse.status);
+
+    if (!testResponse.ok) {
+      console.log('Paystack key is invalid or API is down');
+      return res.status(500).json({
+        error: "Paystack API key invalid or service unavailable",
+        fallback: true,
+      });
+    }
+
+    // Fetch list of banks from Paystack
+    const response = await fetch(
+      "https://api.paystack.co/bank",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log('Paystack bank API response status:', response.status);
 
     const data = await response.json();
 
-    console.log('Paystack response data:', JSON.stringify(data, null, 2));
-    console.log('Paystack response ok:', response.ok);
+    console.log('Paystack bank API response:', JSON.stringify(data, null, 2));
     console.log('Paystack data.status:', data.status);
     console.log('Paystack data.data:', data.data);
     console.log('Paystack data.data length:', data.data?.length);
