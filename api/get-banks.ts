@@ -36,15 +36,38 @@ export default async function handler(
       return res.status(500).json({ error: "PAYSTACK_SECRET_KEY not configured" });
     }
 
-    // Make API Request
-    console.log('Making request to Paystack API...');
-    console.log('Using key starting with:', PAYSTACK_SECRET_KEY.substring(0, 10) + '...');
-
-    const response = await fetch("https://api.paystack.co/bank", {
+    // First test if the key works with a simple API call
+    console.log('Testing Paystack key with balance endpoint...');
+    const testResponse = await fetch("https://api.paystack.co/balance", {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${PAYSTACK_SECRET_KEY}`,
         "Accept": "application/json",
+      },
+    });
+
+    console.log('Balance test response status:', testResponse.status);
+
+    if (!testResponse.ok) {
+      console.log('Paystack key test failed - key may be invalid');
+      return res.status(500).json({
+        error: "Paystack API key appears to be invalid",
+        testStatus: testResponse.status
+      });
+    }
+
+    console.log('Paystack key test passed - proceeding with bank fetch');
+
+    // Make API Request - try with country parameter
+    console.log('Making request to Paystack API...');
+    console.log('Using key starting with:', PAYSTACK_SECRET_KEY.substring(0, 10) + '...');
+
+    const response = await fetch("https://api.paystack.co/bank?country=nigeria", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${PAYSTACK_SECRET_KEY}`,
+        "Accept": "application/json",
+        "Content-Type": "application/json",
       },
     });
 
@@ -55,10 +78,23 @@ export default async function handler(
     if (!response.ok) {
       const errorText = await response.text();
       console.log('Paystack error response:', errorText);
-      return res.status(response.status).json({
-        error: "Failed to fetch banks from Paystack",
-        details: errorText,
-        status: response.status
+
+      // If API fails, return fallback banks with indication
+      console.log('Returning fallback banks due to API failure');
+      const fallbackBanks = [
+        { name: "[FALLBACK] Access Bank", code: "044" },
+        { name: "[FALLBACK] First Bank", code: "011" },
+        { name: "[FALLBACK] GTBank", code: "058" },
+        { name: "[FALLBACK] Zenith Bank", code: "057" },
+        { name: "[FALLBACK] UBA", code: "033" },
+        { name: "[FALLBACK] Moniepoint MFB", code: "50515" }
+      ];
+
+      return res.status(200).json({
+        banks: fallbackBanks,
+        fallback: true,
+        error: "Paystack API failed, using fallback banks",
+        apiError: errorText
       });
     }
 

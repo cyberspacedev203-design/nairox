@@ -30,6 +30,7 @@ const WalletDetails = () => {
   const [resolvingAccountName, setResolvingAccountName] = useState(false);
   const [banks, setBanks] = useState<Bank[]>([]);
   const [bankCodes, setBankCodes] = useState<{ [key: string]: string }>({});
+  const [usingFallbackBanks, setUsingFallbackBanks] = useState(false);
 
   // Fallback bank list in case Paystack API fails
   const fallbackBanks: Bank[] = [
@@ -107,8 +108,11 @@ const WalletDetails = () => {
               codes[bank.name] = bank.code;
             });
             setBankCodes(codes);
-            console.log('Loaded banks from Paystack API:', data.banks.length);
+            setUsingFallbackBanks(data.fallback || false);
+            console.log('Loaded banks from Paystack API:', data.banks.length, data.fallback ? '(FALLBACK)' : '(LIVE)');
             return;
+          } else {
+            console.log('No banks returned from API');
           }
         } else {
           const errorData = await response.json();
@@ -126,6 +130,7 @@ const WalletDetails = () => {
         codes[bank.name] = bank.code;
       });
       setBankCodes(codes);
+      setUsingFallbackBanks(true);
     };
 
     const verifySession = async () => {
@@ -360,6 +365,11 @@ const WalletDetails = () => {
                     ))}
                   </SelectContent>
                 </Select>
+                {usingFallbackBanks && (
+                  <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded px-2 py-1">
+                    ⚠️ Using limited bank list. Paystack API may be unavailable.
+                  </p>
+                )}
               </div>
 
               {message && (
