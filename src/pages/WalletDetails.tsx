@@ -19,6 +19,7 @@ const WalletDetails = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [profile, setProfile] = useState<any>(null);
   const [walletDetails, setWalletDetails] = useState({
     accountName: "",
     accountNumber: "",
@@ -140,6 +141,16 @@ const WalletDetails = () => {
           navigate("/auth");
           return;
         }
+
+        // Load user profile to get referral count
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", session.user.id)
+          .maybeSingle();
+
+        if (error) throw error;
+        setProfile(data);
       } catch (error: any) {
         toast.error("Failed to verify auth");
         navigate("/auth");
@@ -207,6 +218,12 @@ const WalletDetails = () => {
 
     if (!accountName || !accountNumber || !bankName) {
       setMessage("Please fill in all wallet/account fields before saving.");
+      return;
+    }
+
+    if (!profile || (profile.total_referrals || 0) < 5) {
+      setMessage(`You need at least 5 referrals to save your wallet. You currently have ${profile?.total_referrals || 0} referrals.`);
+      toast.error(`You need at least 5 referrals to save your wallet.`);
       return;
     }
 

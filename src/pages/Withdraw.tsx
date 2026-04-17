@@ -368,14 +368,6 @@ const Withdraw = () => {
               <p className="text-xs text-muted-foreground">
                 Wallet details can only be changed on the Wallet page.
               </p>
-              <Button
-                type="button"
-                onClick={() => navigate("/wallet")}
-                variant="outline"
-                className="w-full"
-              >
-                Edit Wallet
-              </Button>
             </div>
 
             <Button
