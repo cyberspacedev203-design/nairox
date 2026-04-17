@@ -372,11 +372,6 @@ const WalletDetails = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                {usingFallbackBanks && (
-                  <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded px-2 py-1">
-                    ⚠️ Using limited bank list. Paystack API may be unavailable.
-                  </p>
-                )}
               </div>
 
               {message && (
