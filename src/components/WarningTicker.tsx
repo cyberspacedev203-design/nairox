@@ -1,6 +1,6 @@
 import React from "react";
 
-export const WarningTicker: React.FC = () => {
+export default function WarningTicker() {
   const warnings = [
     "Avoid using Opay bank",
     "Payments made with other banks are confirmed within minutes",
@@ -84,5 +84,3 @@ export const WarningTicker: React.FC = () => {
     </div>
   );
 };
-
-export default WarningTicker;
