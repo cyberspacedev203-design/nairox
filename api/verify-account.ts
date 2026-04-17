@@ -11,9 +11,13 @@ export default async function handler(
   try {
     const { accountNumber, bankCode } = req.body;
 
+    console.log('Received body:', { accountNumber, bankCode });
+
     if (!accountNumber || !bankCode) {
+      console.log('Missing required fields:', { accountNumber, bankCode });
       return res.status(400).json({
         error: "Account number and bank code are required",
+        received: { accountNumber, bankCode },
       });
     }
 

@@ -119,33 +119,38 @@ const WalletDetails = () => {
   const resolveAccountName = async (accountNumber: string, bankCode: string) => {
     if (!accountNumber || !bankCode) return;
 
+    console.log('Resolving account:', { accountNumber, bankCode });
     setResolvingAccountName(true);
     try {
+      const payload = { accountNumber, bankCode };
+      console.log('Sending payload:', payload);
+
       const response = await fetch('/api/verify-account', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ accountNumber, bankCode })
+        body: JSON.stringify(payload)
       });
 
+      console.log('Response status:', response.status);
+
       if (!response.ok) {
-        console.warn('Verification API error:', response.statusText);
-        // Fallback: allow manual entry
+        const errorData = await response.json();
+        console.warn('Verification API error:', errorData);
         return;
       }
 
       const data = await response.json();
+      console.log('API response:', data);
 
       if (data && data.accountName) {
         setWalletDetails(prev => ({ ...prev, accountName: data.accountName }));
       } else {
-        // Fallback: allow manual entry
         console.warn('No account name returned from API');
       }
     } catch (error) {
       console.error('Error resolving account name:', error);
-      // Fallback: allow manual entry
     } finally {
       setResolvingAccountName(false);
     }
