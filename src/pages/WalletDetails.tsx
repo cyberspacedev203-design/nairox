@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
@@ -21,6 +22,44 @@ const WalletDetails = () => {
   const [message, setMessage] = useState<string | null>(null);
   const [hasWallet, setHasWallet] = useState(false);
   const [isEditing, setIsEditing] = useState(true);
+  const [resolvingAccountName, setResolvingAccountName] = useState(false);
+
+  // Paystack bank code mapping (common Nigerian banks)
+  const bankCodes: { [key: string]: string } = {
+    "Access Bank": "044",
+    "Citibank": "023",
+    "Ecobank": "050",
+    "FCMB": "214",
+    "Fidelity Bank": "070",
+    "First Bank": "011",
+    "GTBank": "058",
+    "Heritage Bank": "030",
+    "Keystone Bank": "082",
+    "Kuda Bank": "50211",
+    "Opay": "100004",
+    "Palmpay": "100033",
+    "Polaris Bank": "076",
+    "Providus Bank": "101",
+    "Stanbic IBTC": "221",
+    "Standard Chartered": "068",
+    "Sterling Bank": "232",
+    "SunTrust Bank": "100",
+    "UBA": "033",
+    "Union Bank": "032",
+    "Unity Bank": "215",
+    "Wema Bank": "035",
+    "Zenith Bank": "057",
+    "Moniepoint MFB": "50515",
+    "VFD MFB": "566"
+  };
+
+  const nigerianBanks = [
+    "Access Bank", "Citibank", "Ecobank", "FCMB", "Fidelity Bank",
+    "First Bank", "GTBank", "Heritage Bank", "Keystone Bank", "Kuda Bank",
+    "Opay", "Palmpay", "Polaris Bank", "Providus Bank", "Stanbic IBTC",
+    "Standard Chartered", "Sterling Bank", "SunTrust Bank", "UBA", "Union Bank",
+    "Unity Bank", "Wema Bank", "Zenith Bank", "Moniepoint MFB", "VFD MFB"
+  ].sort();
 
   useEffect(() => {
     const loadSavedWallet = () => {
@@ -69,6 +108,42 @@ const WalletDetails = () => {
     loadSavedWallet();
     verifySession();
   }, [navigate]);
+
+  // Resolve account name when account number or bank changes
+  useEffect(() => {
+    if (walletDetails.accountNumber.length === 10 && walletDetails.bankName && bankCodes[walletDetails.bankName]) {
+      resolveAccountName(walletDetails.accountNumber, bankCodes[walletDetails.bankName]);
+    }
+  }, [walletDetails.accountNumber, walletDetails.bankName]);
+
+  const resolveAccountName = async (accountNumber: string, bankCode: string) => {
+    if (!accountNumber || !bankCode) return;
+
+    setResolvingAccountName(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-account', {
+        body: { accountNumber, bankCode }
+      });
+
+      if (error) {
+        console.warn('Supabase function error:', error);
+        // Fallback: allow manual entry
+        return;
+      }
+
+      if (data && data.accountName) {
+        setWalletDetails(prev => ({ ...prev, accountName: data.accountName }));
+      } else {
+        // Fallback: allow manual entry
+        console.warn('No account name returned from API');
+      }
+    } catch (error) {
+      console.error('Error resolving account name:', error);
+      // Fallback: allow manual entry
+    } finally {
+      setResolvingAccountName(false);
+    }
+  };
 
   const handleSave = () => {
     const accountName = walletDetails.accountName.trim();
@@ -187,14 +262,23 @@ const WalletDetails = () => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="accountName">Account / Wallet Name</Label>
-                <Input
-                  id="accountName"
-                  type="text"
-                  value={walletDetails.accountName}
-                  onChange={(e) => setWalletDetails({ ...walletDetails, accountName: e.target.value })}
-                  placeholder="Enter name on account"
-                  className="bg-background/50"
-                />
+                <div className="relative">
+                  <Input
+                    id="accountName"
+                    type="text"
+                    value={walletDetails.accountName}
+                    onChange={(e) => setWalletDetails({ ...walletDetails, accountName: e.target.value })}
+                    placeholder="Enter name on account"
+                    className="bg-background/50 pr-10"
+                    readOnly={resolvingAccountName}
+                  />
+                  {resolvingAccountName && (
+                    <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 animate-spin text-muted-foreground" />
+                  )}
+                </div>
+                {resolvingAccountName && (
+                  <p className="text-xs text-muted-foreground">Resolving account name...</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -211,14 +295,21 @@ const WalletDetails = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="bankName">Bank / Wallet Provider</Label>
-                <Input
-                  id="bankName"
-                  type="text"
+                <Select
                   value={walletDetails.bankName}
-                  onChange={(e) => setWalletDetails({ ...walletDetails, bankName: e.target.value })}
-                  placeholder="Enter bank or wallet provider"
-                  className="bg-background/50"
-                />
+                  onValueChange={(value) => setWalletDetails({ ...walletDetails, bankName: value })}
+                >
+                  <SelectTrigger className="bg-background/50">
+                    <SelectValue placeholder="Select your bank" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {nigerianBanks.map((bank) => (
+                      <SelectItem key={bank} value={bank}>
+                        {bank}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {message && (
