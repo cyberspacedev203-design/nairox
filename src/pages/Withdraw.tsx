@@ -80,13 +80,6 @@ const Withdraw = () => {
     setWalletLoaded(true);
   }, []);
 
-  useEffect(() => {
-    if (walletLoaded && !walletSaved) {
-      toast.error("Wallet not set. Please save your withdrawal wallet first.");
-      navigate("/wallet");
-    }
-  }, [walletLoaded, walletSaved, navigate]);
-
   const loadProfile = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -112,6 +105,11 @@ const Withdraw = () => {
 
   const handleWithdraw = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!walletSaved) {
+      toast.error("Please set your withdrawal account first.");
+      return;
+    }
 
     const tier = tiers[withdrawalTier];
     const amount = Math.floor(Number(withdrawData.amount));
@@ -351,29 +349,47 @@ const Withdraw = () => {
 
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground">Withdrawal Destination</p>
-              <div className="rounded-3xl border border-border/50 bg-muted/50 p-4 space-y-3">
-                <div>
-                  <p className="text-xs text-muted-foreground">Account / Wallet Name</p>
-                  <p className="text-lg font-semibold">{withdrawData.accountName}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Account / Wallet Number</p>
-                  <p className="text-lg font-semibold font-mono">{withdrawData.accountNumber}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Bank / Wallet Provider</p>
-                  <p className="text-lg font-semibold">{withdrawData.bankName}</p>
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Wallet details can only be changed on the Wallet page.
-              </p>
+              {walletSaved ? (
+                <>
+                  <div className="rounded-3xl border border-border/50 bg-muted/50 p-4 space-y-3">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Account / Wallet Name</p>
+                      <p className="text-lg font-semibold">{withdrawData.accountName}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Account / Wallet Number</p>
+                      <p className="text-lg font-semibold font-mono">{withdrawData.accountNumber}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Bank / Wallet Provider</p>
+                      <p className="text-lg font-semibold">{withdrawData.bankName}</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Wallet details can only be changed on the Wallet page.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="rounded-3xl border border-border/50 bg-muted/50 p-4">
+                    <p className="text-lg font-semibold text-muted-foreground">Account not set</p>
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={() => navigate("/wallet")}
+                    className="w-full"
+                    variant="outline"
+                  >
+                    Set Withdrawal Account
+                  </Button>
+                </>
+              )}
             </div>
 
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-primary to-secondary"
-              disabled={submitting}
+              disabled={submitting || !walletSaved}
             >
               {submitting ? "Submitting..." : "Submit Withdrawal"}
             </Button>
