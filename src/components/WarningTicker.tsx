@@ -80,7 +80,6 @@ export default function WarningTicker() {
           }
         }
       `}</style>
-      </div>
     </div>
   );
 };
