@@ -46,6 +46,23 @@ const Withdraw = () => {
     loadProfile();
   }, []);
 
+  useEffect(() => {
+    const savedWallet = localStorage.getItem("walletDetails");
+    if (savedWallet) {
+      try {
+        const parsed = JSON.parse(savedWallet);
+        setWithdrawData((prev) => ({
+          ...prev,
+          accountName: parsed.accountName || prev.accountName,
+          accountNumber: parsed.accountNumber || prev.accountNumber,
+          bankName: parsed.bankName || prev.bankName,
+        }));
+      } catch (error) {
+        console.warn("Failed to load saved wallet details", error);
+      }
+    }
+  }, []);
+
   const loadProfile = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();

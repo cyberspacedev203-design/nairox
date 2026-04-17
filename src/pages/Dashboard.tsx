@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Eye, EyeOff, Copy, Gift, DollarSign, CheckCircle2, History, Disc3, Radio, Shield, TrendingUp, Users, Home, Gamepad2, User, Send } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff, Copy, Gift, DollarSign, CheckCircle2, History, Disc3, Wallet, Shield, TrendingUp, Users, Home, Gamepad2, User, Send } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
@@ -23,7 +25,9 @@ const Dashboard = () => {
   const [canClaim, setCanClaim] = useState(false);
   const [lastClaimTime, setLastClaimTime] = useState<Date | null>(null);
   const [showTopUp, setShowTopUp] = useState(false);
-  const [showLoanModal, setShowLoanModal] = useState(false);
+  const [showWalletModal, setShowWalletModal] = useState(false);
+  const [walletDetails, setWalletDetails] = useState({ accountName: "", accountNumber: "", bankName: "" });
+  const [walletMessage, setWalletMessage] = useState<string | null>(null);
   const [timeRemaining, setTimeRemaining] = useState("Ready!");
   const [showWithdrawalNotice, setShowWithdrawalNotice] = useState(false);
 
@@ -42,6 +46,18 @@ const Dashboard = () => {
       authListener.subscription.unsubscribe();
     };
   }, [navigate]);
+
+  useEffect(() => {
+    const savedWallet = localStorage.getItem("walletDetails");
+    if (savedWallet) {
+      try {
+        const parsed = JSON.parse(savedWallet);
+        setWalletDetails((prev) => ({ ...prev, ...parsed }));
+      } catch (error) {
+        console.warn("Failed to parse saved wallet details", error);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (lastClaimTime) {
@@ -70,6 +86,33 @@ const Dashboard = () => {
       return () => clearInterval(interval);
     }
   }, [lastClaimTime]);
+
+  const handleSaveWalletDetails = () => {
+    if (!profile) return;
+
+    const referrals = profile.total_referrals || 0;
+    const required = 5;
+
+    if (referrals < required) {
+      setWalletMessage(`You need at least ${required} referrals. You currently have ${referrals}/${required}.`);
+      return;
+    }
+
+    const accountName = walletDetails.accountName.trim();
+    const accountNumber = walletDetails.accountNumber.trim();
+    const bankName = walletDetails.bankName.trim();
+
+    if (!accountName || !accountNumber || !bankName) {
+      setWalletMessage("Please fill in all wallet/account fields before saving.");
+      return;
+    }
+
+    const detailsToSave = { accountName, accountNumber, bankName };
+    localStorage.setItem("walletDetails", JSON.stringify(detailsToSave));
+    setWalletMessage(null);
+    toast.success("Wallet details saved successfully.");
+    setShowWalletModal(false);
+  };
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -161,12 +204,12 @@ const Dashboard = () => {
     }
   };
 
-  // Auto-dismiss loan modal after 6 seconds when opened
+  // Auto-dismiss wallet modal after 6 seconds when opened
   useEffect(() => {
-    if (!showLoanModal) return;
-    const t = setTimeout(() => setShowLoanModal(false), 6000);
+    if (!showWalletModal) return;
+    const t = setTimeout(() => setShowWalletModal(false), 6000);
     return () => clearTimeout(t);
-  }, [showLoanModal]);
+  }, [showWalletModal]);
 
   if (loading || !profile) return null;
 
@@ -189,58 +232,92 @@ const Dashboard = () => {
         />
       )}
 
-      {/* SMALL LOAN POPUP - Centered */}
-      {showLoanModal && (
+      {/* WALLET DETAILS POPUP - Centered */}
+      {showWalletModal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center animate-in fade-in duration-300"
-          onClick={() => setShowLoanModal(false)}
+          onClick={() => setShowWalletModal(false)}
         >
           <div
-            className="w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-4 border border-gray-200 dark:border-gray-700"
+            className="w-80 bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-5 border border-gray-200 dark:border-gray-700"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/30 dark:to-emerald-800/20 rounded-full flex items-center justify-center">
-                <Radio className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <div className="flex items-start gap-3 mb-4">
+              <div className="flex-shrink-0 w-11 h-11 bg-gradient-to-br from-primary/10 to-secondary/15 rounded-2xl flex items-center justify-center">
+                <Wallet className="w-5 h-5 text-primary" />
               </div>
-
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-1">
-                  <h4 className="font-semibold text-sm text-gray-800 dark:text-white">
-                    Upgrade Required
-                  </h4>
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <h4 className="font-semibold text-sm text-gray-900 dark:text-white">
+                      Wallet Details
+                    </h4>
+                    <p className="text-xs text-muted-foreground">
+                      Save the account details you will use for withdrawals.
+                    </p>
+                  </div>
                   <button
-                    onClick={() => setShowLoanModal(false)}
+                    onClick={() => setShowWalletModal(false)}
                     className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-sm"
                   >
                     ×
                   </button>
                 </div>
-
-                <p className="text-xs text-gray-600 dark:text-gray-300 mb-3">
-                  Upgrade your account to access quick loans without BVN
-                </p>
-
-                <div className="flex gap-2">
-                  <Button
-                    onClick={() => {
-                      setShowLoanModal(false);
-                      navigate("/upgrade");
-                    }}
-                    className="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-xs py-1.5 h-8"
-                  >
-                    Upgrade
-                  </Button>
-
-                  <Button
-                    onClick={() => setShowLoanModal(false)}
-                    variant="outline"
-                    className="flex-1 text-gray-600 dark:text-gray-400 text-xs py-1.5 h-8 border-gray-300 dark:border-gray-600"
-                  >
-                    Cancel
-                  </Button>
-                </div>
               </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="accountName" className="text-xs font-medium text-muted-foreground">
+                  Account / Wallet Name
+                </Label>
+                <Input
+                  id="accountName"
+                  value={walletDetails.accountName}
+                  onChange={(e) => setWalletDetails({ ...walletDetails, accountName: e.target.value })}
+                  placeholder="Enter name on account"
+                  className="mt-2"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="accountNumber" className="text-xs font-medium text-muted-foreground">
+                  Account / Wallet Number
+                </Label>
+                <Input
+                  id="accountNumber"
+                  value={walletDetails.accountNumber}
+                  onChange={(e) => setWalletDetails({ ...walletDetails, accountNumber: e.target.value })}
+                  placeholder="Enter account or wallet number"
+                  className="mt-2"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="bankName" className="text-xs font-medium text-muted-foreground">
+                  Bank / Wallet Provider
+                </Label>
+                <Input
+                  id="bankName"
+                  value={walletDetails.bankName}
+                  onChange={(e) => setWalletDetails({ ...walletDetails, bankName: e.target.value })}
+                  placeholder="Enter bank or wallet provider"
+                  className="mt-2"
+                />
+              </div>
+
+              {walletMessage && (
+                <div className="rounded-2xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
+                  {walletMessage}
+                </div>
+              )}
+
+              <Button
+                onClick={handleSaveWalletDetails}
+                className="w-full bg-gradient-to-r from-primary to-secondary text-white"
+              >
+                Save Wallet Details
+              </Button>
             </div>
           </div>
         </div>
@@ -407,12 +484,12 @@ const Dashboard = () => {
             </button>
             <button
               type="button"
-              onClick={() => setShowLoanModal(true)}
+              onClick={() => setShowWalletModal(true)}
               className="h-20 flex flex-col gap-1.5 items-center justify-center rounded-lg border bg-card/80 hover:bg-card border-border/50 transition-all active:scale-95 touch-manipulation cursor-pointer min-h-[44px]"
               style={{ WebkitTapHighlightColor: "transparent" }}
             >
-              <Radio className="w-5 h-5 text-primary" />
-              <span className="text-xs font-semibold">💳 Loan</span>
+              <Wallet className="w-5 h-5 text-primary" />
+              <span className="text-xs font-semibold">💳 Wallet</span>
             </button>
           </div>
         </div>
