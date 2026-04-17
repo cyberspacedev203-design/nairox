@@ -41,6 +41,8 @@ export default async function handler(
 
     const data = await response.json();
 
+    console.log('Paystack response:', { status: response.status, ok: response.ok, data });
+
     if (response.ok && data.status) {
       return res.status(200).json({
         accountName: data.data.account_name,
