@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { X, MessageCircle } from "lucide-react";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
+import { WarningTicker } from "@/components/WarningTicker";
 
 const WithdrawalActivationPending = () => {
   const navigate = useNavigate();
@@ -18,6 +19,8 @@ const WithdrawalActivationPending = () => {
       </div>
 
       <div className="p-6 space-y-6">
+        <WarningTicker />
+
         <Card className="bg-card/80 backdrop-blur-lg border-border/50 p-8 text-center">
           <div className="flex justify-center mb-6">
             <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center">

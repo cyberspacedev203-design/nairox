@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
 import { CopyButton } from "@/components/CopyButton";
 import { NarrationSection } from "@/components/NarrationSection";
+import { WarningTicker } from "@/components/WarningTicker";
 
 const WithdrawalActivation = () => {
   const navigate = useNavigate();
@@ -96,6 +97,8 @@ const WithdrawalActivation = () => {
       </div>
 
       <div className="p-6 space-y-6">
+        <WarningTicker />
+
         <Card className="bg-gradient-to-br from-blue-500/10 to-primary/10 backdrop-blur-lg border-blue-500/20 p-6">
           <div className="flex items-start gap-3 mb-4">
             <div className="text-2xl">⚡</div>
