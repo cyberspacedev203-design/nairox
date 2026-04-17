@@ -49,7 +49,7 @@ const ImportantPaymentNotice: React.FC<ImportantPaymentNoticeProps> = ({
         <div className="card danger-card">
           <span className="icon">✖</span>
           <p>
-            Do not dispute your payment under any circumstances — disputes delay
+            Do not dispute you. payment under any circumstances — disputes delay
             confirmation.
           </p>
         </div>
