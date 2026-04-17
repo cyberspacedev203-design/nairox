@@ -36,28 +36,6 @@ export default async function handler(
       return res.status(500).json({ error: "PAYSTACK_SECRET_KEY not configured" });
     }
 
-    // First test if the key works with a simple API call
-    console.log('Testing Paystack key with balance endpoint...');
-    const testResponse = await fetch("https://api.paystack.co/balance", {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${PAYSTACK_SECRET_KEY}`,
-        "Accept": "application/json",
-      },
-    });
-
-    console.log('Balance test response status:', testResponse.status);
-
-    if (!testResponse.ok) {
-      console.log('Paystack key test failed - key may be invalid');
-      return res.status(500).json({
-        error: "Paystack API key appears to be invalid",
-        testStatus: testResponse.status
-      });
-    }
-
-    console.log('Paystack key test passed - proceeding with bank fetch');
-
     const paystackUrls = [
       "https://api.paystack.co/bank?country=NG",
       "https://api.paystack.co/bank"
@@ -149,17 +127,6 @@ export default async function handler(
       cached: false,
       count: successfulBanks.length,
       source: usedUrl
-    });
-
-    // Cache and Return
-    cachedBanks = banks;
-    cacheTimestamp = now;
-
-    res.setHeader("Cache-Control", "public, max-age=43200"); // Cache for 12 hours
-    return res.status(200).json({
-      banks: banks,
-      cached: false,
-      count: banks.length
     });
 
   } catch (error) {

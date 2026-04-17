@@ -44,7 +44,7 @@ const WalletDetails = () => {
     { name: "Heritage Bank", code: "030" },
     { name: "Keystone Bank", code: "082" },
     { name: "Kuda Bank", code: "50211" },
-    { name: ",Opay", code: "100004" },
+    { name: "Opay", code: "100004" },
     { name: "Palmpay", code: "100033" },
     { name: "Polaris Bank", code: "076" },
     { name: "Providus Bank", code: "101" },
@@ -96,40 +96,33 @@ const WalletDetails = () => {
         const response = await fetch('/api/get-banks');
         console.log('Banks API response status:', response.status);
 
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Banks API response data:', data);
-          console.log('Banks array exists:', !!data.banks);
-          console.log('Banks array length:', data.banks?.length);
-          console.log('Banks array type:', typeof data.banks);
-          console.log('First bank:', data.banks?.[0]);
+        const data = await response.json().catch((err) => {
+          console.warn('Failed to parse banks API response as JSON', err);
+          return null;
+        });
 
-          if (data.banks && data.banks.length > 0) {
-            console.log('Setting banks from API:', data.banks.length);
-            setUsingFallbackBanks(false);
-            setBanks(data.banks);
-            // Build bank code mapping
-            const codes: { [key: string]: string } = {};
-            data.banks.forEach((bank: Bank) => {
-              codes[bank.name] = bank.code;
-            });
-            setBankCodes(codes);
-            console.log('Loaded banks from Paystack API:', data.banks.length, data.fallback ? '(FALLBACK)' : '(LIVE)');
-            return;
-          } else {
-            console.log('No banks returned from API - condition failed');
-            console.log('data.banks:', data.banks);
-            console.log('data.banks.length:', data.banks?.length);
-          }
+        if (response.ok && data && Array.isArray(data.banks) && data.banks.length > 0) {
+          const isFallback = Boolean(data.fallback);
+          console.log('Setting banks from API:', data.banks.length, isFallback ? '(FALLBACK)' : '(LIVE)');
+          setUsingFallbackBanks(isFallback);
+          setBanks(data.banks);
+          const codes: { [key: string]: string } = {};
+          data.banks.forEach((bank: Bank) => {
+            codes[bank.name] = bank.code;
+          });
+          setBankCodes(codes);
+          return;
+        }
+
+        if (!response.ok) {
+          console.log('Banks API error response:', data);
         } else {
-          const errorData = await response.json();
-          console.log('Banks API error:', errorData);
+          console.log('Banks API returned an invalid bank list:', data);
         }
       } catch (error) {
         console.warn('Failed to fetch banks from API', error);
       }
 
-      // Fallback to hardcoded list
       console.log('Using fallback bank list');
       setUsingFallbackBanks(true);
       setBanks(fallbackBanks);
