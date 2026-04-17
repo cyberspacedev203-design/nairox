@@ -108,7 +108,8 @@ export default async function handler(
         { name: "[FALLBACK] GTBank", code: "058" },
         { name: "[FALLBACK] Zenith Bank", code: "057" },
         { name: "[FALLBACK] UBA", code: "033" },
-        { name: "[FALLBACK] Moniepoint MFB", code: "50515" }
+        { name: "[FALLBACK] Moniepoint MFB", code: "50515" },
+        { name: "[FALLBACK] Opay", code: "999992" }
       ];
       return res.status(200).json({
         banks: fallbackBanks,
