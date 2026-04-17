@@ -10,6 +10,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
 
+interface Bank {
+  name: string;
+  code: string;
+}
+
 const WalletDetails = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -23,43 +28,35 @@ const WalletDetails = () => {
   const [hasWallet, setHasWallet] = useState(false);
   const [isEditing, setIsEditing] = useState(true);
   const [resolvingAccountName, setResolvingAccountName] = useState(false);
+  const [banks, setBanks] = useState<Bank[]>([]);
+  const [bankCodes, setBankCodes] = useState<{ [key: string]: string }>({});
 
-  // Paystack bank code mapping (common Nigerian banks)
-  const bankCodes: { [key: string]: string } = {
-    "Access Bank": "044",
-    "Citibank": "023",
-    "Ecobank": "050",
-    "FCMB": "214",
-    "Fidelity Bank": "070",
-    "First Bank": "011",
-    "GTBank": "058",
-    "Heritage Bank": "030",
-    "Keystone Bank": "082",
-    "Kuda Bank": "50211",
-    "Opay": "100004",
-    "Palmpay": "100033",
-    "Polaris Bank": "076",
-    "Providus Bank": "101",
-    "Stanbic IBTC": "221",
-    "Standard Chartered": "068",
-    "Sterling Bank": "232",
-    "SunTrust Bank": "100",
-    "UBA": "033",
-    "Union Bank": "032",
-    "Unity Bank": "215",
-    "Wema Bank": "035",
-    "Zenith Bank": "057",
-    "Moniepoint MFB": "50515",
-    "VFD MFB": "566"
-  };
-
-  const nigerianBanks = [
-    "Access Bank", "Citibank", "Ecobank", "FCMB", "Fidelity Bank",
-    "First Bank", "GTBank", "Heritage Bank", "Keystone Bank", "Kuda Bank",
-    "Opay", "Palmpay", "Polaris Bank", "Providus Bank", "Stanbic IBTC",
-    "Standard Chartered", "Sterling Bank", "SunTrust Bank", "UBA", "Union Bank",
-    "Unity Bank", "Wema Bank", "Zenith Bank", "Moniepoint MFB", "VFD MFB"
-  ].sort();
+  // Fallback bank list in case Paystack API fails
+  const fallbackBanks: Bank[] = [
+    { name: "Access Bank", code: "044" },
+    { name: "Citibank", code: "023" },
+    { name: "Ecobank", code: "050" },
+    { name: "FCMB", code: "214" },
+    { name: "Fidelity Bank", code: "070" },
+    { name: "First Bank", code: "011" },
+    { name: "GTBank", code: "058" },
+    { name: "Heritage Bank", code: "030" },
+    { name: "Keystone Bank", code: "082" },
+    { name: "Kuda Bank", code: "50211" },
+    { name: "Polaris Bank", code: "076" },
+    { name: "Providus Bank", code: "101" },
+    { name: "Stanbic IBTC", code: "221" },
+    { name: "Standard Chartered", code: "068" },
+    { name: "Sterling Bank", code: "232" },
+    { name: "SunTrust Bank", code: "100" },
+    { name: "UBA", code: "033" },
+    { name: "Union Bank", code: "032" },
+    { name: "Unity Bank", code: "215" },
+    { name: "Wema Bank", code: "035" },
+    { name: "Zenith Bank", code: "057" },
+    { name: "Moniepoint MFB", code: "50515" },
+    { name: "VFD MFB", code: "566" }
+  ];
 
   useEffect(() => {
     const loadSavedWallet = () => {
@@ -90,6 +87,37 @@ const WalletDetails = () => {
       }
     };
 
+    const fetchBanks = async () => {
+      try {
+        const response = await fetch('/api/get-banks');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.banks && data.banks.length > 0) {
+            setBanks(data.banks);
+            // Build bank code mapping
+            const codes: { [key: string]: string } = {};
+            data.banks.forEach((bank: Bank) => {
+              codes[bank.name] = bank.code;
+            });
+            setBankCodes(codes);
+            console.log('Loaded banks from Paystack API:', data.banks.length);
+            return;
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to fetch banks from API', error);
+      }
+      
+      // Fallback to hardcoded list
+      console.log('Using fallback bank list');
+      setBanks(fallbackBanks);
+      const codes: { [key: string]: string } = {};
+      fallbackBanks.forEach((bank) => {
+        codes[bank.name] = bank.code;
+      });
+      setBankCodes(codes);
+    };
+
     const verifySession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -106,6 +134,7 @@ const WalletDetails = () => {
     };
 
     loadSavedWallet();
+    fetchBanks();
     verifySession();
   }, [navigate]);
 
@@ -314,9 +343,9 @@ const WalletDetails = () => {
                     <SelectValue placeholder="Select your bank" />
                   </SelectTrigger>
                   <SelectContent>
-                    {nigerianBanks.map((bank) => (
-                      <SelectItem key={bank} value={bank}>
-                        {bank}
+                    {banks.map((bank) => (
+                      <SelectItem key={bank.code} value={bank.name}>
+                        {bank.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
