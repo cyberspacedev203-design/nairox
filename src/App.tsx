@@ -25,6 +25,7 @@ import Community from "./pages/Community";
 import Spin from "./pages/Spin";
 import About from "./pages/About";
 import Broadcast from "./pages/Broadcast";
+import WalletDetails from "./pages/WalletDetails";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -53,6 +54,7 @@ const App = () => (
           <Route path="/instant-withdrawal-activation" element={<InstantWithdrawalActivation />} />
           <Route path="/instant-withdrawal-pending" element={<InstantWithdrawalPending />} />
           <Route path="/withdrawal-activation-pending" element={<WithdrawalActivationPending />} />
+          <Route path="/wallet" element={<WalletDetails />} />
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/support" element={<Support />} />
           <Route path="/community" element={<Community />} />
