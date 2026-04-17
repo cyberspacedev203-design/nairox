@@ -11,6 +11,8 @@ export default async function handler(
   try {
     const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
+    console.log('PAYSTACK_SECRET_KEY exists:', !!PAYSTACK_SECRET_KEY);
+
     if (!PAYSTACK_SECRET_KEY) {
       return res.status(500).json({ error: "PAYSTACK_SECRET_KEY not configured" });
     }
@@ -27,7 +29,11 @@ export default async function handler(
       }
     );
 
+    console.log('Paystack response status:', response.status);
+
     const data = await response.json();
+
+    console.log('Paystack response data:', { status: data.status, dataLength: data.data?.length });
 
     if (response.ok && data.status) {
       // Format banks for frontend: { name, code }

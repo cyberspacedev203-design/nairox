@@ -43,6 +43,8 @@ const WalletDetails = () => {
     { name: "Heritage Bank", code: "030" },
     { name: "Keystone Bank", code: "082" },
     { name: "Kuda Bank", code: "50211" },
+    { name: ",Opay", code: "100004" },
+    { name: "Palmpay", code: "100033" },
     { name: "Polaris Bank", code: "076" },
     { name: "Providus Bank", code: "101" },
     { name: "Stanbic IBTC", code: "221" },
@@ -89,9 +91,14 @@ const WalletDetails = () => {
 
     const fetchBanks = async () => {
       try {
+        console.log('Fetching banks from API...');
         const response = await fetch('/api/get-banks');
+        console.log('Banks API response status:', response.status);
+
         if (response.ok) {
           const data = await response.json();
+          console.log('Banks API response data:', data);
+
           if (data.banks && data.banks.length > 0) {
             setBanks(data.banks);
             // Build bank code mapping
@@ -103,11 +110,14 @@ const WalletDetails = () => {
             console.log('Loaded banks from Paystack API:', data.banks.length);
             return;
           }
+        } else {
+          const errorData = await response.json();
+          console.log('Banks API error:', errorData);
         }
       } catch (error) {
         console.warn('Failed to fetch banks from API', error);
       }
-      
+
       // Fallback to hardcoded list
       console.log('Using fallback bank list');
       setBanks(fallbackBanks);
