@@ -38,6 +38,8 @@ export default async function handler(
 
     // Make API Request
     console.log('Making request to Paystack API...');
+    console.log('Using key starting with:', PAYSTACK_SECRET_KEY.substring(0, 10) + '...');
+
     const response = await fetch("https://api.paystack.co/bank", {
       method: "GET",
       headers: {
@@ -48,18 +50,24 @@ export default async function handler(
 
     console.log('Paystack response status:', response.status);
     console.log('Paystack response ok:', response.ok);
+    console.log('Paystack response headers:', Object.fromEntries(response.headers.entries()));
 
     if (!response.ok) {
       const errorText = await response.text();
       console.log('Paystack error response:', errorText);
       return res.status(response.status).json({
         error: "Failed to fetch banks from Paystack",
-        details: errorText
+        details: errorText,
+        status: response.status
       });
     }
 
     const data = await response.json();
     console.log('Paystack response data:', JSON.stringify(data, null, 2));
+    console.log('Paystack data.status:', data.status);
+    console.log('Paystack data.message:', data.message);
+    console.log('Paystack data.data type:', typeof data.data);
+    console.log('Paystack data.data isArray:', Array.isArray(data.data));
 
     if (!data.status) {
       console.log('Paystack returned status false');
