@@ -30,7 +30,6 @@ const WalletDetails = () => {
   const [resolvingAccountName, setResolvingAccountName] = useState(false);
   const [banks, setBanks] = useState<Bank[]>([]);
   const [bankCodes, setBankCodes] = useState<{ [key: string]: string }>({});
-  const [usingFallbackBanks, setUsingFallbackBanks] = useState(false);
 
   // Fallback bank list in case Paystack API fails
   const fallbackBanks: Bank[] = [
@@ -113,7 +112,6 @@ const WalletDetails = () => {
               codes[bank.name] = bank.code;
             });
             setBankCodes(codes);
-            setUsingFallbackBanks(data.fallback || false);
             console.log('Loaded banks from Paystack API:', data.banks.length, data.fallback ? '(FALLBACK)' : '(LIVE)');
             return;
           } else {
@@ -137,7 +135,6 @@ const WalletDetails = () => {
         codes[bank.name] = bank.code;
       });
       setBankCodes(codes);
-      setUsingFallbackBanks(true);
     };
 
     const verifySession = async () => {

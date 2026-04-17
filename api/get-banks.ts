@@ -64,7 +64,7 @@ export default async function handler(
 
     let response;
     try {
-      response = await fetch("https://api.paystack.co/bank", {
+      response = await fetch("https://api.paystack.co/bank?country=nigeria", {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${PAYSTACK_SECRET_KEY}`,
