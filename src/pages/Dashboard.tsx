@@ -281,14 +281,14 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* View Daily Tasks Link */}
+        {/* View Testimonials Link */}
         <div className="px-4">
           <button
             type="button"
-            onClick={() => navigate("/tasks")}
+            onClick={() => navigate("/testimonials")}
             className="w-full flex items-center justify-center gap-2 text-sm text-primary hover:underline py-2"
           >
-            View Daily Tasks <ArrowRight className="w-4 h-4" />
+            View Testimonials <ArrowRight className="w-4 h-4" />
           </button>
         </div>
 

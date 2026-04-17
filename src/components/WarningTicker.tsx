@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function WarningTicker() {
+export function WarningTicker() {
   const warnings = [
     "Avoid using Opay bank",
     "Payments made with other banks are confirmed within minutes",
