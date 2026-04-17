@@ -58,34 +58,72 @@ export default async function handler(
 
     console.log('Paystack key test passed - proceeding with bank fetch');
 
-    // Make API Request - try without country parameter first
-    console.log('Making request to Paystack API...');
-    console.log('Using key starting with:', PAYSTACK_SECRET_KEY.substring(0, 10) + '...');
+    const paystackUrls = [
+      "https://api.paystack.co/bank?country=NG",
+      "https://api.paystack.co/bank"
+    ];
 
-    let response;
-    try {
-      response = await fetch("https://api.paystack.co/bank?country=nigeria", {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${PAYSTACK_SECRET_KEY}`,
-          "Accept": "application/json",
-        },
-      });
-    } catch (fetchError) {
-      console.log('Fetch error:', fetchError);
-      return res.status(500).json({ error: "Network error connecting to Paystack" });
+    let successfulBanks: any[] = [];
+    let lastError: any = null;
+    let usedUrl = "";
+
+    const normalizeBanks = (banks: any[]) => banks
+      .map((bank: any) => ({
+        name: bank.name || bank.bank_name || bank.bank,
+        code: (bank.code || bank.bank_code || bank.bankCode || bank.bankcode || bank.bank_code)?.toString(),
+      }))
+      .filter((bank: any) => bank.name && bank.code);
+
+    for (const url of paystackUrls) {
+      try {
+        console.log('Requesting Paystack bank list from:', url);
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${PAYSTACK_SECRET_KEY}`,
+            "Accept": "application/json",
+          },
+        });
+
+        console.log('Paystack response status for', url, response.status);
+        const payload = await response.json();
+        console.log('Paystack payload for', url, JSON.stringify(payload, null, 2));
+
+        if (!response.ok) {
+          lastError = payload;
+          console.log('Paystack returned non-ok status for', url, payload);
+          continue;
+        }
+
+        if (!payload || payload.status !== true || !Array.isArray(payload.data)) {
+          lastError = payload;
+          console.log('Paystack returned invalid payload for', url, payload);
+          continue;
+        }
+
+        const normalized = normalizeBanks(payload.data);
+        console.log('Normalized banks count for', url, normalized.length);
+
+        if (normalized.length > 0) {
+          successfulBanks = normalized;
+          usedUrl = url;
+          break;
+        }
+
+        lastError = {
+          error: 'No banks returned from Paystack',
+          payload,
+          url
+        };
+      } catch (fetchError) {
+        lastError = fetchError;
+        console.log('Fetch error for', url, fetchError);
+        continue;
+      }
     }
 
-    console.log('Paystack response status:', response.status);
-    console.log('Paystack response ok:', response.ok);
-    console.log('Paystack response headers:', Object.fromEntries(response.headers.entries()));
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.log('Paystack error response:', errorText);
-
-      // If API fails, return fallback banks with indication
-      console.log('Returning fallback banks due to API failure');
+    if (successfulBanks.length === 0) {
+      console.log('No banks returned from Paystack via any URL, using fallback. Last error:', lastError);
       const fallbackBanks = [
         { name: "[FALLBACK] Access Bank", code: "044" },
         { name: "[FALLBACK] First Bank", code: "011" },
@@ -94,46 +132,24 @@ export default async function handler(
         { name: "[FALLBACK] UBA", code: "033" },
         { name: "[FALLBACK] Moniepoint MFB", code: "50515" }
       ];
-
       return res.status(200).json({
         banks: fallbackBanks,
         fallback: true,
-        error: "Paystack API failed, using fallback banks",
-        apiError: errorText
+        error: "No banks returned from Paystack API, using fallback banks",
+        details: lastError
       });
     }
 
-    const data = await response.json();
-    console.log('Paystack response data:', JSON.stringify(data, null, 2));
-    console.log('Paystack data.status:', data.status);
-    console.log('Paystack data.message:', data.message);
-    console.log('Paystack data.data type:', typeof data.data);
-    console.log('Paystack data.data isArray:', Array.isArray(data.data));
-
-    if (!data.status) {
-      console.log('Paystack returned status false');
-      return res.status(400).json({
-        error: "Paystack API returned error",
-        details: data.message || "Unknown error"
-      });
-    }
-
-    if (!data.data || !Array.isArray(data.data)) {
-      console.log('Paystack returned invalid data structure');
-      return res.status(400).json({
-        error: "Invalid response from Paystack",
-        details: "No data array returned"
-      });
-    }
-
-    // Process Bank Data
-    const banks = data.data.map((bank: any) => ({
-      name: bank.name || bank.bank_name || bank.bank,
-      code: bank.code || bank.bank_code,
-    })).filter((bank: any) => bank.name && bank.code);
-
-    console.log('Processed banks count:', banks.length);
-    console.log('First few banks:', banks.slice(0, 3));
+    console.log('Successfully fetched banks from Paystack using', usedUrl, 'count:', successfulBanks.length);
+    cachedBanks = successfulBanks;
+    cacheTimestamp = now;
+    res.setHeader("Cache-Control", "public, max-age=43200"); // Cache for 12 hours
+    return res.status(200).json({
+      banks: successfulBanks,
+      cached: false,
+      count: successfulBanks.length,
+      source: usedUrl
+    });
 
     // Cache and Return
     cachedBanks = banks;
