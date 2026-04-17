@@ -18,7 +18,7 @@ const ImportantPaymentNotice: React.FC<ImportantPaymentNoticeProps> = ({
 
         <div className="header">
           <span className="icon warning">⚠️</span>
-          <h2>Important Payment Notice</h2>
+          <h2>Important Payment Notice.</h2>
         </div>
 
         <ul className="instructions">
