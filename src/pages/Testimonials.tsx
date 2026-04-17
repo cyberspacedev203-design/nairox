@@ -1,4 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Star, Send } from "lucide-react";
 
 interface Testimonial {
   stars: number;
@@ -715,11 +721,15 @@ const Popup: React.FC<PopupProps> = ({ testimonial, index, onClose }) => {
 };
 
 const Testimonials: React.FC = () => {
+  const navigate = useNavigate();
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
   const [popup, setPopup] = useState<{
     testimonial: Testimonial;
     index: number;
   } | null>(null);
+  const [reviewText, setReviewText] = useState("");
+  const [reviewStars, setReviewStars] = useState(5);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // Popup logic
   useEffect(() => {
@@ -737,6 +747,13 @@ const Testimonials: React.FC = () => {
       clearInterval(interval);
     };
   }, []);
+
+  const handleSubmitReview = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (reviewText.trim()) {
+      setShowUpgradeModal(true);
+    }
+  };
 
   const visibleTestimonials = testimonials.slice(0, visibleCount);
   const hasMore = visibleCount < testimonials.length;
@@ -809,7 +826,7 @@ const Testimonials: React.FC = () => {
               lineHeight: 1.2,
             }}
           >
-            Naijans are winning{" "}
+            Nigerians are winning{" "}
             <span
               style={{
                 background: "linear-gradient(90deg,#a855f7,#38bdf8,#34d399)",
@@ -835,6 +852,159 @@ const Testimonials: React.FC = () => {
             Real stories, real earnings — from Lagos to Calabar and everywhere
             in between
           </p>
+        </div>
+
+        {/* Share Your Story Form */}
+        <div
+          style={{
+            maxWidth: "600px",
+            margin: "0 auto 3rem",
+            animation: "tsFadeIn 1s ease both",
+          }}
+        >
+          <Card
+            style={{
+              background: "rgba(30,16,53,.9)",
+              border: "1px solid rgba(168,85,247,.3)",
+              borderRadius: "16px",
+              padding: "24px",
+            }}
+          >
+            <div style={{ textAlign: "center", marginBottom: "20px" }}>
+              <h3
+                style={{
+                  color: "#f8fafc",
+                  fontSize: "1.25rem",
+                  fontWeight: 600,
+                  marginBottom: "8px",
+                }}
+              >
+                Share Your Success Story! 🌟
+              </h3>
+              <p
+                style={{
+                  color: "#94a3b8",
+                  fontSize: "0.9rem",
+                }}
+              >
+                Tell us about your earnings and inspire other Nigerians
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmitReview}>
+              <div style={{ marginBottom: "16px" }}>
+                <Label
+                  htmlFor="review-stars"
+                  style={{
+                    color: "#cbd5e1",
+                    fontSize: "0.9rem",
+                    fontWeight: 500,
+                    display: "block",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Rate your experience
+                </Label>
+                <div style={{ display: "flex", gap: "4px" }}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setReviewStars(star)}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        padding: "4px",
+                        borderRadius: "4px",
+                        transition: "all 0.2s",
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLButtonElement).style.background =
+                          "rgba(168,85,247,.2)";
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLButtonElement).style.background =
+                          "none";
+                      }}
+                    >
+                      <Star
+                        size={24}
+                        style={{
+                          color: star <= reviewStars ? "#fbbf24" : "#64748b",
+                          fill: star <= reviewStars ? "#fbbf24" : "none",
+                        }}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ marginBottom: "20px" }}>
+                <Label
+                  htmlFor="review-text"
+                  style={{
+                    color: "#cbd5e1",
+                    fontSize: "0.9rem",
+                    fontWeight: 500,
+                    display: "block",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Your story
+                </Label>
+                <Textarea
+                  id="review-text"
+                  placeholder="Share your experience... How much have you earned? What strategies worked for you?"
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                  style={{
+                    background: "rgba(15,23,42,.8)",
+                    border: "1px solid rgba(168,85,247,.3)",
+                    borderRadius: "8px",
+                    color: "#f8fafc",
+                    minHeight: "100px",
+                    resize: "vertical",
+                  }}
+                  required
+                />
+              </div>
+
+              <Button
+                type="submit"
+                style={{
+                  width: "100%",
+                  background: "linear-gradient(90deg,#a855f7,#38bdf8)",
+                  border: "none",
+                  borderRadius: "8px",
+                  padding: "12px",
+                  color: "white",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "8px",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.transform =
+                    "translateY(-2px)";
+                  (e.currentTarget as HTMLButtonElement).style.boxShadow =
+                    "0 4px 12px rgba(168,85,247,.3)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.transform =
+                    "translateY(0)";
+                  (e.currentTarget as HTMLButtonElement).style.boxShadow =
+                    "none";
+                }}
+              >
+                <Send size={16} />
+                Post Review
+              </Button>
+            </form>
+          </Card>
         </div>
 
         {/* Ticker */}
@@ -988,6 +1158,135 @@ const Testimonials: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Upgrade Modal */}
+      {showUpgradeModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            animation: "tsFadeIn .3s ease both",
+          }}
+        >
+          <Card
+            style={{
+              background: "rgba(30,16,53,.95)",
+              border: "1px solid rgba(168,85,247,.4)",
+              borderRadius: "16px",
+              padding: "32px",
+              maxWidth: "400px",
+              width: "90%",
+              textAlign: "center",
+            }}
+          >
+            <div
+              style={{
+                width: "64px",
+                height: "64px",
+                borderRadius: "50%",
+                background: "linear-gradient(135deg,#a855f7,#38bdf8)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "0 auto 20px",
+              }}
+            >
+              <Star size={32} style={{ color: "white" }} />
+            </div>
+
+            <h3
+              style={{
+                color: "#f8fafc",
+                fontSize: "1.25rem",
+                fontWeight: 600,
+                marginBottom: "12px",
+              }}
+            >
+              Upgrade Required! 🚀
+            </h3>
+
+            <p
+              style={{
+                color: "#94a3b8",
+                fontSize: "0.95rem",
+                lineHeight: 1.5,
+                marginBottom: "24px",
+              }}
+            >
+              To share your success story and inspire others, you need to upgrade
+              your account. Unlock premium features and get your story featured!
+            </p>
+
+            <div style={{ display: "flex", gap: "12px", flexDirection: "column" }}>
+              <Button
+                onClick={() => {
+                  setShowUpgradeModal(false);
+                  navigate("/upgrade");
+                }}
+                style={{
+                  background: "linear-gradient(90deg,#a855f7,#38bdf8)",
+                  border: "none",
+                  borderRadius: "8px",
+                  padding: "12px",
+                  color: "white",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  width: "100%",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.transform =
+                    "translateY(-2px)";
+                  (e.currentTarget as HTMLButtonElement).style.boxShadow =
+                    "0 4px 12px rgba(168,85,247,.3)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.transform =
+                    "translateY(0)";
+                  (e.currentTarget as HTMLButtonElement).style.boxShadow =
+                    "none";
+                }}
+              >
+                Upgrade Now
+              </Button>
+
+              <Button
+                onClick={() => setShowUpgradeModal(false)}
+                variant="outline"
+                style={{
+                  border: "1px solid rgba(168,85,247,.4)",
+                  background: "transparent",
+                  color: "#c084fc",
+                  borderRadius: "8px",
+                  padding: "12px",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  width: "100%",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background =
+                    "rgba(168,85,247,.1)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background =
+                    "transparent";
+                }}
+              >
+                Maybe Later
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
 
       {/* Popup */}
       {popup && (
