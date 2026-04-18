@@ -1147,7 +1147,7 @@ const Testimonials: React.FC = () => {
 
       <div
         style={{
-          background: "linear-gradient(160deg,#0f172a 0%,#1e1035 100%)",
+          background: "linear-gradient(135deg,#0f172a 0%,#1a1a2e 100%)",
           minHeight: "100vh",
           padding: "2.5rem 1.5rem 3rem",
           fontFamily: "sans-serif",
