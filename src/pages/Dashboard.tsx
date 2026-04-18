@@ -407,46 +407,40 @@ const Dashboard = () => {
               <div className="w-16 h-1 bg-gradient-to-r from-green-500 to-yellow-400 mx-auto mb-4"></div>
             </div>
 
-            <div className="space-y-3 mb-6 relative z-10">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Shield className="w-5 h-5 text-white" />
+            <div className="space-y-4 mb-6 relative z-10">
+              <div className="rounded-3xl border border-white/10 bg-white/5 p-5 min-h-[220px]">
+                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.2em] text-green-300 font-semibold">
+                      Testimonial Preview
+                    </p>
+                    <h3 className="text-lg font-semibold text-white mt-3">
+                      “This website changed my life! I earned ₦3,450,000 in my first month just by following the simple steps.”
+                    </h3>
+                  </div>
+                  <div className="text-yellow-400 text-base font-bold tracking-wide">
+                    ★★★★★
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-white font-semibold mb-1">100% Secure</h3>
-                  <p className="text-green-200 text-sm">
-                    Bank-level encryption protects your transactions and
-                    personal data
-                  </p>
-                </div>
-              </div>
 
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0">
-                  <TrendingUp className="w-5 h-5 text-black" />
+                <div className="grid grid-cols-2 gap-3 mt-5 text-sm text-slate-300">
+                  <div className="rounded-2xl bg-slate-950/80 p-3">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-green-300">
+                      User
+                    </p>
+                    <p className="font-semibold text-white">Chisom Okonkwo</p>
+                  </div>
+                  <div className="rounded-2xl bg-slate-950/80 p-3">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-green-300">
+                      Location
+                    </p>
+                    <p className="font-semibold text-white">Lagos, Nigeria</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-white font-semibold mb-1">
-                    Lightning Fast
-                  </h3>
-                  <p className="text-green-200 text-sm">
-                    Instant withdrawals and seamless transactions in seconds
-                  </p>
-                </div>
-              </div>
 
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Users className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-white font-semibold mb-1">
-                    100% Reliable
-                  </h3>
-                  <p className="text-green-200 text-sm">
-                    24/7 support and guaranteed service uptime
-                  </p>
-                </div>
+                <p className="mt-4 text-sm leading-6 text-green-200">
+                  A real earning preview from a member who unlocked ₦3.4M in the first month — all from one simple system.
+                </p>
               </div>
             </div>
 
