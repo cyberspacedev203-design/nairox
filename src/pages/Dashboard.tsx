@@ -14,54 +14,68 @@ import WithdrawalNoticeModal from "@/components/WithdrawalNoticeModal";
 import { Link } from "react-router-dom";
 
 const testimonialsList = [
-  {
-    quote: "This website changed my life! I earned ₦3,450,000 in my first month just by following the simple steps.",
-    name: "Chisom Okonkwo",
-    location: "Lagos, Nigeria",
-    stars: 5,
-  },
-  {
-    quote: "I was skeptical at first, but after 3 weeks I made over ₦1,200,000. The best part? It works while I sleep.",
-    name: "Tunde Adeyemi",
-    location: "Abuja, Nigeria",
-    stars: 5,
-  },
-  {
-    quote: "As a single mum, this has been a game-changer. Earned ₦890,000 last month working only 2 hours a day.",
-    name: "Ngozi Eze",
-    location: "Port Harcourt, Nigeria",
-    stars: 4,
-  },
-  {
-    quote: "Made ₦7,650,000 in 45 days. I quit my 9–5 last week. The community and tools are unmatched.",
-    name: "Emeka Nwosu",
-    location: "Kano, Nigeria",
-    stars: 5,
-  },
-  {
-    quote: "Retired teacher here. This platform gave me purpose again and ₦2,340,000 extra per month. Love it!",
-    name: "Mama Blessing Adewale",
-    location: "Ibadan, Nigeria",
-    stars: 5,
-  },
-  {
-    quote: "From zero to ₦4,200,000 in 6 weeks. The step-by-step guides are so easy even my grandma could follow.",
-    name: "Kunle Afolabi",
-    location: "Enugu, Nigeria",
-    stars: 5,
-  },
-  {
-    quote: "Earned my first ₦500,000 in under 10 days. Now consistently pulling ₦1,800,000–₦2,500,000 monthly.",
-    name: "Adaeze Okafor",
-    location: "Benin City, Nigeria",
-    stars: 4,
-  },
-  {
-    quote: "I love how beginner-friendly it is. Made ₦9,100,000 so far and I'm only 19!",
-    name: "Seun Balogun",
-    location: "Warri, Nigeria",
-    stars: 5,
-  },
+  { stars: 5, quote: "This website changed my life! I earned ₦3,450,000 in my first month just by following the simple steps. From a broke corper to financially free.", name: "Chisom Okonkwo", location: "Lagos, Nigeria" },
+  { stars: 5, quote: "I was skeptical at first, but after 3 weeks I made over ₦1,200,000. The best part? It works while I sleep. Passive income at its finest!", name: "Tunde Adeyemi", location: "Abuja, Nigeria" },
+  { stars: 4, quote: "As a single mum, this has been a game-changer. Earned ₦890,000 last month working only 2 hours a day. Finally can afford extras for my kids.", name: "Ngozi Eze", location: "Port Harcourt, Nigeria" },
+  { stars: 5, quote: "Made ₦7,650,000 in 45 days. I quit my 9–5 last week. The community and tools are unmatched.", name: "Emeka Nwosu", location: "Kano, Nigeria" },
+  { stars: 5, quote: "Retired teacher here. This platform gave me purpose again and ₦2,340,000 extra per month. Love it!", name: "Mama Blessing Adewale", location: "Ibadan, Nigeria" },
+  { stars: 5, quote: "From zero to ₦4,200,000 in 6 weeks. The step-by-step guides are so easy even my grandma could follow.", name: "Kunle Afolabi", location: "Enugu, Nigeria" },
+  { stars: 4, quote: "Earned my first ₦500,000 in under 10 days. Now consistently pulling ₦1,800,000–₦2,500,000 monthly.", name: "Adaeze Okafor", location: "Benin City, Nigeria" },
+  { stars: 5, quote: "I love how beginner-friendly it is. Made ₦9,100,000 so far and I'm only 19!", name: "Seun Balogun", location: "Warri, Nigeria" },
+  { stars: 5, quote: "Best decision ever. Replaced my salary (₦4,800,000/month) and now travel full-time.", name: "Zainab Musa", location: "Calabar, Nigeria" },
+  { stars: 4, quote: "As a truck driver, I do this on the road. Already banked ₦3,670,000 in passive earnings.", name: "Chukwudi Ogbuike", location: "Owerri, Nigeria" },
+  { stars: 5, quote: "Turned my passion into ₦2,890,000/month. Can't thank the team enough!", name: "Ifunanya Chukwu", location: "Jos, Nigeria" },
+  { stars: 5, quote: "My side hustle exploded to ₦6,200,000 last month. Finally debt-free!", name: "Fatima Usman", location: "Kaduna, Nigeria" },
+  { stars: 4, quote: "Consistent ₦1,100,000–₦1,600,000 every single month. Super reliable.", name: "Rotimi Adesanya", location: "Abeokuta, Nigeria" },
+  { stars: 5, quote: "Earned ₦12,450,000 in 3 months. This is the real deal.", name: "Aisha Garba", location: "Sokoto, Nigeria" },
+  { stars: 5, quote: "From unemployed to making ₦2,750,000/month from home. Mind blown.", name: "Uche Nnamdi", location: "Akure, Nigeria" },
+  { stars: 4, quote: "Great for beginners. I made ₦780,000 in week one!", name: "Chiamaka Obiora", location: "Makurdi, Nigeria" },
+  { stars: 5, quote: "The support is incredible. Hit ₦5,340,000 and still growing strong.", name: "Babatunde Olawale", location: "Lagos, Nigeria" },
+  { stars: 5, quote: "Quit my corporate job after earning ₦8,900,000 in two months. Freedom!", name: "Amira Suleiman", location: "Abuja, Nigeria" },
+  { stars: 4, quote: "Low effort, high reward. Averaging ₦2,100,000 monthly now.", name: "Nnamdi Obi", location: "Port Harcourt, Nigeria" },
+  { stars: 5, quote: "Made ₦1,450,000 while on vacation in Zanzibar. Truly location independent.", name: "Halima Yakubu", location: "Kano, Nigeria" },
+  { stars: 5, quote: "Started with nothing, now earning ₦4,500,000 monthly. This platform is gold!", name: "Obiora Chukwuemeka", location: "Ibadan, Nigeria" },
+  { stars: 4, quote: "As a freelancer, this doubled my income to ₦3,200,000 per month.", name: "Bukola Fashola", location: "Enugu, Nigeria" },
+  { stars: 5, quote: "Earned ₦6,800,000 in 2 months. Life-changing opportunity!", name: "Damilola Ogundimu", location: "Benin City, Nigeria" },
+  { stars: 5, quote: "From part-time to full-time earner: ₦5,100,000 monthly now.", name: "Yetunde Adebayo", location: "Warri, Nigeria" },
+  { stars: 4, quote: "Consistent ₦1,900,000 every month. Perfect for busy parents.", name: "Chidi Okeke", location: "Calabar, Nigeria" },
+  { stars: 5, quote: "Made ₦10,200,000 in 4 months. Unbelievable results!", name: "Funmi Adeleke", location: "Owerri, Nigeria" },
+  { stars: 5, quote: "Passive income dream: ₦3,750,000 while I travel the world.", name: "Tosin Ajayi", location: "Jos, Nigeria" },
+  { stars: 4, quote: "Beginner-friendly and profitable. Earned ₦950,000 in first week.", name: "Oluwaseun Oladele", location: "Kaduna, Nigeria" },
+  { stars: 5, quote: "Replaced my job income with ₦7,300,000 monthly earnings.", name: "Nneka Ihejirika", location: "Abeokuta, Nigeria" },
+  { stars: 5, quote: "As a student, this gave me financial freedom: ₦2,600,000/month.", name: "Abdullahi Bello", location: "Sokoto, Nigeria" },
+  { stars: 4, quote: "Low-risk, high-reward. Averaging ₦4,100,000 monthly.", name: "Chidinma Ibe", location: "Akure, Nigeria" },
+  { stars: 5, quote: "Earned ₦8,500,000 in 3 months. The community is amazing!", name: "Segun Oluwole", location: "Makurdi, Nigeria" },
+  { stars: 5, quote: "From doubter to believer: ₦5,800,000 in passive income.", name: "Mariam Aliyu", location: "Lagos, Nigeria" },
+  { stars: 4, quote: "Consistent ₦2,300,000–₦3,000,000 every single month.", name: "Chukwuebuka Osei", location: "Abuja, Nigeria" },
+  { stars: 5, quote: "Made ₦9,750,000 in 5 months. This is revolutionary!", name: "Ifeoma Nwofor", location: "Port Harcourt, Nigeria" },
+  { stars: 5, quote: "Quit my dead-end job after earning ₦4,200,000/month.", name: "Ayo Oluwasegun", location: "Kano, Nigeria" },
+  { stars: 4, quote: "Perfect for side income. Made ₦1,150,000 in week one!", name: "Stella Ogwu", location: "Ibadan, Nigeria" },
+  { stars: 5, quote: "The tools are incredible. Hit ₦6,900,000 and counting.", name: "Emeka Okafor", location: "Enugu, Nigeria" },
+  { stars: 5, quote: "Financial independence achieved: ₦11,200,000 in two months.", name: "Adaora Nze", location: "Benin City, Nigeria" },
+  { stars: 4, quote: "Easy to use and profitable. Averaging ₦3,400,000 monthly.", name: "Sola Adeyemi", location: "Warri, Nigeria" },
+  { stars: 5, quote: "Made ₦2,800,000 while on a family trip to Dubai. Amazing!", name: "Bimpe Olanrewaju", location: "Calabar, Nigeria" },
+  { stars: 5, quote: "Started small, now earning ₦7,100,000 monthly. So grateful!", name: "Usman Danladi", location: "Owerri, Nigeria" },
+  { stars: 4, quote: "As a retiree, this provides ₦3,900,000 extra per month.", name: "Mama Ngozi Aniemena", location: "Jos, Nigeria" },
+  { stars: 5, quote: "Earned ₦8,300,000 in 3 months. Best investment ever!", name: "Kehinde Akinola", location: "Kaduna, Nigeria" },
+  { stars: 5, quote: "From zero to ₦5,500,000 in 6 weeks. Unstoppable!", name: "Oluwakemi Fasanya", location: "Abeokuta, Nigeria" },
+  { stars: 4, quote: "Reliable income stream: ₦2,700,000–₦3,500,000 monthly.", name: "Ikechukwu Igwe", location: "Sokoto, Nigeria" },
+  { stars: 5, quote: "Made ₦12,800,000 in 4 months. Life transformed!", name: "Adesola Olawuyi", location: "Akure, Nigeria" },
+  { stars: 5, quote: "Passive earnings of ₦4,600,000 while chasing my dreams.", name: "Olumide Adewale", location: "Makurdi, Nigeria" },
+  { stars: 4, quote: "Beginner success: ₦1,200,000 in first week. Loving it!", name: "Chinwe Okonkwo", location: "Lagos, Nigeria" },
+  { stars: 5, quote: "Replaced full-time salary with ₦9,400,000 monthly income.", name: "Maryam Ibrahim", location: "Abuja, Nigeria" },
+  { stars: 5, quote: "As a young professional, earning ₦3,100,000/month is freedom.", name: "Femi Adesola", location: "Port Harcourt, Nigeria" },
+  { stars: 4, quote: "Low-effort high-reward: ₦4,800,000 monthly average.", name: "Ngozi Okorie", location: "Kano, Nigeria" },
+  { stars: 5, quote: "Earned ₦10,600,000 in 3 months. The support is top-notch!", name: "Wale Adeyemi", location: "Ibadan, Nigeria" },
+  { stars: 5, quote: "From doubt to ₦6,400,000 in passive income. Incredible!", name: "Nadia Hassan", location: "Enugu, Nigeria" },
+  { stars: 4, quote: "Steady ₦2,900,000–₦3,800,000 every month. Highly recommend.", name: "Chukwuma Nwachukwu", location: "Benin City, Nigeria" },
+  { stars: 5, quote: "Achieved ₦11,900,000 in 5 months. This platform rocks!", name: "Adunola Adeyemi", location: "Warri, Nigeria" },
+  { stars: 5, quote: "Left my job for ₦5,300,000/month earnings. Best choice!", name: "Kayode Ogunleye", location: "Calabar, Nigeria" },
+  { stars: 4, quote: "Quick start: ₦1,400,000 in week one. Excited for more!", name: "Amaka Eze", location: "Owerri, Nigeria" },
+  { stars: 5, quote: "Tools and community led to ₦7,500,000 monthly success.", name: "Emmanuel Ugwu", location: "Jos, Nigeria" },
+  { stars: 5, quote: "Financial freedom: ₦13,100,000 in two months. Thank you!", name: "Hauwa Abdullahi", location: "Kaduna, Nigeria" },
+  { stars: 4, quote: "Effortless earnings: ₦3,700,000 monthly average.", name: "Kunle Bakare", location: "Abeokuta, Nigeria" },
+  { stars: 5, quote: "Made ₦3,200,000 during my honeymoon. Truly flexible!", name: "Dupe Owolade", location: "Sokoto, Nigeria" },
 ];
 
 const Dashboard = () => {
@@ -79,12 +93,12 @@ const Dashboard = () => {
   const [cardAnimation, setCardAnimation] = useState("pop");
   const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
 
-  // Cycle through animations and testimonials
+  // Cycle through random testimonials with animations
   useEffect(() => {
     const animations = ["pop", "burst", "ripple", "tear"];
     const interval = setInterval(() => {
       setCardAnimation(animations[Math.floor(Math.random() * animations.length)]);
-      setCurrentTestimonialIndex((prev) => (prev + 1) % testimonialsList.length);
+      setCurrentTestimonialIndex(Math.floor(Math.random() * testimonialsList.length));
     }, 4000);
     return () => clearInterval(interval);
   }, []);
