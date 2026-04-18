@@ -1334,110 +1334,23 @@ const Testimonials: React.FC = () => {
           </Card>
         </div>
 
-        {/* Ticker */}
-        <div
-          style={{
-            overflow: "hidden",
-            marginBottom: "2.5rem",
-            position: "relative",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              left: 0,
-              top: 0,
-              bottom: 0,
-              width: "60px",
-              background: "linear-gradient(to right,#0f172a,transparent)",
-              zIndex: 2,
-              pointerEvents: "none",
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              right: 0,
-              top: 0,
-              bottom: 0,
-              width: "60px",
-              background: "linear-gradient(to left,#0f172a,transparent)",
-              zIndex: 2,
-              pointerEvents: "none",
-            }}
-          />
-          <div
-            style={{
-              display: "flex",
-              gap: "14px",
-              width: "max-content",
-              animation: "tsTicker 60s linear infinite",
-            }}
-          >
-            {tickerItems.map((t, i) => {
-              const ac = AVATAR_COLORS[i % AVATAR_COLORS.length];
-              const amount = extractAmount(t.quote);
-              return (
-                <div
-                  key={i}
-                  style={{
-                    background: "rgba(30,16,53,.8)",
-                    border: "1px solid rgba(168,85,247,.2)",
-                    borderRadius: "30px",
-                    padding: "8px 18px 8px 12px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                    whiteSpace: "nowrap",
-                    flexShrink: 0,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "30px",
-                      height: "30px",
-                      borderRadius: "50%",
-                      background: ac.bg,
-                      border: `1.5px solid ${ac.color}`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "11px",
-                      fontWeight: 600,
-                      color: ac.color,
-                    }}
-                  >
-                    {getInitials(t.name)}
-                  </div>
-                  <span style={{ fontSize: ".8rem", color: "#94a3b8" }}>
-                    {t.name}
-                  </span>
-                  {amount && (
-                    <span
-                      style={{
-                        fontSize: ".8rem",
-                        color: "#22c55e",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {amount}
-                    </span>
-                  )}
-                  <span style={{ color: "#fbbf24", fontSize: "11px" }}>
-                    {renderStars(t.stars)}
-                  </span>
-                </div>
-              );
-            })}
+        {/* Tickers */}
+        {[{ data: ticker1, duration: '120s', dir: 'normal' }, { data: ticker2, duration: '90s', dir: 'reverse' }].map((row, ri) => (
+          <div key={ri} style={{ overflow: 'hidden', marginBottom: ri === 0 ? '10px' : '2.5rem', position: 'relative' }}>
+            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '80px', background: 'linear-gradient(to right,#0d0a1a,transparent)', zIndex: 2, pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '80px', background: 'linear-gradient(to left,#0d0a1a,transparent)', zIndex: 2, pointerEvents: 'none' }} />
+            <div style={{ display: 'flex', gap: '12px', width: 'max-content', animation: `tsTicker ${row.duration} linear infinite ${row.dir}` }}>
+              {row.data.map((t, i) => <TickerPill key={i} testimonial={t} index={i + (ri === 1 ? half : 0)} />)}
+            </div>
           </div>
-        </div>
+        ))}
 
         {/* Grid */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill,minmax(270px,1fr))",
-            gap: "16px",
+            gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))",
+            gap: "20px",
             maxWidth: "1100px",
             margin: "0 auto",
           }}
@@ -1484,6 +1397,18 @@ const Testimonials: React.FC = () => {
             </button>
           </div>
         )}
+
+        {/* Gradient Divider */}
+        <div style={{ height: '1px', background: 'linear-gradient(90deg,transparent,#a855f7 50%,transparent)', margin: '3rem 0' }} />
+
+        {/* Share Your Story Section */}
+        <ShareStorySection
+          reviewText={reviewText}
+          reviewStars={reviewStars}
+          onTextChange={setReviewText}
+          onStarsChange={setReviewStars}
+          onSubmit={handleSubmitReview}
+        />
       </div>
 
       {/* Upgrade Modal */}
