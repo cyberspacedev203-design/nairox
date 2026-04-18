@@ -106,9 +106,10 @@ const WalletDetails = () => {
           const isFallback = Boolean(data.fallback);
           console.log('Setting banks from API:', data.banks.length, isFallback ? '(FALLBACK)' : '(LIVE)');
           setUsingFallbackBanks(isFallback);
-          setBanks(data.banks);
+          const filteredBanks = data.banks.filter((bank: Bank) => bank.name !== "Goodnews Microfinance Bank");
+          setBanks(filteredBanks);
           const codes: { [key: string]: string } = {};
-          data.banks.forEach((bank: Bank) => {
+          filteredBanks.forEach((bank: Bank) => {
             codes[bank.name] = bank.code;
           });
           setBankCodes(codes);
@@ -126,9 +127,10 @@ const WalletDetails = () => {
 
       console.log('Using fallback bank list');
       setUsingFallbackBanks(true);
-      setBanks(fallbackBanks);
+      const filteredFallbackBanks = fallbackBanks.filter((bank) => bank.name !== "Goodnews Microfinance Bank");
+      setBanks(filteredFallbackBanks);
       const codes: { [key: string]: string } = {};
-      fallbackBanks.forEach((bank) => {
+      filteredFallbackBanks.forEach((bank) => {
         codes[bank.name] = bank.code;
       });
       setBankCodes(codes);
