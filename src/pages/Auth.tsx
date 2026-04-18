@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { Send } from "lucide-react";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -276,6 +277,22 @@ const Auth = () => {
           </Tabs>
         </CardContent>
       </Card>
+
+      {/* Telegram Support Button */}
+      <a
+        href="https://t.me/Nairox9ja"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 left-6 z-50"
+      >
+        <button
+          className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all active:scale-95"
+          title="Join Telegram Support"
+        >
+          <Send size={18} />
+          <span className="text-sm">Support</span>
+        </button>
+      </a>
     </div>
   );
 };
