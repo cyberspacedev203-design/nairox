@@ -1160,7 +1160,7 @@ const Testimonials: React.FC = () => {
             Real-time member wins
           </div>
           <h1 style={{ fontSize: 'clamp(1.8rem,5vw,3rem)', fontWeight: 800, color: '#fff', margin: '0 0 14px', lineHeight: 1.15, letterSpacing: '-.02em' }}>
-            Naijans are{' '}
+            Nigerians are{' '}
             <span style={{ position: 'relative', display: 'inline-block' }}>
               <span style={{ background: 'linear-gradient(135deg,#a855f7 0%,#6366f1 40%,#38bdf8 70%,#34d399 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>winning big</span>
               <span style={{ position: 'absolute', bottom: '-4px', left: 0, right: 0, height: '2px', background: 'linear-gradient(90deg,#a855f7,#38bdf8,#34d399)', borderRadius: '2px' }} />

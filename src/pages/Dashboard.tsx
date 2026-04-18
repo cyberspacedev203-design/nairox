@@ -25,6 +25,16 @@ const Dashboard = () => {
   const [showTopUp, setShowTopUp] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState("Ready!");
   const [showWithdrawalNotice, setShowWithdrawalNotice] = useState(false);
+  const [cardAnimation, setCardAnimation] = useState("pop");
+
+  // Cycle through animations
+  useEffect(() => {
+    const animations = ["pop", "burst", "ripple", "tear"];
+    const interval = setInterval(() => {
+      setCardAnimation(animations[Math.floor(Math.random() * animations.length)]);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     checkAuth();
@@ -402,13 +412,24 @@ const Dashboard = () => {
           <div className="why-glow bg-gradient-to-br from-black via-green-950 to-black rounded-2xl p-6 mb-6 mx-2 border border-green-500/30 relative overflow-hidden">
             <div className="text-center mb-4 relative z-10">
               <h2 className="text-2xl font-bold text-white mb-2">
-                testimonials
+                Testimonials
               </h2>
               <div className="w-16 h-1 bg-gradient-to-r from-green-500 to-yellow-400 mx-auto mb-4"></div>
             </div>
 
             <div className="space-y-4 mb-6 relative z-10">
-              <div className="rounded-3xl border border-white/10 bg-white/5 p-5 min-h-[220px]">
+              <div 
+                className="rounded-3xl border border-white/10 bg-white/5 p-5 min-h-[220px] testimonial-card"
+                style={{
+                  animation: cardAnimation === 'pop' 
+                    ? `popIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards`
+                    : cardAnimation === 'burst'
+                    ? 'burst 0.6s ease-in-out infinite'
+                    : cardAnimation === 'ripple'
+                    ? 'ripple 1.2s ease-in-out infinite'
+                    : 'tearShift 1.5s ease-in-out infinite'
+                }}
+              >
                 <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div>
                     <p className="text-xs uppercase tracking-[0.2em] text-green-300 font-semibold">
@@ -446,7 +467,7 @@ const Dashboard = () => {
 
             <Link to="/testimonials">
               <Button className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-bold py-3 rounded-full text-lg">
-                view more testimonial
+                View more testimonial
               </Button>
             </Link>
           </div>
@@ -495,6 +516,78 @@ const Dashboard = () => {
             100% {
               left: -120%;
             }
+          }
+
+          @keyframes popIn {
+            0% {
+              transform: scale(0.8) translate3d(0, 0, 0);
+              opacity: 0;
+              filter: blur(8px);
+            }
+            50% {
+              transform: scale(1.02);
+              box-shadow: 0 0 30px rgba(34, 197, 94, 0.6);
+            }
+            100% {
+              transform: scale(1);
+              opacity: 1;
+              filter: blur(0px);
+            }
+          }
+
+          @keyframes burst {
+            0% {
+              transform: scale(1);
+              box-shadow: 0 0 0px rgba(34, 197, 94, 0);
+            }
+            50% {
+              transform: scale(1.05);
+              box-shadow: 0 0 40px rgba(255, 193, 7, 0.8), 0 0 60px rgba(34, 197, 94, 0.4);
+            }
+            100% {
+              transform: scale(1);
+              box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+            }
+          }
+
+          @keyframes ripple {
+            0% {
+              box-shadow: 0 0 0px 0px rgba(34, 197, 94, 0.4), 0 0 20px rgba(34, 197, 94, 0.2);
+            }
+            50% {
+              box-shadow: 0 0 0px 20px rgba(34, 197, 94, 0), 0 0 40px rgba(34, 197, 94, 0.6);
+            }
+            100% {
+              box-shadow: 0 0 0px 0px rgba(34, 197, 94, 0), 0 0 20px rgba(34, 197, 94, 0.2);
+            }
+          }
+
+          @keyframes tearShift {
+            0% {
+              transform: translateY(0) skewY(0deg);
+              opacity: 1;
+              filter: blur(0px);
+            }
+            25% {
+              transform: translateY(-4px) skewY(1deg);
+              opacity: 0.95;
+            }
+            50% {
+              transform: translateY(0) skewY(-1deg);
+              opacity: 0.98;
+            }
+            75% {
+              transform: translateY(-2px) skewY(0.5deg);
+            }
+            100% {
+              transform: translateY(0) skewY(0deg);
+              opacity: 1;
+            }
+          }
+
+          .testimonial-card {
+            transition: all 0.3s ease;
+            will-change: transform, box-shadow, filter;
           }
 
           .why-glow {
