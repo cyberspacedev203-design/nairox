@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -382,36 +381,52 @@ const WalletDetails = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="bankName">Bank / Wallet Provider</Label>
-                <Select
-                  value={walletDetails.bankName}
-                  onValueChange={(value) => setWalletDetails({ ...walletDetails, bankName: value })}
-                >
-                  <SelectTrigger className="bg-background/50">
-                    <SelectValue placeholder="Select your bank" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <div className="p-2 pb-0">
-                      <Input
-                        placeholder="Search banks..."
-                        value={bankSearch}
-                        onChange={(e) => setBankSearch(e.target.value)}
-                        className="bg-background/50 h-9"
-                      />
-                    </div>
-                    <div className="max-h-64 overflow-y-auto">
+                <div className="relative">
+                  <Input
+                    id="bankName"
+                    type="text"
+                    placeholder="Search and select your bank..."
+                    value={bankSearch}
+                    onChange={(e) => setBankSearch(e.target.value)}
+                    className="bg-background/50 w-full"
+                  />
+                  {bankSearch && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-lg shadow-lg max-h-64 overflow-y-auto z-50">
                       {banks
                         .filter((bank) =>
                           bank.name.toLowerCase().includes(bankSearch.toLowerCase()) ||
                           bank.code.includes(bankSearch)
                         )
                         .map((bank) => (
-                          <SelectItem key={bank.code} value={bank.name}>
-                            {bank.name}
-                          </SelectItem>
+                          <button
+                            key={bank.code}
+                            type="button"
+                            onClick={() => {
+                              setWalletDetails({ ...walletDetails, bankName: bank.name });
+                              setBankSearch("");
+                            }}
+                            className="w-full text-left px-4 py-3 hover:bg-primary/10 border-b border-border/50 last:border-b-0 transition-colors"
+                          >
+                            <div className="font-medium text-sm">{bank.name}</div>
+                            <div className="text-xs text-muted-foreground">{bank.code}</div>
+                          </button>
                         ))}
+                      {banks.filter((bank) =>
+                        bank.name.toLowerCase().includes(bankSearch.toLowerCase()) ||
+                        bank.code.includes(bankSearch)
+                      ).length === 0 && (
+                        <div className="px-4 py-3 text-sm text-muted-foreground text-center">
+                          No banks found matching "{bankSearch}"
+                        </div>
+                      )}
                     </div>
-                  </SelectContent>
-                </Select>
+                  )}
+                  {walletDetails.bankName && !bankSearch && (
+                    <div className="absolute top-1/2 right-3 transform -translate-y-1/2 text-sm text-muted-foreground">
+                      ✓ {walletDetails.bankName}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {message && (
