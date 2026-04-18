@@ -32,6 +32,7 @@ const WalletDetails = () => {
   const [banks, setBanks] = useState<Bank[]>([]);
   const [bankCodes, setBankCodes] = useState<{ [key: string]: string }>({});
   const [usingFallbackBanks, setUsingFallbackBanks] = useState(false);
+  const [bankSearch, setBankSearch] = useState("");
 
   // Fallback bank list in case Paystack API fails
   const fallbackBanks: Bank[] = [
@@ -170,6 +171,12 @@ const WalletDetails = () => {
       resolveAccountName(walletDetails.accountNumber, bankCodes[walletDetails.bankName]);
     }
   }, [walletDetails.accountNumber, walletDetails.bankName]);
+
+  useEffect(() => {
+    if (walletDetails.bankName) {
+      setBankSearch("");
+    }
+  }, [walletDetails.bankName]);
 
   const resolveAccountName = async (accountNumber: string, bankCode: string) => {
     if (!accountNumber || !bankCode) return;
@@ -383,11 +390,26 @@ const WalletDetails = () => {
                     <SelectValue placeholder="Select your bank" />
                   </SelectTrigger>
                   <SelectContent>
-                    {banks.map((bank) => (
-                      <SelectItem key={bank.code} value={bank.name}>
-                        {bank.name}
-                      </SelectItem>
-                    ))}
+                    <div className="p-2 pb-0">
+                      <Input
+                        placeholder="Search banks..."
+                        value={bankSearch}
+                        onChange={(e) => setBankSearch(e.target.value)}
+                        className="bg-background/50 h-9"
+                      />
+                    </div>
+                    <div className="max-h-64 overflow-y-auto">
+                      {banks
+                        .filter((bank) =>
+                          bank.name.toLowerCase().includes(bankSearch.toLowerCase()) ||
+                          bank.code.includes(bankSearch)
+                        )
+                        .map((bank) => (
+                          <SelectItem key={bank.code} value={bank.name}>
+                            {bank.name}
+                          </SelectItem>
+                        ))}
+                    </div>
                   </SelectContent>
                 </Select>
               </div>
