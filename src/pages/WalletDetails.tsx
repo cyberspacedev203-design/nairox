@@ -32,6 +32,7 @@ const WalletDetails = () => {
   const [bankCodes, setBankCodes] = useState<{ [key: string]: string }>({});
   const [usingFallbackBanks, setUsingFallbackBanks] = useState(false);
   const [bankSearch, setBankSearch] = useState("");
+  const [showBankDropdown, setShowBankDropdown] = useState(false);
 
   // Fallback bank list in case Paystack API fails
   const fallbackBanks: Bank[] = [
@@ -390,36 +391,41 @@ const WalletDetails = () => {
                     placeholder="Search and select your bank..."
                     value={bankSearch}
                     onChange={(e) => setBankSearch(e.target.value)}
+                    onFocus={() => setShowBankDropdown(true)}
+                    onBlur={() => setTimeout(() => setShowBankDropdown(false), 200)}
                     className="bg-background/50 w-full"
                   />
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-lg shadow-lg max-h-64 overflow-y-auto z-50">
-                    {banks
-                      .filter((bank) =>
+                  {showBankDropdown && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-lg shadow-lg max-h-64 overflow-y-auto z-50">
+                      {banks
+                        .filter((bank) =>
+                          bank.name.toLowerCase().includes(bankSearch.toLowerCase()) ||
+                          bank.code.includes(bankSearch)
+                        )
+                        .map((bank) => (
+                          <button
+                            key={bank.code}
+                            type="button"
+                            onClick={() => {
+                              setWalletDetails({ ...walletDetails, bankName: bank.name });
+                              setBankSearch("");
+                              setShowBankDropdown(false);
+                            }}
+                            className="w-full text-left px-4 py-3 hover:bg-primary/10 border-b border-border/50 last:border-b-0 transition-colors text-sm"
+                          >
+                            {bank.name}
+                          </button>
+                        ))}
+                      {banks.filter((bank) =>
                         bank.name.toLowerCase().includes(bankSearch.toLowerCase()) ||
                         bank.code.includes(bankSearch)
-                      )
-                      .map((bank) => (
-                        <button
-                          key={bank.code}
-                          type="button"
-                          onClick={() => {
-                            setWalletDetails({ ...walletDetails, bankName: bank.name });
-                            setBankSearch("");
-                          }}
-                          className="w-full text-left px-4 py-3 hover:bg-primary/10 border-b border-border/50 last:border-b-0 transition-colors text-sm"
-                        >
-                          {bank.name}
-                        </button>
-                      ))}
-                    {banks.filter((bank) =>
-                      bank.name.toLowerCase().includes(bankSearch.toLowerCase()) ||
-                      bank.code.includes(bankSearch)
-                    ).length === 0 && (
-                      <div className="px-4 py-3 text-sm text-muted-foreground text-center">
-                        No banks found
-                      </div>
-                    )}
-                  </div>
+                      ).length === 0 && (
+                        <div className="px-4 py-3 text-sm text-muted-foreground text-center">
+                          No banks found
+                        </div>
+                      )}
+                    </div>
+                  )}
                   {walletDetails.bankName && !bankSearch && (
                     <div className="absolute top-1/2 right-3 transform -translate-y-1/2 text-sm text-muted-foreground">
                       ✓ {walletDetails.bankName}
