@@ -720,6 +720,373 @@ const Popup: React.FC<PopupProps> = ({ testimonial, index, onClose }) => {
   );
 };
 
+interface TickerPillProps {
+  testimonial: Testimonial;
+  index: number;
+}
+
+const TickerPill: React.FC<TickerPillProps> = ({ testimonial, index }) => {
+  const ac = AVATAR_COLORS[index % AVATAR_COLORS.length];
+  const amount = extractAmount(testimonial.quote);
+  return (
+    <div
+      style={{
+        background: "rgba(30,16,53,.8)",
+        border: "1px solid rgba(168,85,247,.2)",
+        borderRadius: "30px",
+        padding: "8px 18px 8px 12px",
+        display: "flex",
+        alignItems: "center",
+        gap: "10px",
+        whiteSpace: "nowrap",
+        flexShrink: 0,
+      }}
+    >
+      <div
+        style={{
+          width: "30px",
+          height: "30px",
+          borderRadius: "50%",
+          background: ac.bg,
+          border: `1.5px solid ${ac.color}`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "11px",
+          fontWeight: 600,
+          color: ac.color,
+        }}
+      >
+        {getInitials(testimonial.name)}
+      </div>
+      <span style={{ fontSize: ".8rem", color: "#94a3b8" }}>
+        {testimonial.name}
+      </span>
+      {amount && (
+        <span
+          style={{
+            fontSize: ".8rem",
+            color: "#22c55e",
+            fontWeight: 600,
+          }}
+        >
+          {amount}
+        </span>
+      )}
+      <span style={{ color: "#fbbf24", fontSize: "11px" }}>
+        {renderStars(testimonial.stars)}
+      </span>
+    </div>
+  );
+};
+
+interface ShareStorySectionProps {
+  onNewStory: (story: Testimonial) => void;
+  userStories: Testimonial[];
+}
+
+const ShareStorySection: React.FC<ShareStorySectionProps> = ({ onNewStory, userStories }) => {
+  const [reviewText, setReviewText] = useState("");
+  const [reviewStars, setReviewStars] = useState(5);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  const handleSubmitReview = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (reviewText.trim()) {
+      setShowUpgradeModal(true);
+    }
+  };
+
+  const handleNewStory = (story: Testimonial) => {
+    setUserStories(prev => [story, ...prev]);
+  };
+
+  return (
+    <>
+      <div
+        style={{
+          maxWidth: "600px",
+          margin: "3rem auto 2rem",
+          animation: "tsFadeIn 1s ease both",
+        }}
+      >
+        <Card
+          style={{
+            background: "rgba(30,16,53,.9)",
+            border: "1px solid rgba(168,85,247,.3)",
+            borderRadius: "16px",
+            padding: "24px",
+          }}
+        >
+          <div style={{ textAlign: "center", marginBottom: "20px" }}>
+            <h3
+              style={{
+                color: "#f8fafc",
+                fontSize: "1.25rem",
+                fontWeight: 600,
+                marginBottom: "8px",
+              }}
+            >
+              Share Your Success Story! 🌟
+            </h3>
+            <p
+              style={{
+                color: "#94a3b8",
+                fontSize: "0.9rem",
+              }}
+            >
+              Tell us about your earnings and inspire other Nigerians
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmitReview}>
+            <div style={{ marginBottom: "16px" }}>
+              <Label
+                htmlFor="review-stars"
+                style={{
+                  color: "#cbd5e1",
+                  fontSize: "0.9rem",
+                  fontWeight: 500,
+                  display: "block",
+                  marginBottom: "8px",
+                }}
+              >
+                Rate your experience
+              </Label>
+              <div style={{ display: "flex", gap: "4px" }}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setReviewStars(star)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      padding: "4px",
+                      borderRadius: "4px",
+                      transition: "all 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.background =
+                        "rgba(168,85,247,.2)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.background =
+                        "none";
+                    }}
+                  >
+                    <Star
+                      size={24}
+                      style={{
+                        color: star <= reviewStars ? "#fbbf24" : "#64748b",
+                        fill: star <= reviewStars ? "#fbbf24" : "none",
+                      }}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ marginBottom: "20px" }}>
+              <Label
+                htmlFor="review-text"
+                style={{
+                  color: "#cbd5e1",
+                  fontSize: "0.9rem",
+                  fontWeight: 500,
+                  display: "block",
+                  marginBottom: "8px",
+                }}
+              >
+                Your story
+              </Label>
+              <Textarea
+                id="review-text"
+                placeholder="Share your experience... How much have you earned? What strategies worked for you?"
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+                style={{
+                  background: "rgba(15,23,42,.8)",
+                  border: "1px solid rgba(168,85,247,.3)",
+                  borderRadius: "8px",
+                  color: "#f8fafc",
+                  minHeight: "100px",
+                  resize: "vertical",
+                }}
+                required
+              />
+            </div>
+
+            <Button
+              type="submit"
+              style={{
+                width: "100%",
+                background: "linear-gradient(90deg,#a855f7,#38bdf8)",
+                border: "none",
+                borderRadius: "8px",
+                padding: "12px",
+                color: "white",
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: "all 0.2s",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.transform =
+                  "translateY(-2px)";
+                (e.currentTarget as HTMLButtonElement).style.boxShadow =
+                  "0 4px 12px rgba(168,85,247,.3)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.transform =
+                  "translateY(0)";
+                (e.currentTarget as HTMLButtonElement).style.boxShadow =
+                  "none";
+              }}
+            >
+              <Send size={16} />
+              Post Review
+            </Button>
+          </form>
+        </Card>
+      </div>
+
+      {/* Upgrade Modal */}
+      {showUpgradeModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            animation: "tsFadeIn .3s ease both",
+          }}
+        >
+          <Card
+            style={{
+              background: "rgba(30,16,53,.95)",
+              border: "1px solid rgba(168,85,247,.4)",
+              borderRadius: "16px",
+              padding: "32px",
+              maxWidth: "400px",
+              width: "90%",
+              textAlign: "center",
+            }}
+          >
+            <div
+              style={{
+                width: "64px",
+                height: "64px",
+                borderRadius: "50%",
+                background: "linear-gradient(135deg,#a855f7,#38bdf8)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "0 auto 20px",
+              }}
+            >
+              <Star size={32} style={{ color: "white" }} />
+            </div>
+
+            <h3
+              style={{
+                color: "#f8fafc",
+                fontSize: "1.25rem",
+                fontWeight: 600,
+                marginBottom: "12px",
+              }}
+            >
+              Upgrade Required! 🚀
+            </h3>
+
+            <p
+              style={{
+                color: "#94a3b8",
+                fontSize: "0.95rem",
+                lineHeight: 1.5,
+                marginBottom: "24px",
+              }}
+            >
+              To share your success story and inspire others, you need to upgrade
+              your account. Unlock premium features and get your story featured!
+            </p>
+
+            <div style={{ display: "flex", gap: "12px", flexDirection: "column" }}>
+              <Button
+                onClick={() => {
+                  setShowUpgradeModal(false);
+                  navigate("/upgrade");
+                }}
+                style={{
+                  background: "linear-gradient(90deg,#a855f7,#38bdf8)",
+                  border: "none",
+                  borderRadius: "8px",
+                  padding: "12px",
+                  color: "white",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  width: "100%",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.transform =
+                    "translateY(-2px)";
+                  (e.currentTarget as HTMLButtonElement).style.boxShadow =
+                    "0 4px 12px rgba(168,85,247,.3)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.transform =
+                    "translateY(0)";
+                  (e.currentTarget as HTMLButtonElement).style.boxShadow =
+                    "none";
+                }}
+              >
+                Upgrade Now
+              </Button>
+
+              <Button
+                onClick={() => setShowUpgradeModal(false)}
+                variant="outline"
+                style={{
+                  border: "1px solid rgba(168,85,247,.4)",
+                  background: "transparent",
+                  color: "#c084fc",
+                  borderRadius: "8px",
+                  padding: "12px",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  width: "100%",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background =
+                    "rgba(168,85,247,.1)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background =
+                    "transparent";
+                }}
+              >
+                Maybe Later
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
+    </>
+  );
+};
+
 const Testimonials: React.FC = () => {
   const navigate = useNavigate();
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
@@ -730,6 +1097,12 @@ const Testimonials: React.FC = () => {
   const [reviewText, setReviewText] = useState("");
   const [reviewStars, setReviewStars] = useState(5);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [userStories, setUserStories] = useState<Testimonial[]>([]);
+
+  // Ticker data
+  const half = Math.floor(testimonials.length / 2);
+  const ticker1 = testimonials.slice(0, half);
+  const ticker2 = testimonials.slice(half);
 
   // Popup logic
   useEffect(() => {
@@ -781,77 +1154,31 @@ const Testimonials: React.FC = () => {
         }}
       >
         {/* Header */}
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: "2rem",
-            animation: "tsFadeIn .7s ease both",
-          }}
-        >
-          <div
-            style={{
-              display: "inline-block",
-              background: "rgba(168,85,247,.18)",
-              border: "1px solid rgba(168,85,247,.35)",
-              color: "#c084fc",
-              fontSize: "12px",
-              fontWeight: 500,
-              padding: "4px 14px",
-              borderRadius: "20px",
-              letterSpacing: ".06em",
-              textTransform: "uppercase",
-              marginBottom: "14px",
-            }}
-          >
-            <span
-              style={{
-                width: "10px",
-                height: "10px",
-                borderRadius: "50%",
-                background: "#22c55e",
-                display: "inline-block",
-                marginRight: "6px",
-                verticalAlign: "middle",
-                animation: "tsPulse 1.4s infinite",
-              }}
-            />
-            Live member wins
+        <div style={{ textAlign: 'center', padding: '3rem 1.5rem 2rem', animation: 'tsFadeUp .8s ease both' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(168,85,247,.12)', border: '1px solid rgba(168,85,247,.28)', color: '#c084fc', fontSize: '11.5px', fontWeight: 600, padding: '5px 16px', borderRadius: '30px', letterSpacing: '.08em', textTransform: 'uppercase', marginBottom: '20px' }}>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', animation: 'tsPulse 1.6s infinite', display: 'inline-block', flexShrink: 0 }} />
+            Real-time member wins
           </div>
-          <h1
-            style={{
-              fontSize: "clamp(1.6rem,4vw,2.6rem)",
-              fontWeight: 700,
-              color: "#f8fafc",
-              margin: "0 0 12px",
-              lineHeight: 1.2,
-            }}
-          >
-            Nigerians are winning{" "}
-            <span
-              style={{
-                background: "linear-gradient(90deg,#a855f7,#38bdf8,#34d399)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-                animation: "tsShimmer 3s linear infinite",
-                backgroundSize: "200%",
-              }}
-            >
-              every day
-            </span>{" "}
-            🎉
+          <h1 style={{ fontSize: 'clamp(1.8rem,5vw,3rem)', fontWeight: 800, color: '#fff', margin: '0 0 14px', lineHeight: 1.15, letterSpacing: '-.02em' }}>
+            Naijans are{' '}
+            <span style={{ position: 'relative', display: 'inline-block' }}>
+              <span style={{ background: 'linear-gradient(135deg,#a855f7 0%,#6366f1 40%,#38bdf8 70%,#34d399 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>winning big</span>
+              <span style={{ position: 'absolute', bottom: '-4px', left: 0, right: 0, height: '2px', background: 'linear-gradient(90deg,#a855f7,#38bdf8,#34d399)', borderRadius: '2px' }} />
+            </span>
+            {' every single day'}
           </h1>
-          <p
-            style={{
-              color: "#94a3b8",
-              fontSize: "1rem",
-              maxWidth: "500px",
-              margin: "0 auto",
-            }}
-          >
-            Real stories, real earnings — from Lagos to Calabar and everywhere
-            in between
-          </p>
+          <p style={{ color: '#64748b', fontSize: '1rem', maxWidth: '480px', margin: '0 auto', lineHeight: 1.7 }}>From Lagos to Sokoto — real people, real naira, real freedom.</p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '28px', marginTop: '24px', flexWrap: 'wrap' }}>
+            {([['60+', 'Success stories', '#c084fc'], ['₦500M+', 'Total earned', '#38bdf8'], ['36', 'States represented', '#34d399']] as [string, string, string][]).map(([val, lbl, color], i) => (
+              <React.Fragment key={i}>
+                {i > 0 && <div style={{ width: '1px', background: 'rgba(255,255,255,.08)' }} />}
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color }}>{val}</div>
+                  <div style={{ fontSize: '.75rem', color: '#475569', marginTop: '2px' }}>{lbl}</div>
+                </div>
+              </React.Fragment>
+            ))}
+          </div>
         </div>
 
         {/* Share Your Story Form */}
