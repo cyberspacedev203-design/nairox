@@ -13,6 +13,57 @@ import { AddBalanceModal } from "@/components/AddBalanceModal";
 import WithdrawalNoticeModal from "@/components/WithdrawalNoticeModal";
 import { Link } from "react-router-dom";
 
+const testimonialsList = [
+  {
+    quote: "This website changed my life! I earned ₦3,450,000 in my first month just by following the simple steps.",
+    name: "Chisom Okonkwo",
+    location: "Lagos, Nigeria",
+    stars: 5,
+  },
+  {
+    quote: "I was skeptical at first, but after 3 weeks I made over ₦1,200,000. The best part? It works while I sleep.",
+    name: "Tunde Adeyemi",
+    location: "Abuja, Nigeria",
+    stars: 5,
+  },
+  {
+    quote: "As a single mum, this has been a game-changer. Earned ₦890,000 last month working only 2 hours a day.",
+    name: "Ngozi Eze",
+    location: "Port Harcourt, Nigeria",
+    stars: 4,
+  },
+  {
+    quote: "Made ₦7,650,000 in 45 days. I quit my 9–5 last week. The community and tools are unmatched.",
+    name: "Emeka Nwosu",
+    location: "Kano, Nigeria",
+    stars: 5,
+  },
+  {
+    quote: "Retired teacher here. This platform gave me purpose again and ₦2,340,000 extra per month. Love it!",
+    name: "Mama Blessing Adewale",
+    location: "Ibadan, Nigeria",
+    stars: 5,
+  },
+  {
+    quote: "From zero to ₦4,200,000 in 6 weeks. The step-by-step guides are so easy even my grandma could follow.",
+    name: "Kunle Afolabi",
+    location: "Enugu, Nigeria",
+    stars: 5,
+  },
+  {
+    quote: "Earned my first ₦500,000 in under 10 days. Now consistently pulling ₦1,800,000–₦2,500,000 monthly.",
+    name: "Adaeze Okafor",
+    location: "Benin City, Nigeria",
+    stars: 4,
+  },
+  {
+    quote: "I love how beginner-friendly it is. Made ₦9,100,000 so far and I'm only 19!",
+    name: "Seun Balogun",
+    location: "Warri, Nigeria",
+    stars: 5,
+  },
+];
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [showBalance, setShowBalance] = useState(true);
@@ -26,12 +77,14 @@ const Dashboard = () => {
   const [timeRemaining, setTimeRemaining] = useState("Ready!");
   const [showWithdrawalNotice, setShowWithdrawalNotice] = useState(false);
   const [cardAnimation, setCardAnimation] = useState("pop");
+  const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
 
-  // Cycle through animations
+  // Cycle through animations and testimonials
   useEffect(() => {
     const animations = ["pop", "burst", "ripple", "tear"];
     const interval = setInterval(() => {
       setCardAnimation(animations[Math.floor(Math.random() * animations.length)]);
+      setCurrentTestimonialIndex((prev) => (prev + 1) % testimonialsList.length);
     }, 4000);
     return () => clearInterval(interval);
   }, []);
@@ -436,11 +489,11 @@ const Dashboard = () => {
                       Testimonial Preview
                     </p>
                     <h3 className="text-lg font-semibold text-white mt-3">
-                      “This website changed my life! I earned ₦3,450,000 in my first month just by following the simple steps.”
+                      "{testimonialsList[currentTestimonialIndex].quote}"
                     </h3>
                   </div>
                   <div className="text-yellow-400 text-base font-bold tracking-wide">
-                    ★★★★★
+                    {'★'.repeat(testimonialsList[currentTestimonialIndex].stars)}
                   </div>
                 </div>
 
@@ -449,18 +502,18 @@ const Dashboard = () => {
                     <p className="text-[10px] uppercase tracking-[0.2em] text-green-300">
                       User
                     </p>
-                    <p className="font-semibold text-white">Chisom Okonkwo</p>
+                    <p className="font-semibold text-white">{testimonialsList[currentTestimonialIndex].name}</p>
                   </div>
                   <div className="rounded-2xl bg-slate-950/80 p-3">
                     <p className="text-[10px] uppercase tracking-[0.2em] text-green-300">
                       Location
                     </p>
-                    <p className="font-semibold text-white">Lagos, Nigeria</p>
+                    <p className="font-semibold text-white">{testimonialsList[currentTestimonialIndex].location}</p>
                   </div>
                 </div>
 
                 <p className="mt-4 text-sm leading-6 text-green-200">
-                  A real earning preview from a member who unlocked ₦3.4M in the first month — all from one simple system.
+                  A real earning preview from a member who unlocked success — all from one simple system.
                 </p>
               </div>
             </div>
