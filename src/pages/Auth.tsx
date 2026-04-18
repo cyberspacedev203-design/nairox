@@ -280,7 +280,7 @@ const Auth = () => {
 
       {/* Telegram Support Button */}
       <a
-        href="https://t.me/Nairox9ja"
+        href="https://t.me/Nairox9jaCustomercarebot"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 left-6 z-50"
