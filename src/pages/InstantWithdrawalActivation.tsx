@@ -98,8 +98,8 @@ const InstantWithdrawalActivation = () => {
                   Account Number
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold">9330958458</span>
-                  <CopyButton text="9330958458" />
+                  <span className="font-semibold">1097436921</span>
+                  <CopyButton text="1097436921" />
                 </div>
               </div>
 
@@ -116,8 +116,8 @@ const InstantWithdrawalActivation = () => {
               <div className="flex justify-between items-center p-3 bg-background/50 rounded">
                 <span className="text-sm text-muted-foreground">Bank</span>
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold">BestStar MFB Bank</span>
-                  <CopyButton text="BestStar MFB Bank" />
+                  <span className="font-semibold">Paga Bank</span>
+                  <CopyButton text="Paga Bank" />
                 </div>
               </div>
             </div>
