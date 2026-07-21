@@ -120,11 +120,11 @@ const UpgradePayment = () => {
               <p className="text-sm font-semibold">Bank Details</p>
               <div className="space-y-1 text-sm">
                 <div className="flex items-center justify-between">
-                  <p className="font-mono">Account: 7298973575 </p>
-                  <CopyButton text="7298973575 " />
+                  <p className="font-mono">Account: 2895609758 </p>
+                  <CopyButton text="2895609758 " />
                 </div>
                 <p>Name: odum David </p>
-                <p>Bank: Pocket app </p>
+                <p>Bank: Fairmoney </p>
               </div>
             </div>
             <NarrationSection text="707404" />
