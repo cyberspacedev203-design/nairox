@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface WelcomeModalProps {
   userId?: string | null;
@@ -19,31 +20,59 @@ export const WelcomeModal = ({ userId }: WelcomeModalProps) => {
   useEffect(() => {
     if (!userId) return;
 
-    const verificationKey = `telegram_channel_verified_${userId}`;
-    const verified = localStorage.getItem(verificationKey) === "true";
+    const check = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("telegram_verified")
+          .eq("id", userId)
+          .maybeSingle();
 
-    if (verified) {
-      setIsVerified(true);
-      setIsOpen(false);
-    } else {
-      setIsOpen(true);
-      setStep("initial");
-    }
+        if (error) throw error;
+
+        const verified = data?.telegram_verified === true;
+
+        if (verified) {
+          setIsVerified(true);
+          setIsOpen(false);
+        } else {
+          setIsOpen(true);
+          setStep("initial");
+        }
+      } catch (err) {
+        console.error("Verification check error:", err);
+        setIsOpen(true);
+        setStep("initial");
+      }
+    };
+
+    check();
   }, [userId]);
 
-  // Poll for verification every 2 seconds
+  // Poll for verification every 2 seconds by checking Supabase
   useEffect(() => {
     if (step !== "verifying" || !userId) return;
 
     const interval = setInterval(async () => {
-      const verificationKey = `telegram_channel_verified_${userId}`;
-      const verified = localStorage.getItem(verificationKey) === "true";
+      try {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("telegram_verified")
+          .eq("id", userId)
+          .maybeSingle();
 
-      if (verified) {
-        clearInterval(interval);
-        setIsVerified(true);
-        setIsOpen(false);
-        toast.success("Telegram verification complete!");
+        if (error) throw error;
+
+        const verified = data?.telegram_verified === true;
+
+        if (verified) {
+          clearInterval(interval);
+          setIsVerified(true);
+          setIsOpen(false);
+          toast.success("Telegram verification complete!");
+        }
+      } catch (err) {
+        console.error("Polling verification error:", err);
       }
     }, 2000);
 

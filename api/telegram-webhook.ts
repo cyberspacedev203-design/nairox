@@ -102,22 +102,32 @@ export default async function handler(req, res) {
     `✅ Verified: ${telegramUsername} (app user ${appUserId})`
   );
 
-  // If you want to persist verification to your database, add a
-  // telegram_verified boolean column to the profiles table and update it here.
-  // Example:
-  // const updateResponse = await supabase
-  //   .from("profiles")
-  //   .update({ telegram_verified: true })
-  //   .eq("id", appUserId);
-  //
-  // if (updateResponse.error) {
-  //   console.error("Supabase update error:", updateResponse.error);
-  //   await sendTelegramMessage(
-  //     telegramUserId,
-  //     "You are a channel member, but I could not save verification to the database. Please contact support."
-  //   );
-  //   return res.status(500).json({ error: updateResponse.error });
-  // }
+  // Persist verification to Supabase (requires `telegram_verified` column)
+  try {
+    const updateResponse = await supabase
+      .from("profiles")
+      .update({ telegram_verified: true, telegram_username: message.from.username || null, telegram_id: telegramUserId })
+      .eq("id", appUserId);
+
+    if (updateResponse.error) {
+      console.error("Supabase update error:", updateResponse.error);
+      await sendTelegramMessage(
+        telegramUserId,
+        "You are a channel member, but I could not save verification to the database. Please contact support."
+      );
+      // still notify channel, but report partial failure
+      await sendTelegramMessage(notificationChatId, `⚠️ Verification saved FAILED for app user ${appUserId}: ${updateResponse.error.message || updateResponse.error}`);
+      return res.status(500).json({ error: updateResponse.error });
+    }
+  } catch (err) {
+    console.error("Supabase update exception:", err);
+    await sendTelegramMessage(
+      telegramUserId,
+      "You are a channel member, but I could not save verification to the database. Please contact support."
+    );
+    await sendTelegramMessage(notificationChatId, `⚠️ Verification error for app user ${appUserId}: ${err?.message || err}`);
+    return res.status(500).json({ error: String(err) });
+  }
 
   await sendTelegramMessage(
     telegramUserId,
