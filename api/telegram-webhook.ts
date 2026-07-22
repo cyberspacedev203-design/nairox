@@ -34,6 +34,11 @@ const getNotificationChatIdentifier = () => {
   return getChannelIdentifier();
 };
 
+const getChannelLink = () => {
+  if (TELEGRAM_CHANNEL_USERNAME) return `https://t.me/${TELEGRAM_CHANNEL_USERNAME}`;
+  return null;
+};
+
 const acceptedStatuses = new Set([
   "creator",
   "administrator",
@@ -57,6 +62,8 @@ export default async function handler(req, res) {
   const update = req.body;
   const message = update?.message;
 
+  console.log("[telegram-webhook] incoming update:", JSON.stringify(update)?.slice(0, 2000));
+
   if (!message || !message.from || !message.from.id || !message.text) {
     return res.status(200).send("ok");
   }
@@ -75,7 +82,14 @@ export default async function handler(req, res) {
       telegramUserId,
       "Please open the verification link from the website so I can verify you."
     );
-    return res.status(400).json({ error: "Missing app user id" });
+    return res.status(200).json({ error: "Missing app user id" });
+  }
+
+  // let the user know we received their /start and are checking
+  try {
+    await sendTelegramMessage(telegramUserId, "Checking your channel membership, please wait...");
+  } catch (e) {
+    console.error("Failed to send ack message to user:", e);
   }
 
   const channelId = getChannelIdentifier();
@@ -85,10 +99,17 @@ export default async function handler(req, res) {
   const chatMemberData = await chatMemberResponse.json();
 
   if (!chatMemberData.ok || !acceptedStatuses.has(chatMemberData.result?.status)) {
-    await sendTelegramMessage(
-      telegramUserId,
-      "I could not verify that you are a member of the channel. Please join the channel and then send /start again."
-    );
+    const channelLink = getChannelLink();
+    const joinMessage = channelLink
+      ? `I could not verify that you are a member of the channel. Please join here: ${channelLink} then return to this bot and send /start again.`
+      : "I could not verify that you are a member of the channel. Please ask support to add the bot to the channel or try again later.";
+
+    try {
+      await sendTelegramMessage(telegramUserId, joinMessage);
+    } catch (e) {
+      console.error("Failed to send join instruction to user:", e);
+    }
+
     return res.status(200).json({ verified: false, member: chatMemberData });
   }
 
@@ -111,22 +132,38 @@ export default async function handler(req, res) {
 
     if (updateResponse.error) {
       console.error("Supabase update error:", updateResponse.error);
+      try {
+        await sendTelegramMessage(
+          telegramUserId,
+          "You are a channel member, but I could not save verification to the database. Please contact support."
+        );
+      } catch (e) {
+        console.error("Failed to notify user about DB error:", e);
+      }
+      // still notify channel, but report partial failure
+      try {
+        await sendTelegramMessage(notificationChatId, `⚠️ Verification saved FAILED for app user ${appUserId}: ${updateResponse.error.message || updateResponse.error}`);
+      } catch (e) {
+        console.error("Failed to notify channel about DB error:", e);
+      }
+      return res.status(200).json({ error: updateResponse.error, verified: false });
+    }
+  } catch (err) {
+    console.error("Supabase update exception:", err);
+    try {
       await sendTelegramMessage(
         telegramUserId,
         "You are a channel member, but I could not save verification to the database. Please contact support."
       );
-      // still notify channel, but report partial failure
-      await sendTelegramMessage(notificationChatId, `⚠️ Verification saved FAILED for app user ${appUserId}: ${updateResponse.error.message || updateResponse.error}`);
-      return res.status(500).json({ error: updateResponse.error });
+    } catch (e) {
+      console.error("Failed to notify user about DB exception:", e);
     }
-  } catch (err) {
-    console.error("Supabase update exception:", err);
-    await sendTelegramMessage(
-      telegramUserId,
-      "You are a channel member, but I could not save verification to the database. Please contact support."
-    );
-    await sendTelegramMessage(notificationChatId, `⚠️ Verification error for app user ${appUserId}: ${err?.message || err}`);
-    return res.status(500).json({ error: String(err) });
+    try {
+      await sendTelegramMessage(notificationChatId, `⚠️ Verification error for app user ${appUserId}: ${err?.message || err}`);
+    } catch (e) {
+      console.error("Failed to notify channel about DB exception:", e);
+    }
+    return res.status(200).json({ error: String(err), verified: false });
   }
 
   await sendTelegramMessage(
