@@ -26,7 +26,7 @@ For a **private channel**:
 
 ## Step 4: Set Up Webhook in Vercel
 
-1. Get your bot username from BotFather (e.g., `@nairox9ja_verify_bot` or just `nairox9ja_verify_bot`)
+1. Get your bot username from BotFather (e.g., `@Getmemberrrbot` or just `Getmemberrrbot`)
 2. In your Telegram bot settings (via BotFather), set the webhook URL:
    ```
    https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook?url=https://<your-vercel-app>.vercel.app/api/telegram-webhook
@@ -54,16 +54,16 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGc...
 Create or update `.env.local` in your project root:
 
 ```
-VITE_TELEGRAM_BOT_USERNAME=nairox9ja_verify_bot
+VITE_TELEGRAM_BOT_USERNAME=Getmemberrrbot
 ```
 
-Replace `nairox9ja_verify_bot` with your actual bot username (without `@`).
+Replace `Getmemberrrbot` with your actual bot username (without `@`).
 
 ## How It Works
 
 1. User sees welcome modal on dashboard
 2. Clicks "Verify with Bot 🤖"
-3. Deep link opens: `https://t.me/nairox9ja_verify_bot?start=<userId>`
+3. Deep link opens: `https://t.me/Getmemberrrbot?start=<userId>`
 4. User sends `/start` in the bot
 5. Bot checks if user is in your channel via `getChatMember` API
 6. If verified, user can close the bot and click "I have verified ✓"

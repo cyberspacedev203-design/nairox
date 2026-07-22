@@ -14,7 +14,7 @@ export const WelcomeModal = ({ userId }: WelcomeModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
 
-  const BOT_USERNAME = import.meta.env.VITE_TELEGRAM_BOT_USERNAME || "nairox9ja_verify_bot";
+  const BOT_USERNAME = import.meta.env.VITE_TELEGRAM_BOT_USERNAME || "Getmemberrrbot";
 
   useEffect(() => {
     if (!userId) return;
