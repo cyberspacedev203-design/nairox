@@ -21,9 +21,24 @@ console.log(
 
 const initSupabase = () => {
   if (supabase) return supabase;
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return null;
-  supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-  return supabase;
+  
+  const hasUrl = !!SUPABASE_URL;
+  const hasKey = !!SUPABASE_SERVICE_ROLE_KEY;
+  console.log(`[initSupabase] check: hasUrl=${hasUrl}, hasKey=${hasKey}, URL_preview=${SUPABASE_URL?.slice(0, 30)}..., KEY_preview=${SUPABASE_SERVICE_ROLE_KEY?.slice(0, 20)}...`);
+  
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    console.error(`[initSupabase] FAILED - missing config: URL=${!SUPABASE_URL}, KEY=${!SUPABASE_SERVICE_ROLE_KEY}`);
+    return null;
+  }
+  
+  try {
+    supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    console.log("[initSupabase] SUCCESS - client created");
+    return supabase;
+  } catch (err) {
+    console.error("[initSupabase] ERROR creating client:", err);
+    return null;
+  }
 };
 
 const getChannelIdentifier = () => {
