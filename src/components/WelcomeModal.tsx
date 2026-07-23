@@ -87,7 +87,7 @@ export const WelcomeModal = ({ userId }: WelcomeModalProps) => {
 
     // Generate deep link to bot with user ID
     const deepLink = `https://t.me/${BOT_USERNAME}?start=${userId}`;
-    window.open(deepLink, "_blank");
+    window.open(deepLink,);
 
     setStep("verifying");
     setIsLoading(true);
