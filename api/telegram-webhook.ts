@@ -13,7 +13,10 @@ let telegramApiBase = TELEGRAM_BOT_TOKEN ? `https://api.telegram.org/bot${TELEGR
 
 // Log presence (not values) of important env vars to help debug runtime configuration
 console.log(
-  `[telegram-webhook] env presence: TELEGRAM_BOT_TOKEN=${!!TELEGRAM_BOT_TOKEN}, SUPABASE_URL=${!!SUPABASE_URL}, SUPABASE_SERVICE_ROLE_KEY=${!!SUPABASE_SERVICE_ROLE_KEY}, TELEGRAM_CHANNEL_USERNAME=${!!TELEGRAM_CHANNEL_USERNAME}, TELEGRAM_CHANNEL_ID=${!!TELEGRAM_CHANNEL_ID}`
+  `[telegram-webhook] Supabase init check: VITE_SUPABASE_URL=${!!SUPABASE_URL} (length: ${SUPABASE_URL?.length || 0}), VITE_SUPABASE_SERVICE_ROLE_KEY=${!!SUPABASE_SERVICE_ROLE_KEY} (length: ${SUPABASE_SERVICE_ROLE_KEY?.length || 0})`
+);
+console.log(
+  `[telegram-webhook] env presence: TELEGRAM_BOT_TOKEN=${!!TELEGRAM_BOT_TOKEN}, TELEGRAM_CHANNEL_USERNAME=${!!TELEGRAM_CHANNEL_USERNAME}, TELEGRAM_CHANNEL_ID=${!!TELEGRAM_CHANNEL_ID}`
 );
 
 const initSupabase = () => {
