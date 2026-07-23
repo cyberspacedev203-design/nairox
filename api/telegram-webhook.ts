@@ -5,16 +5,16 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHANNEL_USERNAME = process.env.TELEGRAM_CHANNEL_USERNAME;
 const TELEGRAM_CHANNEL_ID = process.env.TELEGRAM_CHANNEL_ID;
 const TELEGRAM_NOTIFICATION_CHAT_ID = process.env.TELEGRAM_NOTIFICATION_CHAT_ID;
-// Server functions read plain env vars, NOT VITE_* (those are frontend-only, baked in during build)
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
+const SUPABASE_PUBLISHABLE_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 let supabase = null;
 let telegramApiBase = TELEGRAM_BOT_TOKEN ? `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}` : null;
 
 // Log presence (not values) of important env vars to help debug runtime configuration
 console.log(
-  `[telegram-webhook] Supabase init check: VITE_SUPABASE_URL=${!!SUPABASE_URL} (length: ${SUPABASE_URL?.length || 0}), VITE_SUPABASE_SERVICE_ROLE_KEY=${!!SUPABASE_SERVICE_ROLE_KEY} (length: ${SUPABASE_SERVICE_ROLE_KEY?.length || 0})`
+  `[telegram-webhook] Supabase init check: SUPABASE_URL=${!!SUPABASE_URL} (length: ${SUPABASE_URL?.length || 0}), SUPABASE_SERVICE_ROLE_KEY=${!!SUPABASE_SERVICE_ROLE_KEY} (length: ${SUPABASE_SERVICE_ROLE_KEY?.length || 0}), SUPABASE_PUBLISHABLE_KEY=${!!SUPABASE_PUBLISHABLE_KEY}`
 );
 console.log(
   `[telegram-webhook] env presence: TELEGRAM_BOT_TOKEN=${!!TELEGRAM_BOT_TOKEN}, TELEGRAM_CHANNEL_USERNAME=${!!TELEGRAM_CHANNEL_USERNAME}, TELEGRAM_CHANNEL_ID=${!!TELEGRAM_CHANNEL_ID}`
@@ -24,11 +24,15 @@ const initSupabase = () => {
   if (supabase) return supabase;
   
   const hasUrl = !!SUPABASE_URL;
-  const hasKey = !!SUPABASE_SERVICE_ROLE_KEY;
-  console.log(`[initSupabase] check: hasUrl=${hasUrl}, hasKey=${hasKey}, URL_preview=${SUPABASE_URL?.slice(0, 30)}..., KEY_preview=${SUPABASE_SERVICE_ROLE_KEY?.slice(0, 20)}...`);
+  const hasServiceKey = !!SUPABASE_SERVICE_ROLE_KEY;
+  const hasPublishable = !!SUPABASE_PUBLISHABLE_KEY;
+  console.log(`[initSupabase] check: hasUrl=${hasUrl}, hasServiceKey=${hasServiceKey}, hasPublishableKey=${hasPublishable}, URL_preview=${SUPABASE_URL?.slice(0, 30)}..., KEY_preview=${SUPABASE_SERVICE_ROLE_KEY?.slice(0, 20)}...`);
   
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    console.error(`[initSupabase] FAILED - missing config: URL=${!SUPABASE_URL}, KEY=${!SUPABASE_SERVICE_ROLE_KEY}`);
+    console.error(`[initSupabase] FAILED - missing config: URL=${!SUPABASE_URL}, SERVICE_ROLE_KEY=${!SUPABASE_SERVICE_ROLE_KEY}, publishableKeyPresent=${hasPublishable}`);
+    if (hasPublishable && !hasServiceKey) {
+      console.error(`[initSupabase] WARNING - only publishable key found. You must set VITE_SUPABASE_SERVICE_ROLE_KEY or SUPABASE_SERVICE_ROLE_KEY, not the publishable key.`);
+    }
     return null;
   }
   
