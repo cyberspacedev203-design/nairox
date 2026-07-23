@@ -34,14 +34,9 @@ const getChannelLink = () => {
   return null;
 };
 
-const acceptedStatuses = new Set([
-  "creator",
-  "administrator",
-  "member",
-  "restricted",
-]);
+const acceptedStatuses = new Set(["creator", "administrator", "member", "restricted"]);
 
-const sendTelegramMessage = async (chatId: number | string, text: string) => {
+const sendTelegramMessage = async (chatId: number | string, text: string, extra: Record<string, any> = {}) => {
   if (!telegramApiBase) {
     console.warn("sendTelegramMessage skipped: TELEGRAM_BOT_TOKEN not set");
     return null;
@@ -51,11 +46,133 @@ const sendTelegramMessage = async (chatId: number | string, text: string) => {
     await fetch(`${telegramApiBase}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: chatId, text }),
+      body: JSON.stringify({ chat_id: chatId, text, ...extra }),
     });
   } catch (e) {
     console.error("sendTelegramMessage error:", e);
   }
+};
+
+const answerCallbackQuery = async (callbackQueryId: string, text: string) => {
+  if (!telegramApiBase) return null;
+
+  try {
+    await fetch(`${telegramApiBase}/answerCallbackQuery`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ callback_query_id: callbackQueryId, text }),
+    });
+  } catch (e) {
+    console.error("answerCallbackQuery error:", e);
+  }
+};
+
+const buildInitialKeyboard = (appUserId: string | null, channelLink: string | null) => {
+  const buttons = [];
+
+  if (channelLink) {
+    buttons.push([{ text: TELEGRAM_CHANNEL_USERNAME ? `@${TELEGRAM_CHANNEL_USERNAME}` : "Open Channel", url: channelLink }]);
+  }
+
+  buttons.push([{ text: "Verify", callback_data: appUserId ? `verify:${appUserId}` : "verify" }]);
+
+  return { inline_keyboard: buttons };
+};
+
+const verifyMembership = async ({
+  chatId,
+  telegramUserId,
+  appUserId,
+  messageFrom,
+  callbackQueryId = null,
+}: {
+  chatId: number | string;
+  telegramUserId: number;
+  appUserId: string;
+  messageFrom: any;
+  callbackQueryId?: string | null;
+}) => {
+  if (!TELEGRAM_BOT_TOKEN) {
+    console.error("Missing TELEGRAM_BOT_TOKEN environment variable");
+    await sendTelegramMessage(chatId, "Bot is not configured yet. Please contact support.");
+    return { verified: false, error: "Missing TELEGRAM_BOT_TOKEN" };
+  }
+
+  if (callbackQueryId) {
+    await answerCallbackQuery(callbackQueryId, "Checking your membership...");
+  }
+
+  await sendTelegramMessage(chatId, "Checking your channel membership, please wait...");
+
+  const channelId = getChannelIdentifier();
+  if (!channelId) {
+    console.error("Missing TELEGRAM_CHANNEL_ID or TELEGRAM_CHANNEL_USERNAME environment variable");
+    await sendTelegramMessage(chatId, "The channel is not configured yet. Please contact support.");
+    return { verified: false, error: "Missing channel identifier" };
+  }
+
+  let chatMemberData = { ok: false };
+  try {
+    const chatMemberResponse = await fetch(
+      `${telegramApiBase}/getChatMember?chat_id=${encodeURIComponent(channelId)}&user_id=${telegramUserId}`
+    );
+    chatMemberData = await chatMemberResponse.json();
+  } catch (e) {
+    console.error("getChatMember failed:", e);
+    await sendTelegramMessage(chatId, "Unable to verify membership right now. Please try again later.");
+    return { verified: false, error: String(e) };
+  }
+
+  if (!chatMemberData.ok || !acceptedStatuses.has(chatMemberData.result?.status)) {
+    const channelLink = getChannelLink();
+    const joinMessage = channelLink
+      ? "You still need to join the channel before I can verify you."
+      : "You still need to join the channel before I can verify you.";
+
+    const keyboard = buildInitialKeyboard(appUserId, channelLink);
+    await sendTelegramMessage(chatId, joinMessage, { reply_markup: keyboard });
+    return { verified: false, member: chatMemberData };
+  }
+
+  const notificationChatId = getNotificationChatIdentifier();
+  const telegramUsername = messageFrom?.username
+    ? `@${messageFrom.username}`
+    : `${messageFrom?.first_name || ""}${messageFrom?.last_name ? ` ${messageFrom.last_name}` : ""}`.trim() || `User ${telegramUserId}`;
+
+  try {
+    if (notificationChatId) {
+      await sendTelegramMessage(notificationChatId, `✅ Verified: ${telegramUsername} (app user ${appUserId})`);
+    }
+  } catch (e) {
+    console.error("Failed to notify channel/notification chat:", e);
+  }
+
+  const sb = initSupabase();
+  if (!sb) {
+    console.warn("Supabase not configured; skipping DB persistence for verification");
+    await sendTelegramMessage(chatId, "Verification complete! You can now continue on the website.");
+    return { verified: true, persisted: false };
+  }
+
+  try {
+    const updateResponse = await sb
+      .from("profiles")
+      .update({ telegram_verified: true, telegram_username: messageFrom?.username || null, telegram_id: telegramUserId })
+      .eq("id", appUserId);
+
+    if (updateResponse.error) {
+      console.error("Supabase update error:", updateResponse.error);
+      await sendTelegramMessage(chatId, "You are a channel member, but I could not save your verification. Please contact support.");
+      return { verified: false, error: updateResponse.error };
+    }
+  } catch (err) {
+    console.error("Supabase update exception:", err);
+    await sendTelegramMessage(chatId, "You are a channel member, but I could not save your verification. Please contact support.");
+    return { verified: false, error: String(err) };
+  }
+
+  await sendTelegramMessage(chatId, "Verification complete! You can now continue on the website.");
+  return { verified: true, persisted: true };
 };
 
 export default async function handler(req, res) {
@@ -64,9 +181,31 @@ export default async function handler(req, res) {
   }
 
   const update = req.body;
+  const callbackQuery = update?.callback_query;
   const message = update?.message;
 
   console.log("[telegram-webhook] incoming update:", JSON.stringify(update)?.slice(0, 2000));
+
+  if (callbackQuery?.data) {
+    const data = String(callbackQuery.data);
+    const appUserId = data.startsWith("verify:") ? data.slice("verify:".length) : null;
+    const chatId = callbackQuery.message?.chat?.id;
+    const telegramUserId = callbackQuery.from?.id;
+
+    if (!chatId || !telegramUserId || !appUserId) {
+      return res.status(200).send("ok");
+    }
+
+    await verifyMembership({
+      chatId,
+      telegramUserId,
+      appUserId,
+      messageFrom: callbackQuery.from,
+      callbackQueryId: callbackQuery.id,
+    });
+
+    return res.status(200).send("ok");
+  }
 
   if (!message || !message.from || !message.from.id || !message.text) {
     return res.status(200).send("ok");
@@ -82,136 +221,15 @@ export default async function handler(req, res) {
 
   const appUserId = startMatch[1];
   if (!appUserId) {
-    try {
-      await sendTelegramMessage(
-        telegramUserId,
-        "Please open the verification link from the website so I can verify you."
-      );
-    } catch (e) {
-      console.error("Failed to send missing app id message:", e);
-    }
+    await sendTelegramMessage(telegramUserId, "Please open the verification link from the website so I can verify you.");
     return res.status(200).json({ error: "Missing app user id" });
   }
 
-  if (!TELEGRAM_BOT_TOKEN) {
-    console.error("Missing TELEGRAM_BOT_TOKEN environment variable");
-    // Return 200 so Telegram stops retrying and log instructive message
-    return res.status(200).json({ error: "Server misconfiguration: TELEGRAM_BOT_TOKEN not set" });
-  }
+  const channelLink = getChannelLink();
+  const keyboard = buildInitialKeyboard(appUserId, channelLink);
+  await sendTelegramMessage(telegramUserId, "Join the channel and tap Verify below.", {
+    reply_markup: keyboard,
+  });
 
-  // let the user know we received their /start and are checking
-  try {
-    await sendTelegramMessage(telegramUserId, "Checking your channel membership, please wait...");
-  } catch (e) {
-    console.error("Failed to send ack message to user:", e);
-  }
-
-  const channelId = getChannelIdentifier();
-  if (!channelId) {
-    console.error("Missing TELEGRAM_CHANNEL_ID or TELEGRAM_CHANNEL_USERNAME environment variable");
-    await sendTelegramMessage(telegramUserId, "Server misconfiguration: channel identifier is not configured. Contact support.");
-    return res.status(200).json({ error: "Missing channel identifier" });
-  }
-
-  let chatMemberData = { ok: false };
-  try {
-    const chatMemberResponse = await fetch(
-      `${telegramApiBase}/getChatMember?chat_id=${encodeURIComponent(channelId)}&user_id=${telegramUserId}`
-    );
-    chatMemberData = await chatMemberResponse.json();
-  } catch (e) {
-    console.error("getChatMember failed:", e);
-    await sendTelegramMessage(telegramUserId, "Unable to verify membership right now. Please try again later.");
-    return res.status(200).json({ error: "getChatMember failed", details: String(e) });
-  }
-
-  if (!chatMemberData.ok || !acceptedStatuses.has(chatMemberData.result?.status)) {
-    const channelLink = getChannelLink();
-    const joinMessage = channelLink
-      ? `I could not verify that you are a member of the channel. Please join here: ${channelLink} then return to this bot and send /start again.`
-      : "I could not verify that you are a member of the channel. Please ask support to add the bot to the channel or try again later.";
-
-    try {
-      await sendTelegramMessage(telegramUserId, joinMessage);
-    } catch (e) {
-      console.error("Failed to send join instruction to user:", e);
-    }
-
-    return res.status(200).json({ verified: false, member: chatMemberData });
-  }
-
-  const notificationChatId = getNotificationChatIdentifier();
-  const telegramUsername = message.from.username
-    ? `@${message.from.username}`
-    : `${message.from.first_name || ""}${message.from.last_name ? ` ${message.from.last_name}` : ""}`.trim() || `User ${telegramUserId}`;
-
-  try {
-    if (notificationChatId) await sendTelegramMessage(notificationChatId, `✅ Verified: ${telegramUsername} (app user ${appUserId})`);
-  } catch (e) {
-    console.error("Failed to notify channel/notification chat:", e);
-  }
-
-  // Persist verification to Supabase (if configured)
-  const sb = initSupabase();
-  if (!sb) {
-    console.warn("Supabase not configured; skipping DB persistence for verification");
-    try {
-      await sendTelegramMessage(telegramUserId, "Verification complete! You are a member of the Telegram channel. (Note: server DB not configured, verification not saved)");
-    } catch (e) {
-      console.error("Failed to notify user after skipping DB persistence:", e);
-    }
-    return res.status(200).json({ verified: true, persisted: false });
-  }
-
-  try {
-    const updateResponse = await sb
-      .from("profiles")
-      .update({ telegram_verified: true, telegram_username: message.from.username || null, telegram_id: telegramUserId })
-      .eq("id", appUserId);
-
-    if (updateResponse.error) {
-      console.error("Supabase update error:", updateResponse.error);
-      try {
-        await sendTelegramMessage(
-          telegramUserId,
-          "You are a channel member, but I could not save verification to the database. Please contact support."
-        );
-      } catch (e) {
-        console.error("Failed to notify user about DB error:", e);
-      }
-      try {
-        if (notificationChatId) await sendTelegramMessage(notificationChatId, `⚠️ Verification saved FAILED for app user ${appUserId}: ${updateResponse.error.message || updateResponse.error}`);
-      } catch (e) {
-        console.error("Failed to notify channel about DB error:", e);
-      }
-      return res.status(200).json({ error: updateResponse.error, verified: false });
-    }
-  } catch (err) {
-    console.error("Supabase update exception:", err);
-    try {
-      await sendTelegramMessage(
-        telegramUserId,
-        "You are a channel member, but I could not save verification to the database. Please contact support."
-      );
-    } catch (e) {
-      console.error("Failed to notify user about DB exception:", e);
-    }
-    try {
-      if (notificationChatId) await sendTelegramMessage(notificationChatId, `⚠️ Verification error for app user ${appUserId}: ${err?.message || err}`);
-    } catch (e) {
-      console.error("Failed to notify channel about DB exception:", e);
-    }
-    return res.status(200).json({ error: String(err), verified: false });
-  }
-
-  try {
-    await sendTelegramMessage(
-      telegramUserId,
-      "Verification complete! You are a member of the Telegram channel. You can now continue on the website."
-    );
-  } catch (e) {
-    console.error("Failed to notify user about successful verification:", e);
-  }
-
-  return res.status(200).json({ verified: true, persisted: true });
+  return res.status(200).send("ok");
 }

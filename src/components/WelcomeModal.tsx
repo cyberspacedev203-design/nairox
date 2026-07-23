@@ -98,16 +98,6 @@ export const WelcomeModal = ({ userId }: WelcomeModalProps) => {
     }, 3000);
   };
 
-  const handleVerificationComplete = () => {
-    if (!userId) return;
-
-    const verificationKey = `telegram_channel_verified_${userId}`;
-    localStorage.setItem(verificationKey, "true");
-    setIsVerified(true);
-    setIsOpen(false);
-    toast.success("Telegram verification complete!");
-  };
-
   return (
     <>
       {isLoading && (
@@ -115,7 +105,7 @@ export const WelcomeModal = ({ userId }: WelcomeModalProps) => {
           <div className="text-center">
             <div className="w-12 h-12 rounded-full border-4 border-white border-t-transparent animate-spin mx-auto mb-4"></div>
             <p className="text-white font-medium">Waiting for verification...</p>
-            <p className="text-white/70 text-sm mt-2">Follow the bot to complete verification</p>
+            <p className="text-white/70 text-sm mt-2">Open Telegram and tap the Verify button there.</p>
           </div>
         </div>
       )}
@@ -150,8 +140,8 @@ export const WelcomeModal = ({ userId }: WelcomeModalProps) => {
 
             <p className="text-center text-sm text-muted-foreground">
               {step === "initial"
-                ? "Click the button below to open our verification bot. It will confirm you are a channel member."
-                : "Open the Telegram bot link again or click 'I have verified' below when done."}
+                ? "Tap the button below to open our verification bot. Once you press the Verify button inside Telegram, the site will unlock automatically."
+                : "The site will open automatically as soon as your Telegram verification is confirmed."}
             </p>
 
             <div className="space-y-2">
@@ -162,16 +152,6 @@ export const WelcomeModal = ({ userId }: WelcomeModalProps) => {
               >
                 {step === "initial" ? "Verify with Bot 🤖" : "Open Bot Again"}
               </Button>
-
-              {step === "verifying" && (
-                <Button
-                  onClick={handleVerificationComplete}
-                  variant="outline"
-                  className="w-full py-3 px-4 rounded-lg touch-manipulation min-h-[44px]"
-                >
-                  I have verified ✓
-                </Button>
-              )}
             </div>
           </div>
         </DialogContent>
