@@ -168,8 +168,7 @@ const verifyMembership = async ({
     return { verified: false, member: chatMemberData };
   }
 
-  // Only send confirmation to user, not to a separate notification channel
-
+  const notificationChatId = TELEGRAM_NOTIFICATION_CHAT_ID;
   const sb = initSupabase();
   if (!sb) {
     console.warn("Supabase not configured; skipping DB persistence for verification");
@@ -198,6 +197,16 @@ const verifyMembership = async ({
   }
 
   await sendTelegramMessage(chatId, "Verification complete! You can now continue on the website.");
+
+  if (notificationChatId) {
+    try {
+      await sendTelegramMessage(notificationChatId, `✅ Verified: ${messageFrom?.username ? `@${messageFrom.username}` : `${messageFrom?.first_name || ""} ${messageFrom?.last_name || ""}`.trim()} (${appUserId})`);
+      console.log(`[telegram-webhook] notification sent to ${notificationChatId}`);
+    } catch (error) {
+      console.error("Failed to send notification to notification chat:", error);
+    }
+  }
+
   return { verified: true, persisted: true };
 };
 
