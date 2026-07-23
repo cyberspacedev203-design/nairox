@@ -145,8 +145,11 @@ const verifyMembership = async ({
   const sb = initSupabase();
   if (!sb) {
     console.warn("Supabase not configured; skipping DB persistence for verification");
-    await sendTelegramMessage(chatId, "Verification complete! You can now continue on the website.");
-    return { verified: true, persisted: false };
+    await sendTelegramMessage(
+      chatId,
+      "You are a member of the channel, but server-side verification is not configured. The website cannot unlock until the site admin sets SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY and runs the database migration. Please contact support."
+    );
+    return { verified: false, persisted: false };
   }
 
   try {
