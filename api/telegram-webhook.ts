@@ -140,18 +140,7 @@ const verifyMembership = async ({
     return { verified: false, member: chatMemberData };
   }
 
-  const notificationChatId = getNotificationChatIdentifier();
-  const telegramUsername = messageFrom?.username
-    ? `@${messageFrom.username}`
-    : `${messageFrom?.first_name || ""}${messageFrom?.last_name ? ` ${messageFrom.last_name}` : ""}`.trim() || `User ${telegramUserId}`;
-
-  try {
-    if (notificationChatId) {
-      await sendTelegramMessage(notificationChatId, `✅ Verified: ${telegramUsername} (app user ${appUserId})`);
-    }
-  } catch (e) {
-    console.error("Failed to notify channel/notification chat:", e);
-  }
+  // Only send confirmation to user, not to a separate notification channel
 
   const sb = initSupabase();
   if (!sb) {
