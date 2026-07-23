@@ -152,6 +152,16 @@ export const WelcomeModal = ({ userId }: WelcomeModalProps) => {
               >
                 {step === "initial" ? "Verify with Bot 🤖" : "Open Bot Again"}
               </Button>
+              <Button
+                onClick={() => {
+                  setIsVerified(true);
+                  setIsOpen(false);
+                }}
+                variant="outline"
+                className="w-full py-3 px-4 rounded-lg touch-manipulation min-h-[44px] font-semibold"
+              >
+                Continue to Site →
+              </Button>
             </div>
           </div>
         </DialogContent>
