@@ -11,6 +11,11 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 let supabase = null;
 let telegramApiBase = TELEGRAM_BOT_TOKEN ? `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}` : null;
 
+// Log presence (not values) of important env vars to help debug runtime configuration
+console.log(
+  `[telegram-webhook] env presence: TELEGRAM_BOT_TOKEN=${!!TELEGRAM_BOT_TOKEN}, SUPABASE_URL=${!!SUPABASE_URL}, SUPABASE_SERVICE_ROLE_KEY=${!!SUPABASE_SERVICE_ROLE_KEY}, TELEGRAM_CHANNEL_USERNAME=${!!TELEGRAM_CHANNEL_USERNAME}, TELEGRAM_CHANNEL_ID=${!!TELEGRAM_CHANNEL_ID}`
+);
+
 const initSupabase = () => {
   if (supabase) return supabase;
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return null;
