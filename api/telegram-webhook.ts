@@ -111,23 +111,29 @@ const verifyMembership = async ({
     return { verified: false, error: "Missing channel identifier" };
   }
 
+  // Wait 2 seconds for Telegram to propagate the membership change
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+
   let chatMemberData = { ok: false };
   try {
     const chatMemberResponse = await fetch(
       `${telegramApiBase}/getChatMember?chat_id=${encodeURIComponent(channelId)}&user_id=${telegramUserId}`
     );
     chatMemberData = await chatMemberResponse.json();
+    console.log("[telegram-webhook] getChatMember response:", JSON.stringify(chatMemberData)?.slice(0, 500));
   } catch (e) {
     console.error("getChatMember failed:", e);
     await sendTelegramMessage(chatId, "Unable to verify membership right now. Please try again later.");
     return { verified: false, error: String(e) };
   }
 
-  if (!chatMemberData.ok || !acceptedStatuses.has(chatMemberData.result?.status)) {
+  const userStatus = chatMemberData.result?.status || "unknown";
+  if (!chatMemberData.ok || !acceptedStatuses.has(userStatus)) {
     const channelLink = getChannelLink();
+    const statusInfo = !chatMemberData.ok ? `API error: ${chatMemberData.description}` : `Your status is: ${userStatus}`;
     const joinMessage = channelLink
-      ? "You still need to join the channel before I can verify you."
-      : "You still need to join the channel before I can verify you.";
+      ? `You still need to join the channel. (${statusInfo})`
+      : `You still need to join the channel. (${statusInfo})`;
 
     const keyboard = buildInitialKeyboard(appUserId, channelLink);
     await sendTelegramMessage(chatId, joinMessage, { reply_markup: keyboard });
