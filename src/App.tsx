@@ -1,8 +1,10 @@
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Auth from "./pages/Auth";
 import Welcome from "./pages/Welcome";
 import Dashboard from "./pages/Dashboard";
@@ -31,41 +33,227 @@ import Testimonials from "./pages/Testimonials";
 
 const queryClient = new QueryClient();
 
+const AppRoutes = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!["/", "/auth"].includes(location.pathname)) {
+      return;
+    }
+
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/dashboard", { replace: true });
+      }
+    };
+
+    checkSession();
+  }, [location.pathname, navigate]);
+
+  return (
+    <Routes>
+      <Route path="/" element={<Auth />} />
+      <Route path="/auth" element={<Auth />} />
+      <Route
+        path="/welcome"
+        element={
+          <ProtectedRoute>
+            <Welcome />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/history"
+        element={
+          <ProtectedRoute>
+            <History />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/referrals"
+        element={
+          <ProtectedRoute>
+            <Referrals />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/withdraw"
+        element={
+          <ProtectedRoute>
+            <Withdraw />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/upgrade"
+        element={
+          <ProtectedRoute>
+            <Upgrade />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/upgrade-payment"
+        element={
+          <ProtectedRoute>
+            <UpgradePayment />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/upgrade-pending"
+        element={
+          <ProtectedRoute>
+            <UpgradePending />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/gateway-activation"
+        element={
+          <ProtectedRoute>
+            <GatewayActivation />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/gateway-pending"
+        element={
+          <ProtectedRoute>
+            <GatewayPending />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/withdrawal-activation"
+        element={
+          <ProtectedRoute>
+            <WithdrawalActivation />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/instant-withdrawal-activation"
+        element={
+          <ProtectedRoute>
+            <InstantWithdrawalActivation />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/instant-withdrawal-pending"
+        element={
+          <ProtectedRoute>
+            <InstantWithdrawalPending />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/withdrawal-activation-pending"
+        element={
+          <ProtectedRoute>
+            <WithdrawalActivationPending />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/wallet"
+        element={
+          <ProtectedRoute>
+            <WalletDetails />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/tasks"
+        element={
+          <ProtectedRoute>
+            <Tasks />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/support"
+        element={
+          <ProtectedRoute>
+            <Support />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/community"
+        element={
+          <ProtectedRoute>
+            <Community />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/spin"
+        element={
+          <ProtectedRoute>
+            <Spin />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/about"
+        element={
+          <ProtectedRoute>
+            <About />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/broadcast"
+        element={
+          <ProtectedRoute>
+            <Broadcast />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/testimonials"
+        element={
+          <ProtectedRoute>
+            <Testimonials />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Auth />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/welcome" element={<Welcome />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/history" element={<History />} />
-          <Route path="/referrals" element={<Referrals />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/withdraw" element={<Withdraw />} />
-          <Route path="/upgrade" element={<Upgrade />} />
-          <Route path="/upgrade-payment" element={<UpgradePayment />} />
-          <Route path="/upgrade-pending" element={<UpgradePending />} />
-          <Route path="/gateway-activation" element={<GatewayActivation />} />
-          <Route path="/gateway-pending" element={<GatewayPending />} />
-          <Route path="/withdrawal-activation" element={<WithdrawalActivation />} />
-          <Route path="/instant-withdrawal-activation" element={<InstantWithdrawalActivation />} />
-          <Route path="/instant-withdrawal-pending" element={<InstantWithdrawalPending />} />
-          <Route path="/withdrawal-activation-pending" element={<WithdrawalActivationPending />} />
-          <Route path="/wallet" element={<WalletDetails />} />
-          <Route path="/tasks" element={<Tasks />} />
-          <Route path="/support" element={<Support />} />
-          <Route path="/community" element={<Community />} />
-          <Route path="/spin" element={<Spin />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/broadcast" element={<Broadcast />} />
-          <Route path="/testimonials" element={<Testimonials />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AppRoutes />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

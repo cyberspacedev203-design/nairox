@@ -6,9 +6,10 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface WelcomeModalProps {
   userId?: string | null;
+  showPrompt?: boolean;
 }
 
-export const WelcomeModal = ({ userId }: WelcomeModalProps) => {
+export const WelcomeModal = ({ userId, showPrompt = false }: WelcomeModalProps) => {
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState<"initial" | "verifying">("initial");
@@ -18,7 +19,7 @@ export const WelcomeModal = ({ userId }: WelcomeModalProps) => {
   const BOT_USERNAME = import.meta.env.VITE_TELEGRAM_BOT_USERNAME || "Getmemberrrbot";
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || !showPrompt) return;
 
     const check = async () => {
       try {
@@ -47,7 +48,7 @@ export const WelcomeModal = ({ userId }: WelcomeModalProps) => {
     };
 
     check();
-  }, [userId]);
+  }, [userId, showPrompt]);
 
   // Poll for verification every 2 seconds by checking Supabase
   useEffect(() => {

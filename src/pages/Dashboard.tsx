@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
 import { ArrowRight } from "lucide-react";
-import { WelcomeModal } from "@/components/WelcomeModal";
 import { WithdrawalNotification } from "@/components/WithdrawalNotification";
 import { AddBalanceModal } from "@/components/AddBalanceModal";
 import WithdrawalNoticeModal from "@/components/WithdrawalNoticeModal";
@@ -244,7 +243,6 @@ const Dashboard = () => {
       className="min-h-screen liquid-bg pb-20 relative"
       style={{ position: "relative", zIndex: 1 }}
     >
-      <WelcomeModal userId={user?.id} />
       <WithdrawalNotification />
 
       {/* WITHDRAWAL NOTICE MODAL */}

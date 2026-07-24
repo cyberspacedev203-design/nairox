@@ -140,6 +140,7 @@ const Auth = () => {
       }
 
       localStorage.removeItem("referralCode");
+      localStorage.setItem("justSignedUp", "true");
       toast.success("Welcome to Nairox9ja! You got ₦50,000 bonus!");
       navigate("/dashboard", { replace: true });
     } catch (error: any) {
